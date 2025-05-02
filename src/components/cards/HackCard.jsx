@@ -7,26 +7,26 @@ import BaseCard from './BaseCard';
 const HackCard = ({ title, upvotes, downvotes, comments, className = '' }) => {
 
   return (
-    <BaseCard className={`flex-col items-start ${className}`}> 
+    <BaseCard className={`flex-col items-start bg-[#F5E3C6] border border-[#D1905A] ${className}`}> 
       {/* Top section: Title Only */}
       <div className="w-full mb-2"> 
-        <h3 className="text-lg font-semibold text-gray-900">{title}</h3> 
+        <h3 className="text-lg font-semibold text-[#8B4C24]">{title}</h3> 
       </div>
 
       {/* Bottom section: Interactions */}
-      <div className="flex items-center space-x-4 text-gray-600 text-sm w-full justify-start"> 
+      <div className="flex items-center space-x-4 text-[#8B4C24] text-sm w-full justify-start"> 
         {/*Upvotes / Downvotes*/}
         <div className="flex items-center space-x-2"> 
           <button 
             aria-label="Upvote" 
-            className="px-2 py-1 rounded hover:bg-gray-200 hover:text-orange-500"
+            className="px-2 py-1 rounded hover:bg-[#e0d5b8] hover:text-[#639751]"
           >
             Upvote
           </button>
           <span className="font-medium">{upvotes}</span> 
           <button 
             aria-label="Downvote" 
-            className="px-2 py-1 rounded hover:bg-gray-200 hover:text-blue-500"
+            className="px-2 py-1 rounded hover:bg-[#e0d5b8] hover:text-[#639751]"
           >
             Downvote
           </button>
@@ -36,7 +36,7 @@ const HackCard = ({ title, upvotes, downvotes, comments, className = '' }) => {
         <div className="flex items-center space-x-2">
           <button
             aria-label="View Comments"
-            className="px-2 py-1 rounded hover:bg-gray-200 hover:text-gray-800"
+            className="px-2 py-1 rounded hover:bg-[#e0d5b8] hover:text-[#639751]"
           >
             Comments
           </button>
