@@ -16,31 +16,31 @@ const HackCard = ({ title, upvotes, downvotes, comments, className = '' }) => {
       {/* Bottom section: Interactions */}
       <div className="flex items-center space-x-2 text-xs w-full justify-start mt-2"> 
         {/* Upvotes / Downvotes Group */} 
-        <div className="flex items-center space-x-1.5 bg-[#d1905a] text-[#F5E3C6] px-2 py-1 rounded-full"> 
+        <div className="flex items-center space-x-1.5 bg-[#d1905a] text-[#FFE2B6] px-2 py-1 rounded-full"> 
           <button 
             aria-label="Upvote" 
-            className="p-0.5 rounded bg-[#d1905a] hover:text-[#FFE2B6]"
+            className="p-0.5 rounded bg-[#d1905a]"
           >
-            <ArrowUpIcon className="h-4 w-4" />
+            <ArrowUpIcon className="h-5 w-5" />
           </button>
-          <span className="font-medium min-w-[1ch] text-center">{upvotes - downvotes}</span> 
+          <span className="font-medium min-w-[1ch] text-center text-sm">{upvotes - downvotes}</span>
           <button 
             aria-label="Downvote" 
-            className="p-0.5 rounded bg-[#d1905a] hover:text-[#FFE2B6]"
+            className="p-0.5 rounded bg-[#d1905a]"
           >
-            <ArrowDownIcon className="h-4 w-4" />
+            <ArrowDownIcon className="h-5 w-5" />
           </button>
         </div>
 
         {/* Comments Group */} 
-        <div className="flex items-center space-x-1 bg-[#d1905a] text-[#F5E3C6] px-2 py-1 rounded-full">
+        <div className="flex items-center space-x-1 bg-[#d1905a] text-[#FFE2B6] px-2 py-1 rounded-full">
           <button
             aria-label="View Comments"
-            className="p-0.5 rounded bg-[#d1905a] hover:text-[#FFE2B6]"
+            className="p-0.5 rounded bg-[#d1905a]"
           >
-            <ChatBubbleOvalLeftEllipsisIcon className="h-4 w-4" />
+            <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5" />
           </button>
-          <span className="font-medium">{comments}</span>
+          <span className="font-medium text-sm">{comments}</span>
         </div>
       </div>
     </BaseCard>
