@@ -9,33 +9,41 @@
 
 'use client'
 
+import { useState } from "react"
+import SortDropdown from "./SortDropdown"
 import StickyNavbar from './StickyNavbar'
-import { ChevronDownIcon, ViewColumnsIcon } from '@heroicons/react/24/outline'
+
 
 export default function FeedLayout({ children, title = 'Student Hacks' }) {
+  const [bestSort, setBestSort] = useState("Best")
+  const [dateSort, setDateSort] = useState("Newest")
+
+  const bestOptions = ["Best", "Top", "Hot", "New", "Rising"]
+  const dateOptions = ["Newest", "Oldest"]
+  
   return (
     <>
-      {/* 1) Your fixed top Loaf Life navbar */}
       <StickyNavbar />
 
-      {/* 2) Sticky sort/filter bar, right under navbar */}
       <div className="sticky top-16 z-10 bg-[#F5E3C6] border-b border-[#D1905A]">
-        <div className="max-w-md mx-auto flex items-center px-4 py-2 text-[#8B4C24]">
-          <button className="flex items-center space-x-1 text-sm font-medium hover:text-[#639751]">
-            <span>Best</span>
-            <ChevronDownIcon className="h-4 w-4" />
-          </button>
-          <span className="mx-3 h-4 border-l border-[#D1905A]" />
-          <button className="flex items-center space-x-1 text-sm font-medium hover:text-[#639751]">
-            <span>New</span>
-            <ChevronDownIcon className="h-4 w-4" />
-          </button>
+        <div className="max-w-md mx-auto flex items-center space-x-4 px-4 py-2">
+          <SortDropdown
+            label={bestSort}
+            options={bestOptions}
+            onChange={setBestSort}
+          />
+          <span className="h-4 border-l border-[#D1905A]" />
+          <SortDropdown
+            label={dateSort}
+            options={dateOptions}
+            onChange={setDateSort}
+          />
         </div>
       </div>
 
-      {/* 3) Feed container: wraps exactly what you pass as children */}
       <main className="max-w-md mx-auto px-4 py-6 space-y-6">
         <h1 className="text-2xl font-bold text-[#8B4C24]">{title}</h1>
+        {/* pass bestSort and dateSort down to your feed-rendering logic */}
         {children}
       </main>
     </>

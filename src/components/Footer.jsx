@@ -2,7 +2,7 @@
  * Footer.jsx
  * Loaf Life – fixed bottom footer with Logo, App Name, and AboutUs Link.
  *  
- * I took this template for the sticky footer from flowbite.com
+ * Brady took this template for the sticky footer from flowbite.com
  * 
  * @author flowbite 
  * @see https://flowbite.com/docs/components/footer/
