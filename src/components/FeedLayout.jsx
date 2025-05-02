@@ -39,7 +39,7 @@ export default function FeedLayout({ children, title = 'Student Hacks' }) {
       </div>
 
       {/* 3. Feed area */}
-      <main className="flex-1 overflow-auto max-w-md mx-auto px-4 py-6 space-y-6">
+      <main className="flex-1 overflow-auto max-w-md mx-auto px-4 py-6 space-y-6 bg-[#F5E3C6]">
         {/* page title */}
         <h1 className="text-2xl font-bold text-[#8B4C24]">{title}</h1>
         {/* your PostCard/HackCard components go here */}
