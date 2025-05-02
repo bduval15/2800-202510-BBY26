@@ -1,21 +1,15 @@
+// src/app/hacks-page/page.jsx
 'use client'
+
+import FeedLayout from '@/components/FeedLayout'
 
 export default function HacksPage() {
   return (
-    <div className="dark:bg-gray-900 min-h-screen text-white">
-      {/* sticky navbar*/}
-
-      {/* main feed container */}
-      <main className="max-w-md mx-auto px-4 py-6 space-y-4">
-        {/* Page title */}
-        <h1 className="text-2xl font-bold">Student Hacks</h1>
-
-        {/* Placeholder: drop <PostCard />s or other components in here */}
-        <div className="space-y-6">
-          {/* <PostCard post={…} /> */}
-          {/* <PostCard post={…} /> */}
-        </div>
-      </main>
-    </div>
+    <FeedLayout>
+      {/* Placeholder content so you can see it’s working */}
+      <div className="text-center text-[#8B4C24]">
+        Welcome to Student Hacks! Your posts will appear here.
+      </div>
+    </FeedLayout>
   )
 }
