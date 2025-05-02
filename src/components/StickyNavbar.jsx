@@ -2,11 +2,7 @@
  * StickyNavbar.jsx
  * Loaf Life – fixed top navigation bar with Browse, Save, Live Well links.
  *  
-<<<<<<< HEAD
  * Brady took this template for the sticky navBar from flowbite.com
-=======
- * I took this template for the stick navBar was taken from flowbite.com
->>>>>>> hacks-page-components
  * 
  * @author flowbite 
  * @see https://flowbite.com/docs/components/navbar/
@@ -17,10 +13,7 @@
  */
 
 import Link from 'next/link'
-<<<<<<< HEAD
 import HamburgerDropdown from './HamburgerMenu'
-=======
->>>>>>> hacks-page-components
 
 export default function Navbar() {
   return (
@@ -40,22 +33,8 @@ export default function Navbar() {
 
         {/* Nav Links */}
         <div className="flex space-x-8">
-<<<<<<< HEAD
           {/* Replace the single Link with your dropdown component */}
           <HamburgerDropdown />
-=======
-          <Link
-            href="/profile"
-            className="flex flex-col items-center text-sm text-[#8B4C24] hover:text-[#639751]"
-          >
-            <img
-              src="/images/profile.png"
-              alt="Live Well"
-              className="h-8 w-12 mb-1"
-            />
-            <span>Profile</span>
-          </Link>
->>>>>>> hacks-page-components
         </div>
       </div>
     </nav>

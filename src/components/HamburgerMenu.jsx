@@ -7,6 +7,8 @@
  * @author https://chatgpt.com/
  */
 
+'use client'
+
 import { useState, useRef, useEffect } from "react"
 import { Bars3Icon } from "@heroicons/react/24/outline"
 import Link from "next/link"
