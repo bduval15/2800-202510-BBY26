@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import BaseCard from './BaseCard'; 
+import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline';
 
 
 
@@ -16,19 +17,19 @@ const HackCard = ({ title, upvotes, downvotes, comments, className = '' }) => {
       {/* Bottom section: Interactions */}
       <div className="flex items-center space-x-4 text-[#8B4C24] text-sm w-full justify-start"> 
         {/*Upvotes / Downvotes*/}
-        <div className="flex items-center space-x-2"> 
+        <div className="flex items-center space-x-1">
           <button 
             aria-label="Upvote" 
-            className="px-2 py-1 rounded hover:bg-[#e0d5b8] hover:text-[#639751]"
+            className="p-1 rounded hover:bg-[#e0d5b8] hover:text-[#639751]"
           >
-            Upvote
+            <ArrowUpIcon className="h-5 w-5" />
           </button>
           <span className="font-medium">{upvotes}</span> 
           <button 
             aria-label="Downvote" 
-            className="px-2 py-1 rounded hover:bg-[#e0d5b8] hover:text-[#639751]"
+            className="p-1 rounded hover:bg-[#e0d5b8] hover:text-[#639751]"
           >
-            Downvote
+            <ArrowDownIcon className="h-5 w-5" />
           </button>
           <span className="font-medium">{downvotes}</span>
         </div>
