@@ -1,6 +1,14 @@
 import Image from "next/image";
-
-/* // Portions of styling and layout were assisted by ChatGPT for educational purposes (e.g., Tailwind class structuring, semantic HTML structure). */
+import Link  from 'next/link';
+/**
+ * Home.jsx
+ * Loaf Life – landing page with logo, main heading, CTA button, and how-it-works section.
+ *
+ * Portions of styling and layout were assisted by ChatGPT for educational purposes (e.g., Tailwind class structuring, semantic HTML structure).
+ *
+ * Modified with assistance from ChatGPT o4-mini-high.
+ * @author https://chatgpt.com/*
+ */
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#F5E3C6] text-[#8B4C24] px-6 py-10 flex flex-col items-center font-sans">
@@ -18,10 +26,12 @@ export default function Home() {
         Discover free food spots, great deals, and money-saving hacks.
       </p>
 
-      {/* CTA */}
-      <button className="mt-10 bg-[#639751] text-white font-semibold px-6 py-3 rounded-full hover:bg-[#6bb053] transition">
-        Get Started
-      </button>
+      {/* CTA – redirect to loginPage.js */}
+      <Link href="/login-page">
+        <button className="mt-10 bg-[#639751] text-white font-semibold px-6 py-3 rounded-full hover:bg-[#6bb053] transition">
+          Get Started
+        </button>
+      </Link>
 
       {/* How it Works */}
       <section className="mt-14 grid grid-cols-3 gap-10 text-center text-sm">
