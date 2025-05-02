@@ -2,7 +2,7 @@
  * StickyNavbar.jsx
  * Loaf Life – fixed top navigation bar with Browse, Save, Live Well links.
  *  
- * I took this template for the stick navBar was taken from flowbite.com
+ * I took this template for the sticky navBar from flowbite.com
  * 
  * @author flowbite 
  * @see https://flowbite.com/docs/components/navbar/
