@@ -19,6 +19,13 @@ const publicKey = process.env.PUBLIC_ANON_KEY;
 const serviceKey = process.env.PRIVATE_SERVICE_KEY;
 const tokDecoder = process.env.JWT_TOKEN_DECODER;
 
+console.log({
+  supaURL: process.env.SUPABASE_URL,
+  publicKey: process.env.PUBLIC_ANON_KEY,
+  serviceKey: process.env.PRIVATE_SERVICE_KEY,
+  tokDecoder: process.env.JWT_TOKEN_DECODER
+});
+
 if (!supaURL || !publicKey || !serviceKey || !tokDecoder) 
   {
   throw new Error("Missing Supabase environment variables");
@@ -67,3 +74,7 @@ const serverDB = createClient(supaURL, serviceKey,
 });
 
 module.exports = { clientDB, serverDB };
+
+//import supabase variables with these
+// const { serverDB } = require("../services/supabaseClient");
+// const { clientDB } = require("../services/supabaseClient");
