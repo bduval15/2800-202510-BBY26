@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import BaseCard from './BaseCard'; 
-import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline';
+import { ArrowUpIcon, ArrowDownIcon, ChatBubbleOvalLeftEllipsisIcon } from '@heroicons/react/24/outline';
 
 
 const HackCard = ({ title, upvotes, downvotes, comments, className = '' }) => {
@@ -14,31 +14,31 @@ const HackCard = ({ title, upvotes, downvotes, comments, className = '' }) => {
       </div>
 
       {/* Bottom section: Interactions */}
-      <div className="flex items-center space-x-4 text-[#8B4C24] text-sm w-full justify-start"> 
-        {/*Upvotes / Downvotes*/}
-        <div className="flex items-center space-x-1">
+      <div className="flex items-center space-x-2 text-xs w-full justify-start mt-2"> 
+        {/* Upvotes / Downvotes Group */} 
+        <div className="flex items-center space-x-1.5 bg-[#d1905a] text-[#F5E3C6] px-2 py-1 rounded-full"> 
           <button 
             aria-label="Upvote" 
-            className="p-1 rounded hover:bg-[#e0d5b8] hover:text-[#639751]"
+            className="p-0.5 rounded bg-[#d1905a] hover:text-[#FFE2B6]"
           >
-            <ArrowUpIcon className="h-5 w-5" />
+            <ArrowUpIcon className="h-4 w-4" />
           </button>
-          <span className="font-medium">{upvotes}</span> 
+          <span className="font-medium min-w-[1ch] text-center">{upvotes - downvotes}</span> 
           <button 
             aria-label="Downvote" 
-            className="p-1 rounded hover:bg-[#e0d5b8] hover:text-[#639751]"
+            className="p-0.5 rounded bg-[#d1905a] hover:text-[#FFE2B6]"
           >
-            <ArrowDownIcon className="h-5 w-5" />
+            <ArrowDownIcon className="h-4 w-4" />
           </button>
-          <span className="font-medium">{downvotes}</span>
         </div>
-        {/* Comments */}
-        <div className="flex items-center space-x-2">
+
+        {/* Comments Group */} 
+        <div className="flex items-center space-x-1 bg-[#d1905a] text-[#F5E3C6] px-2 py-1 rounded-full">
           <button
             aria-label="View Comments"
-            className="px-2 py-1 rounded hover:bg-[#e0d5b8] hover:text-[#639751]"
+            className="p-0.5 rounded bg-[#d1905a] hover:text-[#FFE2B6]"
           >
-            Comments
+            <ChatBubbleOvalLeftEllipsisIcon className="h-4 w-4" />
           </button>
           <span className="font-medium">{comments}</span>
         </div>
