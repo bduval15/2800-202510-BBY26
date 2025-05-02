@@ -4,7 +4,6 @@ import BaseCard from './BaseCard';
 import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline';
 
 
-
 const HackCard = ({ title, upvotes, downvotes, comments, className = '' }) => {
 
   return (

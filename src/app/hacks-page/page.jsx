@@ -16,6 +16,37 @@ export default function HacksPage() {
         downvotes={4}
         comments={7}
       />
+      <HackCard
+        title="Free McDonald's Coffee"
+        upvotes={20}
+        downvotes={4}
+        comments={7}
+      />
+      <HackCard
+        title="Free McDonald's Coffee"
+        upvotes={20}
+        downvotes={4}
+        comments={7}
+      />
+      <HackCard
+        title="Free McDonald's Coffee"
+        upvotes={20}
+        downvotes={4}
+        comments={7}
+      />
+      <HackCard
+        title="Free McDonald's Coffee"
+        upvotes={20}
+        downvotes={4}
+        comments={7}
+      />
+      <HackCard
+        title="Free McDonald's Coffee"
+        upvotes={20}
+        downvotes={4}
+        comments={7}
+      />
     </FeedLayout>
   )
 }
+
