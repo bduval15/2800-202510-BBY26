@@ -32,7 +32,16 @@ const HackCard = ({ title, upvotes, downvotes, comments, className = '' }) => {
           </button>
           <span className="font-medium">{downvotes}</span>
         </div>
-        
+        {/* Comments */}
+        <div className="flex items-center space-x-2">
+          <button
+            aria-label="View Comments"
+            className="px-2 py-1 rounded hover:bg-gray-200 hover:text-gray-800"
+          >
+            Comments
+          </button>
+          <span className="font-medium">{comments}</span>
+        </div>
       </div>
     </BaseCard>
   );
