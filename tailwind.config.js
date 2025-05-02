@@ -12,7 +12,7 @@ module.exports = {
             brown_crust: '#D1905A',
             brown_highlight: '#FFE2B6',
             secondary_brown: '#C27A49',
-            green_acccent: '#B8D8B3'
+            green_acccent: '#639751'
         }
     }
 }
