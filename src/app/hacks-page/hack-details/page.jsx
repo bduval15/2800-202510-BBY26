@@ -7,11 +7,12 @@ import Footer from '@/components/Footer';
 // Placeholder data directly here
 const placeholderHack = {
   id: 'placeholder',
-  title: 'Free McDonalds Coffee',
-  descriptionTitle: 'Free Coffee?',
-  description: 'McDonalds is giving away free coffee on May 5th!',
-  hackTitle: 'Hack',
-  hackDetails: 'Just go to the McDonalds on 5th Ave and ask for a free coffee!',
+  title: 'Free BCIT Gym Access',
+  descriptionTitle: 'BCIT Recreation (Burnaby Campus)',
+  description: `All full-time and part-time BCIT students get a complimentary Recreation membership from the first day of classes until the last. With just your BCIT student ID, you'll have free access to
+  a full weight room, gymnasium, change rooms, showers, and more.`,
+  hackTitle: 'A few perks (paid upgrade)',
+  hackDetails: `If you want squash/racquetball or intramurals, those are available at nominal additional rates—still well below commercial alternatives. Lockers, towels, and laundry service can also be added for a small fee (e.g. court bookings run under $10/hr)`,
   author: 'Student',
   timestamp: 'Two days ago',
 };
@@ -25,20 +26,19 @@ export default function HackDetailPage({ params }) {
   return (
     <div>
     <FeedLayout>
-      <div className="bg-[#F5E3C6]">
             {/* Hack Title */}
             <h1 className="text-3xl font-bold mb-4 text-center text-[#8B4C24]">{hack.title}</h1>
             
             {/* Description Section */}
             <div className="mb-4">
               <h2 className="text-xl font-semibold mb-2 text-[#8B4C24]">{hack.descriptionTitle}</h2>
-              <p className="text-base">{hack.description}</p>
+          <p className="text-[#8B4C24]">{hack.description}</p>
             </div>
 
             {/* Hack Details Section */}
             <div className="mb-4">
               <h2 className="text-xl font-semibold mb-2 text-[#8B4C24]">{hack.hackTitle}</h2>
-              <p className="text-base">{hack.hackDetails}</p>
+              <p className="text-[#8B4C24]">{hack.hackDetails}</p>
             </div>
 
             {/* Author/Timestamp */}
@@ -52,7 +52,6 @@ export default function HackDetailPage({ params }) {
             >
               Save Hack
             </button>
-      </div>
     </FeedLayout>
       <Footer /> {/* Includes Footer Navigation */}
     </div>
