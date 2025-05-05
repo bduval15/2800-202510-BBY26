@@ -76,5 +76,5 @@ const serverDB = createClient(supaURL, serviceKey,
 module.exports = { clientDB, serverDB };
 
 //import supabase variables with these
-// const { serverDB } = require("../services/supabaseClient");
-// const { clientDB } = require("../services/supabaseClient");
+//import { serverDB } from "@/services/supabaseClient";
+//import { clientDB } from "@/services/supabaseClient";

@@ -1,16 +1,23 @@
 import React from 'react'
 import Footer from "@/components/Footer"
 import StickyNavbar from "@/components/StickyNavbar"
+import { clientDB } from "@/services/supabaseClient"
 
 /**
  * page.js
  * Loaf Life – login page where users can enter credentials.
  *
  * Modified with assistance from ChatGPT o4-mini-high.
+ * Further assistance in sign up logic
  * @author https://chatgpt.com/*
  */
 
 export default function LoginPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLogin, setIsLogin] = useState(true); 
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState({ text: '', type: '' });
     return (
         <>
     <StickyNavbar/>
