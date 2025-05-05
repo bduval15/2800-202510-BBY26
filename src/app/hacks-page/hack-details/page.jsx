@@ -1,3 +1,19 @@
+/**
+ * HackDetails.jsx
+ * Loaf Life - Hack Details Page
+ * 
+ * This page displays the details of a specific hack.
+ * It includes the hack title, description, hack details, author, and timestamp.
+ * It also includes a button to save the hack.
+ * 
+ * @author: Nathan O
+ * 
+ * Modified with assistance from Google Gemini 2.5 Flash
+ * @author https://gemini.google.com/app
+ */
+
+// Placeholder data currently being used, need to update implementation to use database later - Nate
+
 'use client';
 
 import React, { useState } from 'react';
