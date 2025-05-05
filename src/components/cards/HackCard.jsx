@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import BaseCard from './BaseCard'; 
-import { ArrowUpIcon, ArrowDownIcon, ChatBubbleOvalLeftEllipsisIcon } from '@heroicons/react/24/outline';
+import { ArrowUpIcon, ArrowDownIcon, ChatBubbleOvalLeftEllipsisIcon, BookmarkIcon as BookmarkOutlineIcon } from '@heroicons/react/24/outline';
+import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid';
 
 
 const HackCard = ({ title, upvotes, downvotes, comments, className = '' }) => {
+  const [isBookmarked, setIsBookmarked] = useState(false);
+
+  const handleBookmarkClick = () => {
+    setIsBookmarked(!isBookmarked);
+  };
 
   return (
     <BaseCard className={`flex-col items-start bg-[#F5E3C6] border border-[#D1905A] ${className}`}> 
@@ -42,6 +48,19 @@ const HackCard = ({ title, upvotes, downvotes, comments, className = '' }) => {
           </button>
           <span className="font-medium text-sm">{comments}</span>
         </div>
+
+        {/* Bookmark Button */}
+        <button
+          onClick={handleBookmarkClick}
+          aria-label={isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
+          className="p-1.5 rounded-full bg-[#d1905a] text-[#FFE2B6] ml-auto" // Use ml-auto to push to the right
+        >
+          {isBookmarked ? (
+            <BookmarkSolidIcon className="h-5 w-5" />
+          ) : (
+            <BookmarkOutlineIcon className="h-5 w-5" />
+          )}
+        </button>
       </div>
     </BaseCard>
   );
