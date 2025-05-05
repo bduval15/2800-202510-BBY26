@@ -1,8 +1,8 @@
 'use client';
 import React, { useState } from 'react';
-import Footer from "@/components/Footer"
-import StickyNavbar from "@/components/StickyNavbar"
-import { clientDB } from "@/services/supabaseClient"
+import Footer from "@/components/Footer";
+import StickyNavbar from "@/components/StickyNavbar";
+import { clientDB } from "@/services/supabaseClient";
 
 /**
  * page.js
@@ -54,6 +54,7 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
   return (
     <>
       <StickyNavbar />
