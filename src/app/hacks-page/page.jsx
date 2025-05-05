@@ -5,9 +5,10 @@ import FeedLayout from '@/components/FeedLayout'
 import HackCard from '@/components/cards/HackCard'
 export default function HacksPage() {
   return (
+    <div className="bg-[#F5E3C6]">
     <FeedLayout>
       {/* Placeholder content so you can see it’s working */}
-      <div className="text-center text-[#8B4C24]">
+      <div className="text-center text-[#8B4C24] bg-[#F5E3C6] ">
         Welcome to Student Hacks! Your posts will appear here.
       </div>
       <HackCard 
@@ -47,6 +48,7 @@ export default function HacksPage() {
         comments={7}
       />
     </FeedLayout>
+    </div>
   )
 }
 
