@@ -14,7 +14,7 @@ export default function HacksPage() {
         Welcome to Student Hacks! Your posts will appear here.
       </div>
       <HackCard 
-        title="Free McDonald's Coffee"
+        title="BCIT Recreation (Burnaby Campus)"
         upvotes={20}
         downvotes={4}
         comments={7}
