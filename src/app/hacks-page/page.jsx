@@ -3,6 +3,8 @@
 
 import FeedLayout from '@/components/FeedLayout'
 import HackCard from '@/components/cards/HackCard'
+import Footer from '@/components/Footer'
+
 export default function HacksPage() {
   return (
     <div className="bg-[#F5E3C6]">
@@ -48,6 +50,7 @@ export default function HacksPage() {
         comments={7}
       />
     </FeedLayout>
+    <Footer />
     </div>
   )
 }
