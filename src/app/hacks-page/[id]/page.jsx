@@ -6,7 +6,7 @@ import Footer from '@/components/Footer';
 import Link from 'next/link';
 import BookmarkButton from '@/components/buttons/Bookmark';
 import VoteButtons from '@/components/buttons/VoteButtons';
-import CommentDisplay from '@/components/buttons/CommentDisplay';
+import CommentDisplay from '@/components/buttons/CommentCount';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import Tag from '@/components/Tag';
 import Comment from '@/components/cards/Comment';
@@ -114,7 +114,7 @@ export default function HackDetailPage({ params }) {
           </button>
 
           {showComments && (
-            <div className="mt-4">
+            <div className="mt-4" id="comments-section">
               <Comment
                 avatarSrc={null}
                 username="ToastedBagel"

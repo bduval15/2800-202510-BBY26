@@ -4,7 +4,7 @@ import Link from 'next/link';
 import BaseCard from './BaseCard';
 import BookmarkButton from '../buttons/Bookmark';
 import VoteButtons from '../buttons/VoteButtons';
-import CommentDisplay from '../buttons/CommentDisplay';
+import CommentDisplay from '../buttons/CommentCount';
 import Tag from '../Tag';
 
 /**
