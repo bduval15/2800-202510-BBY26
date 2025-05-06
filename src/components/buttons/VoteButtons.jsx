@@ -9,6 +9,9 @@ import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline';
  * This component displays upvote and downvote buttons and the current vote count.
  * 
  * @author: Nathan O
+ * 
+ * Written with assistance from Google Gemini 2.5 Flash
+ * @author https://gemini.google.com/app
  */
 
 // Placeholder logic, need to implement actual vote handling later - Nathan O

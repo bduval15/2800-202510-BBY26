@@ -6,7 +6,7 @@
  * 
  * @author: Nathan O
  * 
- * Modified with assistance from Google Gemini 2.5 Flash
+ * Written with assistance from Google Gemini 2.5 Flash
  * @author https://gemini.google.com/app
  */
 'use client'

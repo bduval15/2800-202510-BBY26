@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 import BaseCard from './BaseCard';
-import { ChatBubbleOvalLeftEllipsisIcon } from '@heroicons/react/24/outline';
 import BookmarkButton from '../buttons/Bookmark';
 import VoteButtons from '../buttons/VoteButtons';
+import CommentDisplay from '../buttons/CommentDisplay';
 
 /**
  * HackCard.jsx
@@ -14,6 +14,8 @@ import VoteButtons from '../buttons/VoteButtons';
  * 
  * @author: Nathan O
  * 
+ * Written with assistance from Google Gemini 2.5 Flash
+ * @author https://gemini.google.com/app
  */
 
 const HackCard = ({ id, title, upvotes, downvotes, comments, className = '' }) => {
@@ -35,15 +37,7 @@ const HackCard = ({ id, title, upvotes, downvotes, comments, className = '' }) =
         <VoteButtons upvotes={upvotes} downvotes={downvotes} />
 
         {/* Comments Group */}
-        <div className="flex items-center space-x-1 bg-[#d1905a] text-[#FFE2B6] px-2 py-1 rounded-full">
-          <button
-            aria-label="View Comments"
-            className="p-0.5 rounded bg-[#d1905a]"
-          >
-            <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5" />
-          </button>
-          <span className="font-medium text-base">{comments}</span>
-        </div>
+        <CommentDisplay count={comments} />
 
         {/* Bookmark Button */}
         <BookmarkButton />
