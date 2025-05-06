@@ -23,21 +23,18 @@ const VoteButtons = ({ upvotes: initialUpvotes, downvotes: initialDownvotes }) =
   useEffect(() => {
     setLocalUpvotes(Number(initialUpvotes) || 0);
     setLocalDownvotes(Number(initialDownvotes) || 0);
-    setUserVote(null); // Reset user vote if props change significantly, or handle as per desired UX
+    setUserVote(null);
   }, [initialUpvotes, initialDownvotes]);
 
   const handleUpvote = () => {
     if (userVote === 'upvoted') {
-      // Already upvoted, remove upvote
       setLocalUpvotes(localUpvotes - 1);
       setUserVote(null);
     } else if (userVote === 'downvoted') {
-      // Was downvoted, change to upvote
       setLocalDownvotes(localDownvotes - 1);
       setLocalUpvotes(localUpvotes + 1);
       setUserVote('upvoted');
     } else {
-      // No vote or other, add upvote
       setLocalUpvotes(localUpvotes + 1);
       setUserVote('upvoted');
     }
@@ -45,37 +42,24 @@ const VoteButtons = ({ upvotes: initialUpvotes, downvotes: initialDownvotes }) =
 
   const handleDownvote = () => {
     if (userVote === 'downvoted') {
-      // Already downvoted, remove downvote
       setLocalDownvotes(localDownvotes - 1);
       setUserVote(null);
     } else if (userVote === 'upvoted') {
-      // Was upvoted, change to downvote
       setLocalUpvotes(localUpvotes - 1);
       setLocalDownvotes(localDownvotes + 1);
       setUserVote('downvoted');
     } else {
-      // No vote or other, add downvote
       setLocalDownvotes(localDownvotes + 1);
       setUserVote('downvoted');
     }
   };
 
-  const getBackgroundColor = () => {
-    if (userVote === 'upvoted') {
-      return 'bg-[#639751]'; // Green for upvote
-    }
-    if (userVote === 'downvoted') {
-      return 'bg-[#8B4C24]'; // Darker brown for downvote
-    }
-    return 'bg-[#d1905a]'; // Default color
-  };
-
   return (
-    <div className={`flex items-center space-x-1.5 text-[#FFE2B6] px-2 py-1 rounded-full ${getBackgroundColor()}`}>
+    <div className="flex items-center space-x-1.5 bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] px-3 py-1.5 rounded-lg shadow-md">
       <button
         onClick={handleUpvote}
         aria-label="Upvote"
-        className={`p-0.5 rounded ${getBackgroundColor()}`}
+        className="p-0.5 rounded hover:bg-[#EADDCA]"
       >
         <ArrowUpIcon className="h-5 w-5" />
       </button>
@@ -83,7 +67,7 @@ const VoteButtons = ({ upvotes: initialUpvotes, downvotes: initialDownvotes }) =
       <button
         onClick={handleDownvote}
         aria-label="Downvote"
-        className={`p-0.5 rounded ${getBackgroundColor()}`} 
+        className="p-0.5 rounded hover:bg-[#EADDCA]"
       >
         <ArrowDownIcon className="h-5 w-5" />
       </button>
