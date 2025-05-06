@@ -27,7 +27,7 @@ export default function HacksPage() {
         upvotes={20}
         downvotes={4} 
         comments={7} 
-        tags={['BCIT', 'Gym', 'Free']} 
+        tags={['Campus Life', 'Health & Wellness']} 
       />
       <HackCard
         title="Budget Stir Fry Noodles Recipe"

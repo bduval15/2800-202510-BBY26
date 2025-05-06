@@ -25,7 +25,7 @@ const Tag = ({ label }) => {
       whiteSpace: 'nowrap',
       verticalAlign: 'baseline',
       borderRadius: '0.25rem',
-      backgroundColor: '#8B4C24', 
+      backgroundColor: '#B87333',
       color: '#F5E3C6', 
       marginRight: '0.5rem', 
       marginBottom: '0.25rem', 

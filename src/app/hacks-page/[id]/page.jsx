@@ -24,6 +24,8 @@ import BookmarkButton from '@/components/buttons/Bookmark';
 import VoteButtons from '@/components/buttons/VoteButtons';
 import CommentDisplay from '@/components/buttons/CommentDisplay';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import Tag from '@/components/Tag';
+
 // Placeholder data directly here
 const placeholderHack = {
   id: 'placeholder',
@@ -38,6 +40,7 @@ const placeholderHack = {
   upvotes: 150,
   downvotes: 10,
   comments: 25,
+  tags: ['Campus Life', 'Health & Wellness'],
 };
 
 export default function HackDetailPage({ params }) {
@@ -49,7 +52,7 @@ export default function HackDetailPage({ params }) {
   return (
     <div>
       <FeedLayout>
-        <div className="bg-[#F5EFE6] p-4 rounded-lg">
+        <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30">
           {/* Back Button */}
           <Link href="/hacks-page" className="mb-4 inline-block">
             <button className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] px-3 py-1.5 rounded-lg shadow-md">
@@ -59,6 +62,15 @@ export default function HackDetailPage({ params }) {
 
           {/* Hack Title */}
           <h1 className="text-3xl font-bold mb-6 text-[#8B4C24]">{hack.title}</h1>
+
+          {/* Tags Display */}
+          {hack.tags && hack.tags.length > 0 && (
+            <div className="mb-6 flex flex-wrap">
+              {hack.tags.slice(0, 3).map((tag, index) => (
+                <Tag key={index} label={tag} />
+              ))}
+            </div>
+          )}
 
           {/* Description Section */}
           <div className="mb-6">
