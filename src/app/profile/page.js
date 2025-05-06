@@ -13,46 +13,89 @@
 
 "use client";
 
+import { clientDB } from '@/services/supabaseClient';
 import Footer from "@/components/Footer";
 import StickyNavBar from "@/components/StickyNavbar";
 import { useState } from "react";
 import AvatarSelector from "@/components/AvatarSelector";
-import BottomNav from '@/components/BottomNav' 
+import BottomNav from '@/components/BottomNav'
+import { useEffect } from "react";
 
 export default function ProfilePage() {
   // State to toggle the avatar selection modal
   const [showModal, setShowModal] = useState(false);
+
+   // User profile state
   const [selectedAvatar, setSelectedAvatar] = useState("/images/avatars/avatar2.png"); // default avatar
+  const [name, setName] = useState("");
+  const [school, setSchool] = useState("");
+  const [bio, setBio] = useState("");
+
+  // Load user data on component mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const {
+        data: { session },
+        error: sessionError,
+      } = await clientDB.auth.getSession();
+  
+      if (sessionError || !session?.user) {
+        console.error("No active session:", sessionError);
+        return;
+      }
+  
+      const { data, error } = await clientDB
+        .from("profiles")
+        .select("*")
+        .eq("id", session.user.id)
+        .single();
+  
+      if (error) {
+        console.error("Error fetching profile:", error);
+        return;
+      }
+  
+      // Populate state from Supabase profile data
+      if (data) {
+        setName(data.name || "");
+        setSchool(data.school || "");
+        setBio(data.bio || "");
+        setSelectedAvatar(data.avatar_url || "/images/avatars/avatar2.png");
+      }
+    };
+  
+    fetchProfile();
+  }, []);
 
   return (
     <>
       <StickyNavBar />
       <main className="min-h-screen bg-[#F5E3C6] text-[#8B4C24] px-6 py-10 font-sans">
-        {/* USER CARD */}
+        
+        {/* PROFILE CARD */}
         <section className="relative max-w-md mx-auto bg-white p-12 rounded-xl shadow-md text-center">
+          {/* Avatar - clicking opens modal */}
           <img
             src={selectedAvatar}
             alt="User Avatar"
             className="w-24 h-24 mx-auto object-contain mb-4 cursor-pointer"
             onClick={() => setShowModal(true)}
           />
-          <h1 className="text-2xl font-bold mb-1">Jason</h1>
-          <p className="text-[#C27A49] text-sm">Computer Systems Tech @ BCIT</p>
-          <p className="text-[#8B4C24] text-xs mt-2">
-            Passionate about saving money & finding student hacks
-          </p>
 
-          {/* Fixed position */}
+          {/* Dynamic name, school, bio */}
+          <h1 className="text-2xl font-bold mb-1">{name}</h1>
+          <p className="text-[#C27A49] text-sm">{school}</p>
+          <p className="text-[#8B4C24] text-xs mt-2">{bio}</p>
+
+          {/* Edit Profile Button */}
           <div className="absolute bottom-4 right-4">
-            <button
-              className="bg-[#639751] text-white font-medium px-2.5 py-1 rounded-md text-sm hover:bg-[#6bb053] transition"
-            >
+            <button className="bg-[#639751] text-white font-medium px-2.5 py-1 rounded-md text-sm hover:bg-[#6bb053] transition">
               Edit Profile
             </button>
           </div>
         </section>
 
-        {/* BIO */}
+        {/* BIO SECTION (static for now, optional to remove since it's in profile card) */}
         <section className="max-w-md mx-auto bg-white p-4 rounded-lg mt-6">
           <h2 className="font-semibold text-left text-lg text-[#8B4C24] mb-2">Bio</h2>
           <p className="text-sm text-[#5C3D2E]">
@@ -61,7 +104,7 @@ export default function ProfilePage() {
           </p>
         </section>
 
-        {/* TAGS / INTERESTS */}
+        {/* TAGS */}
         <section className="max-w-md mx-auto bg-white p-4 rounded-lg mt-6">
           <h2 className="font-semibold text-left text-lg text-[#8B4C24] mb-2">My Interests</h2>
           <div className="flex flex-wrap gap-2 text-sm">
@@ -81,6 +124,8 @@ export default function ProfilePage() {
             <li className="bg-[#FFE2B6] p-3 rounded-md">Free Events</li>
           </ul>
         </section>
+
+        {/* AVATAR MODAL */}
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg max-w-md w-full">
@@ -102,10 +147,10 @@ export default function ProfilePage() {
           </div>
         )}
 
+        {/* FOOTER & NAVIGATION */}
         <div className="mt-auto">
           <Footer />
         </div>
-
         <BottomNav />
       </main>
     </>
