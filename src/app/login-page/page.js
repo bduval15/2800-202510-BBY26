@@ -29,7 +29,12 @@ export default function LoginPage() {
         // Login flow
         const { error } = await clientDB.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        setMessage({ text: 'Logged in successfully!', type: 'success' });
+
+        window.location.href = '/profile';
+        setMessage({ 
+          text: 'Logged in successfully!', 
+          type: 'success' 
+        });
       }
       else {
         // Signup flow
@@ -43,10 +48,15 @@ export default function LoginPage() {
         });
 
         if (error) throw error;
-        setMessage({
-          text: 'Account created! You are now logged in.',
-          type: 'success'
+
+        const { error: signInError } = await clientDB.auth.signInWithPassword({ 
+          email, 
+          password 
         });
+        
+        if (signInError) throw signInError;
+        
+        window.location.href = '/profile';
       }
     } catch (error) {
       setMessage({ text: error.message, type: 'error' });
