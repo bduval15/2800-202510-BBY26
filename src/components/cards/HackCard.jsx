@@ -2,8 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 import BaseCard from './BaseCard';
-import { ArrowUpIcon, ArrowDownIcon, ChatBubbleOvalLeftEllipsisIcon } from '@heroicons/react/24/outline';
+import { ChatBubbleOvalLeftEllipsisIcon } from '@heroicons/react/24/outline';
 import BookmarkButton from '../buttons/Bookmark';
+import VoteButtons from '../buttons/VoteButtons';
 
 /**
  * HackCard.jsx
@@ -31,21 +32,7 @@ const HackCard = ({ id, title, upvotes, downvotes, comments, className = '' }) =
       {/* Interactions */}
       <div className="flex items-center space-x-2 text-xs w-full justify-start mt-2">
         {/* Upvotes / Downvotes Group */}
-        <div className="flex items-center space-x-1.5 bg-[#d1905a] text-[#FFE2B6] px-2 py-1 rounded-full">
-          <button
-            aria-label="Upvote"
-            className="p-0.5 rounded bg-[#d1905a]"
-          >
-            <ArrowUpIcon className="h-5 w-5" />
-          </button>
-          <span className="font-medium min-w-[1ch] text-center text-base">{upvotes - downvotes}</span>
-          <button
-            aria-label="Downvote"
-            className="p-0.5 rounded bg-[#d1905a]"
-          >
-            <ArrowDownIcon className="h-5 w-5" />
-          </button>
-        </div>
+        <VoteButtons upvotes={upvotes} downvotes={downvotes} />
 
         {/* Comments Group */}
         <div className="flex items-center space-x-1 bg-[#d1905a] text-[#FFE2B6] px-2 py-1 rounded-full">
