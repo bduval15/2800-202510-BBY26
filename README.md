@@ -56,6 +56,7 @@ Students often rely on scattered sources like bulletin boards or Facebook groups
 ---
 
 ## 🗂️ Project Structure
+```
 BBY26REPO/
 ├── public/                  # Static assets (e.g., images, favicon)
 ├── src/
@@ -85,3 +86,4 @@ BBY26REPO/
 ├── postcss.config.mjs       # PostCSS config
 ├── tailwind.config.js       # Tailwind setup
 └── README.md                # Project overview and instructions
+```
