@@ -9,6 +9,7 @@
  * 
  * Modified with assistance from ChatGPT o4-mini-high.
  * 
+ * @author Brady Duval 
  * @author https://chatgpt.com/
  */
 import Link from 'next/link'

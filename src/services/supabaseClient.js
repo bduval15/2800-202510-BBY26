@@ -9,72 +9,46 @@
  * - Adapting to project-specific requirements (explaining public vs service keys)
  * ==============================================
  */
-const { createClient } = require('@supabase/supabase-js');
+import { createClient } from '@supabase/supabase-js';
 
-require('dotenv').config();
+// Client-side variables
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-// Protected constants
-const supaURL = process.env.SUPABASE_URL; 
-const publicKey = process.env.PUBLIC_ANON_KEY;
-const serviceKey = process.env.PRIVATE_SERVICE_KEY;
-const tokDecoder = process.env.JWT_TOKEN_DECODER;
-
-console.log({
-  supaURL: process.env.SUPABASE_URL,
-  publicKey: process.env.PUBLIC_ANON_KEY,
-  serviceKey: process.env.PRIVATE_SERVICE_KEY,
-  tokDecoder: process.env.JWT_TOKEN_DECODER
-});
-
-if (!supaURL || !publicKey || !serviceKey || !tokDecoder) 
-  {
-  throw new Error("Missing Supabase environment variables");
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error(`
+    Missing Supabase client environmental variables
+    - NEXT_PUBLIC_SUPABASE_URL ${!supabaseUrl}
+    - NEXT_PUBLIC_SUPABASE_ANON_KEY ${supabaseAnonKey}
+  `);
 }
 
-//Used for public database access which is constrained to RLS restrictions
-//Provides browser like interactions
-const clientDB = createClient(supaURL, publicKey, 
-  {
-  db: 
-  { 
-    schema: 'public' 
-  },
-  auth: 
-  {
+export const clientDB = createClient(supabaseUrl, supabaseAnonKey, {
+  db: { schema: 'public' },
+  auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: true,   
+    detectSessionInUrl: true,
   },
   global: {
     headers: { 'bby26-supabase-client': 'LoafLife' },
   },
 });
 
-//CAUTION Only use for back-end server-side interactions
-//Used for serverside database interactions unrestricted from RLS constraints
-const serverDB = createClient(supaURL, serviceKey, 
-  {
-  db: 
-  { 
-    schema: 'public' 
-  },
-  auth: 
-  {
-    autoRefreshToken: true,
-    persistSession: false,      
-    detectSessionInUrl: true,   
-  },
-  global: 
-  {
-    headers: 
-    { 
-      'bby26-supabase-server': 'LoafLife' 
+//For server-side usage only
+export const getServerDB = () => {
+  if (typeof window !== 'undefined') {
+    throw new Error('ServerDB should only be used on the server');
+  }
+  
+  const serviceKey = process.env.SUPABASE_SERVICE_KEY;
+  if (!serviceKey) {
+    throw new Error('SUPABASE_SERVICE_KEY is required for serverDB');
+  }
+
+  return createClient(supabaseUrl, serviceKey, {
+    auth: {
+      persistSession: false,
     },
-  },
-});
-
-module.exports = { clientDB, serverDB };
-
-//import supabase variables with these
-// const { serverDB } = require("../services/supabaseClient");
-// const { clientDB } = require("../services/supabaseClient");
+  });
+};
