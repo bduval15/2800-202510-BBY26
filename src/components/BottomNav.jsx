@@ -11,7 +11,7 @@ import {
 
 export default function BottomNav() {
   const items = [
-    { href: '/', icon: <HomeIcon className="h-8 w-8" />, },
+    { href: '/main-feed-page', icon: <HomeIcon className="h-8 w-8" />, },
     { href: '/hacks-page', icon: <PlusCircleIcon className="h-8 w-8" />, },
     { href: '/map', icon: <MapIcon className="h-8 w-8" />, },
     { href: '/profile', icon: <UserIcon className="h-8 w-8" />, },
