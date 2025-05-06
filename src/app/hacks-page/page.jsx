@@ -25,35 +25,36 @@ export default function HacksPage() {
       <HackCard 
         title="Free BCIT Gym Access"
         upvotes={20}
-        downvotes={4}
-        comments={7}
+        downvotes={4} 
+        comments={7} 
+        tags={['BCIT', 'Gym', 'Free']} 
       />
       <HackCard
-        title="Free McDonald's Coffee"
+        title="Budget Stir Fry Noodles Recipe"
         upvotes={20}
         downvotes={4}
         comments={7}
       />
       <HackCard
-        title="Free McDonald's Coffee"
+        title="Peanut Butter Mug Cake Recipe"
         upvotes={20}
         downvotes={4}
         comments={7}
       />
       <HackCard
-        title="Free McDonald's Coffee"
+        title="Budget Template"
         upvotes={20}
         downvotes={4}
         comments={7}
       />
       <HackCard
-        title="Free McDonald's Coffee"
+        title="Streaming Service Alternatives"
         upvotes={20}
         downvotes={4}
         comments={7}
       />
       <HackCard
-        title="Free McDonald's Coffee"
+        title="Budget Night Out"
         upvotes={20}
         downvotes={4}
         comments={7}
