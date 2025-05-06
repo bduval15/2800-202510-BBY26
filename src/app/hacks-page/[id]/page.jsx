@@ -49,40 +49,41 @@ export default function HackDetailPage({ params }) {
   return (
     <div>
       <FeedLayout>
-        {/* Back Button */}
-        <Link href="/hacks-page" className="mb-4 inline-block">
-          <button className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] px-3 py-1.5 rounded-lg shadow-md">
-            <ArrowLeftIcon className="h-5 w-5" />
-          </button>
-        </Link>
+        <div className="bg-[#F5EFE6] p-4 rounded-lg">
+          {/* Back Button */}
+          <Link href="/hacks-page" className="mb-4 inline-block">
+            <button className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] px-3 py-1.5 rounded-lg shadow-md">
+              <ArrowLeftIcon className="h-5 w-5" />
+            </button>
+          </Link>
 
-        {/* Hack Title */}
-        <h1 className="text-3xl font-bold mb-6 text-[#8B4C24]">{hack.title}</h1>
+          {/* Hack Title */}
+          <h1 className="text-3xl font-bold mb-6 text-[#8B4C24]">{hack.title}</h1>
 
-        {/* Description Section */}
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-2 text-[#8B4C24]">{hack.descriptionTitle}</h2>
-          <p className="text-[#8B4C24]">{hack.description}</p>
-        </div>
-
-        {/* Hack Details Section */}
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-2 text-[#8B4C24]">{hack.hackTitle}</h2>
-          <p className="text-[#8B4C24]">{hack.hackDetails}</p>
-        </div>
-
-        {/* Author/Timestamp */}
-        <p className="text-sm text-[#8B4C24]/80 mb-8">By {hack.author} - {hack.timestamp}</p>
-
-        {/* Interactive Buttons Row */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="mr-2">
-            <VoteButtons upvotes={hack.upvotes} downvotes={hack.downvotes} />
+          {/* Description Section */}
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold mb-2 text-[#8B4C24]">{hack.descriptionTitle}</h2>
+            <p className="text-[#8B4C24]">{hack.description}</p>
           </div>
-          <CommentDisplay count={hack.comments} />
-          <BookmarkButton />
-        </div>
 
+          {/* Hack Details Section */}
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold mb-2 text-[#8B4C24]">{hack.hackTitle}</h2>
+            <p className="text-[#8B4C24]">{hack.hackDetails}</p>
+          </div>
+
+          {/* Author/Timestamp */}
+          <p className="text-sm text-[#8B4C24]/80 mb-8">By {hack.author} - {hack.timestamp}</p>
+
+          {/* Interactive Buttons Row */}
+          <div className="flex justify-between items-center mb-6">
+            <div className="mr-2">
+              <VoteButtons upvotes={hack.upvotes} downvotes={hack.downvotes} />
+            </div>
+            <CommentDisplay count={hack.comments} />
+            <BookmarkButton />
+          </div>
+        </div>
       </FeedLayout>
       <Footer /> {/* Includes Footer Navigation */}
     </div>
