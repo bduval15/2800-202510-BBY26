@@ -25,12 +25,12 @@ const BookmarkButton = () => {
     <button
       onClick={handleBookmarkClick}
       aria-label={isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
-      className="p-1.5 rounded-lg bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] shadow-md ml-auto"
+      className="p-1 rounded-lg bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] shadow-md ml-auto"
     >
       {isBookmarked ? (
-        <BookmarkSolidIcon className="h-5 w-5" />
+        <BookmarkSolidIcon className="h-6 w-6" />
       ) : (
-        <BookmarkOutlineIcon className="h-5 w-5" />
+        <BookmarkOutlineIcon className="h-6 w-6" />
       )}
     </button>
   );

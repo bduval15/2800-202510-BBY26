@@ -55,21 +55,27 @@ const VoteButtons = ({ upvotes: initialUpvotes, downvotes: initialDownvotes }) =
   };
 
   return (
-    <div className="flex items-center space-x-1.5 bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] px-3 py-1.5 rounded-lg shadow-md">
+    <div className="flex items-center space-x-1.5 bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] px-3 py-0.5 rounded-lg shadow-md">
       <button
         onClick={handleUpvote}
         aria-label="Upvote"
-        className="p-0.5 rounded hover:bg-[#EADDCA]"
+        className="p-0 rounded hover:bg-[#EADDCA]"
       >
-        <ArrowUpIcon className="h-5 w-5" />
+        <ArrowUpIcon 
+          className={`h-5 w-5 ${userVote === 'upvoted' ? 'text-[#639751]' : ''}`}
+          strokeWidth={userVote === 'upvoted' ? 2.5 : 1.5} 
+        />
       </button>
       <span className="font-medium min-w-[1ch] text-center text-base">{localUpvotes - localDownvotes}</span>
       <button
         onClick={handleDownvote}
         aria-label="Downvote"
-        className="p-0.5 rounded hover:bg-[#EADDCA]"
+        className="p-0 rounded hover:bg-[#EADDCA]"
       >
-        <ArrowDownIcon className="h-5 w-5" />
+        <ArrowDownIcon 
+          className={`h-5 w-5 ${userVote === 'downvoted' ? 'text-red-500' : ''}`}
+          strokeWidth={userVote === 'downvoted' ? 2.5 : 1.5} 
+        />
       </button>
     </div>
   );

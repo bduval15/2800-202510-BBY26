@@ -22,11 +22,11 @@ const CommentDisplay = ({ count }) => {
   };
 
   return (
-    <div className="flex items-center space-x-1 bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] px-3 py-1.5 rounded-lg shadow-md">
+    <div className="flex items-center space-x-1 bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] px-3 py-0.5 rounded-lg shadow-md">
       <button
         onClick={handleViewComments} 
         aria-label="View Comments"
-        className="p-0.5 rounded hover:bg-[#EADDCA]"
+        className="p-0 rounded hover:bg-[#EADDCA]"
       >
         <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5" />
       </button>
