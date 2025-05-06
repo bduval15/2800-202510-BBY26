@@ -9,6 +9,9 @@ import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid';
  * This component is used to add a bookmark to a hack or deal.
  * 
  * @author: Nathan O
+ * 
+ * Written with assistance from Google Gemini 2.5 Flash
+ * @author https://gemini.google.com/app
  */
 
 const BookmarkButton = () => {
