@@ -35,7 +35,7 @@ const HackCard = ({ id, title, upvotes, downvotes, comments, tags = [], classNam
       {/* Tags */}
       {tags && tags.length > 0 && (
         <div className="w-full mb-2 flex flex-wrap">
-          {tags.map((tag, index) => (
+          {tags.slice(0, 3).map((tag, index) => (
             <Tag key={index} label={tag} />
           ))}
         </div>
