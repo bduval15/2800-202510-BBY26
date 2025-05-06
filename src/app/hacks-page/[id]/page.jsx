@@ -20,6 +20,9 @@ import React, { useState } from 'react';
 import FeedLayout from '@/components/FeedLayout';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
+import BookmarkButton from '@/components/buttons/Bookmark';
+import VoteButtons from '@/components/buttons/VoteButtons';
+import CommentDisplay from '@/components/buttons/CommentDisplay';
 
 // Placeholder data directly here
 const placeholderHack = {
@@ -32,6 +35,9 @@ const placeholderHack = {
   hackDetails: `If you want squash/racquetball or intramurals, those are available at nominal additional rates—still well below commercial alternatives. Lockers, towels, and laundry service can also be added for a small fee (e.g. court bookings run under $10/hr)`,
   author: 'Student',
   timestamp: 'Two days ago',
+  upvotes: 150,
+  downvotes: 10,
+  comments: 25,
 };
 
 export default function HackDetailPage({ params }) {
@@ -51,31 +57,32 @@ export default function HackDetailPage({ params }) {
         </Link>
 
         {/* Hack Title */}
-        <h1 className="text-3xl font-bold mb-4 text-center text-[#8B4C24]">{hack.title}</h1>
+        <h1 className="text-3xl font-bold mb-6 text-[#8B4C24]">{hack.title}</h1>
 
         {/* Description Section */}
-        <div className="mb-4">
+        <div className="mb-6">
           <h2 className="text-xl font-semibold mb-2 text-[#8B4C24]">{hack.descriptionTitle}</h2>
           <p className="text-[#8B4C24]">{hack.description}</p>
         </div>
 
         {/* Hack Details Section */}
-        <div className="mb-4">
+        <div className="mb-6">
           <h2 className="text-xl font-semibold mb-2 text-[#8B4C24]">{hack.hackTitle}</h2>
           <p className="text-[#8B4C24]">{hack.hackDetails}</p>
         </div>
 
         {/* Author/Timestamp */}
-        <p className="text-sm text-[#8B4C24]/80 mb-6">By {hack.author} - {hack.timestamp}</p>
+        <p className="text-sm text-[#8B4C24]/80 mb-8">By {hack.author} - {hack.timestamp}</p>
 
-        {/* Save Hack Button */}
-        {/* Assuming Button component takes className and children */}
-        <button
-          className="w-full bg-[#D1905A] text-white hover:bg-[#B8733E] text-lg py-3"
-          onClick={() => console.log('Save hack clicked for ID:', hack.id)} // Placeholder action
-        >
-          Save Hack
-        </button>
+        {/* Interactive Buttons Row */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="mr-2">
+            <VoteButtons upvotes={hack.upvotes} downvotes={hack.downvotes} />
+          </div>
+          <CommentDisplay count={hack.comments} />
+          <BookmarkButton />
+        </div>
+
       </FeedLayout>
       <Footer /> {/* Includes Footer Navigation */}
     </div>
