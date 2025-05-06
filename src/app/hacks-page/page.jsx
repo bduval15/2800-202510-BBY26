@@ -20,7 +20,7 @@ export default function HacksPage() {
     <div className="bg-[#F5E3C6]">
     <FeedLayout>
       <div className="text-left text-2xl font-bold text-[#8B4C24] pl-4">
-        Saving Tips
+        Hacks
       </div>
       <HackCard 
         title="Free BCIT Gym Access"
