@@ -19,6 +19,7 @@
 import React, { useState } from 'react';
 import FeedLayout from '@/components/FeedLayout';
 import Footer from '@/components/Footer';
+import Link from 'next/link';
 
 // Placeholder data directly here
 const placeholderHack = {
@@ -42,6 +43,13 @@ export default function HackDetailPage({ params }) {
   return (
     <div>
       <FeedLayout>
+        {/* Back Button */}
+        <Link href="/hacks-page" className="mb-4 inline-block">
+          <button className="bg-[#D1905A] text-white hover:bg-[#B8733E] px-4 py-2 rounded">
+            ← Back to Hacks
+          </button>
+        </Link>
+
         {/* Hack Title */}
         <h1 className="text-3xl font-bold mb-4 text-center text-[#8B4C24]">{hack.title}</h1>
 
