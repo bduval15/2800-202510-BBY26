@@ -9,8 +9,8 @@ import VoteButtons from '@/components/buttons/VoteButtons';
 import CommentDisplay from '@/components/buttons/CommentCount';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import Tag from '@/components/Tag';
-import Comment from '@/components/cards/Comment';
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+import BottomNav from '@/components/BottomNav';
+import CommentSection from '@/components/sections/CommentSection';
 
 /**
  * HackDetails.jsx
@@ -49,11 +49,10 @@ export default function HackDetailPage({ params }) {
   const hackId = params.hackId;
   // Initialize state directly with placeholder data
   const [hack, setHack] = useState(placeholderHack);
-  const [showComments, setShowComments] = useState(false);
 
   // Render the component with placeholder data
   return (
-    <div>
+    <div className="pb-6">
       <FeedLayout>
         <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30">
           {/* Back Button */}
@@ -97,35 +96,12 @@ export default function HackDetailPage({ params }) {
             </div>
             <BookmarkButton />
           </div>
-        </div> 
-
-        {/* Comments Section */}
-        <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30 mt-4">
-          <button
-            onClick={() => setShowComments(!showComments)}
-            className="w-full flex justify-between items-center text-xl font-semibold text-[#8B4C24] focus:outline-none"
-          >
-            <span>Comments</span>
-            {showComments ? (
-              <ChevronUpIcon className="h-6 w-6 text-[#A0522D]" />
-            ) : (
-              <ChevronDownIcon className="h-6 w-6 text-[#A0522D]" />
-            )}
-          </button>
-
-          {showComments && (
-            <div className="mt-4" id="comments-section">
-              <Comment
-                avatarSrc={null}
-                username="ToastedBagel"
-                timestamp="4h ago"
-                commentText='I love this hack!'
-              />
-            </div>
-          )}
         </div>
+
+        <CommentSection />
+        <Footer />
       </FeedLayout>
-      <Footer /> {/* Includes Footer Navigation */}
+      <BottomNav />
     </div>
   );
 }
