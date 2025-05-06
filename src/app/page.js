@@ -1,10 +1,9 @@
 import Image from "next/image";
-
+import Footer from '@components/Footer';
 /* // Portions of styling and layout were assisted by ChatGPT for educational purposes (e.g., Tailwind class structuring, semantic HTML structure). */
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#F5E3C6] text-[#8B4C24] px-6 py-10 flex flex-col items-center font-sans">
-      {/* Header / Logo */}
+    <main className="min-h-screen bg-[#F5E3C6] text-[#8B4C24] px-6 pt-25 pb-10 flex flex-col items-center font-sans">
       <div className="flex items-center gap-3 mb-6">
         <img src="images/logo.png" alt="Loaf Life Logo" className="w-17 h-17" />
         <h1 className="text-3xl font-bold">LOAF LIFE</h1>
@@ -38,6 +37,7 @@ export default function Home() {
           <p>Live Well</p>
         </div>
       </section>
+      <Footer />
     </main>
   );
 }
