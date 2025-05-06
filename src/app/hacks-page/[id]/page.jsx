@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import FeedLayout from '@/components/FeedLayout';
+// import FeedLayout from '@/components/FeedLayout';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
 import BookmarkButton from '@/components/buttons/Bookmark';
@@ -11,6 +11,7 @@ import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import Tag from '@/components/Tag';
 import BottomNav from '@/components/BottomNav';
 import CommentSection from '@/components/sections/CommentSection';
+import StickyNavbar from '@/components/StickyNavbar';
 
 /**
  * HackDetails.jsx
@@ -53,8 +54,9 @@ export default function HackDetailPage({ params }) {
   // Render the component with placeholder data
   return (
     <div className="pb-6">
-      <FeedLayout>
-        <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30">
+      <div className="max-w-md mx-auto px-4 py-6 space-y-6">
+        <StickyNavbar />
+        <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30 pt-16">
           {/* Back Button */}
           <Link href="/hacks-page" className="mb-4 inline-block">
             <button className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] px-3 py-1.5 rounded-lg shadow-md">
@@ -100,7 +102,8 @@ export default function HackDetailPage({ params }) {
 
         <CommentSection />
         <Footer />
-      </FeedLayout>
+      
+      </div>
       <BottomNav />
     </div>
   );
