@@ -15,7 +15,7 @@ import Link from 'next/link'
 
 export default function Footer() {
   return (
-    <footer className="bg-[#F5E3C6] border-t border-[#D1905A]">
+    <footer className="bg-[#F5E3C6] border-t-3 border-[#D1905A]">
       <div className="max-w-screen-xl mx-auto flex items-center justify-between p-4">
         <Link href="/" className="flex items-center space-x-3">
           <img src="/images/logo.png" alt="Loaf Life Logo" className="h-8 w-8" />

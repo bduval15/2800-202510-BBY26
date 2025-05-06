@@ -42,7 +42,6 @@ export default function FeedLayout({ children, title = 'Student Hacks' }) {
 
       <main className="max-w-md mx-auto px-4 py-6 space-y-6">
         <h1 className="text-2xl font-bold text-[#8B4C24]">{title}</h1>
-        {/* pass bestSort and dateSort down to your feed-rendering logic */}
         {children}
       </main>
     </>

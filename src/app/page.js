@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link  from 'next/link';
+
 /**
  * Home.jsx
  * Loaf Life – landing page with logo, main heading, CTA button, and how-it-works section.
@@ -9,6 +10,7 @@ import Link  from 'next/link';
  * Modified with assistance from ChatGPT o4-mini-high.
  * @author https://chatgpt.com/*
  */
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#F5E3C6] text-[#8B4C24] px-6 py-10 flex flex-col items-center font-sans">

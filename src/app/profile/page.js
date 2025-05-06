@@ -1,5 +1,6 @@
 import Footer from "@/components/Footer";
 import StickyNavBar from "@/components/StickyNavbar";
+import BottomNav from '@/components/BottomNav' 
 
 export default function ProfilePage() {
   return (
@@ -61,6 +62,8 @@ export default function ProfilePage() {
         <div className="mt-auto">
           <Footer />
         </div>
+
+        <BottomNav />
       </main>
     </>
   );
