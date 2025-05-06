@@ -23,7 +23,7 @@ import Link from 'next/link';
 import BookmarkButton from '@/components/buttons/Bookmark';
 import VoteButtons from '@/components/buttons/VoteButtons';
 import CommentDisplay from '@/components/buttons/CommentDisplay';
-
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 // Placeholder data directly here
 const placeholderHack = {
   id: 'placeholder',
@@ -52,7 +52,7 @@ export default function HackDetailPage({ params }) {
         {/* Back Button */}
         <Link href="/hacks-page" className="mb-4 inline-block">
           <button className="bg-[#D1905A] text-white hover:bg-[#B8733E] px-4 py-2 rounded">
-            ← Back to Hacks
+            <ArrowLeftIcon className="h-5 w-5" />
           </button>
         </Link>
 
