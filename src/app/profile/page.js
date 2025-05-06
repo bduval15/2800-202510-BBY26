@@ -13,6 +13,7 @@
 
 "use client";
 
+// Import dependencies
 import { clientDB } from '@/services/supabaseClient';
 import Footer from "@/components/Footer";
 import StickyNavBar from "@/components/StickyNavbar";
@@ -21,34 +22,30 @@ import AvatarSelector from "@/components/AvatarSelector";
 import BottomNav from '@/components/BottomNav'
 import { useEffect } from "react";
 
+// Main profile page component
 export default function ProfilePage() {
-  // State to toggle the avatar selection modal
-  const [showModal, setShowModal] = useState(false);
 
-  // User profile state
-  const [selectedAvatar, setSelectedAvatar] = useState("/images/avatars/avatar2.png"); // default avatar
+  // === PROFILE STATE ===
+  const [showModal, setShowModal] = useState(false); // Avatar modal toggle
+  const [selectedAvatar, setSelectedAvatar] = useState("/images/avatars/avatar1.png"); // default avatar
   const [name, setName] = useState("");
   const [school, setSchool] = useState("");
   const [bio, setBio] = useState("");
 
+  // === EDIT PROFILE MODAL STATE ===
   const [showEditModal, setShowEditModal] = useState(false);
   const [editName, setEditName] = useState(name);
   const [editSchool, setEditSchool] = useState(school);
   const [editBio, setEditBio] = useState(bio);
 
-  // Load user data on component mount
+  // === INTERESTS STATE ===
+  const [interests, setInterests] = useState(["Tech", "Budget Eats", "Events", "Hacks"]);
+  const [editInterests, setEditInterests] = useState([...interests]);
+  const [showEditInterests, setShowEditInterests] = useState(false);
+
+  // === FETCH PROFILE FROM SUPABASE ON MOUNT ===
   useEffect(() => {
-    const fetchProfile = async () => {
-      const {
-        data: { session },
-        error: sessionError,
-      } = await clientDB.auth.getSession();
-
-      if (sessionError || !session?.user) {
-        console.error("No active session:", sessionError);
-        return;
-      }
-
+    const loadProfile = async (session) => {
       const { data, error } = await clientDB
         .from("profiles")
         .select("*")
@@ -60,16 +57,40 @@ export default function ProfilePage() {
         return;
       }
 
-      // Populate state from Supabase profile data
       if (data) {
         setName(data.name || "");
         setSchool(data.school || "");
         setBio(data.bio || "");
-        setSelectedAvatar(data.avatar_url || "/images/avatars/avatar2.png");
+        setSelectedAvatar(data.avatar_url || "/images/avatars/avatar1.png");
       }
     };
 
-    fetchProfile();
+    const initSession = async () => {
+      const {
+        data: { session },
+        error
+      } = await clientDB.auth.getSession();
+
+      if (session) {
+        loadProfile(session);
+      } else {
+        console.log("No session on initial load");
+      }
+    };
+
+    initSession();
+
+    // Subscribe to session changes (handles refresh/login edge cases)
+    const {
+      data: { subscription }
+    } = clientDB.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        loadProfile(session);
+      }
+    });
+
+    // Cleanup the listener when component unmounts
+    return () => subscription.unsubscribe();
   }, []);
 
   return (
@@ -100,31 +121,105 @@ export default function ProfilePage() {
                 setEditBio(bio);
                 setShowEditModal(true);
               }}
-
+              className="flex items-center gap-1 px-3 py-1 border border-[#8B4C24] text-[#8B4C24] text-sm rounded-md hover:bg-[#F5E3C6] transition"
             >
-              Edit Profile
+              <span>Edit</span>
             </button>
-
           </div>
+
+          {showEditInterests && (
+            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg max-w-md w-full">
+                <h2 className="text-lg font-bold text-[#8B4C24] mb-4">Edit Interests</h2>
+
+                {/* Input to add new interest */}
+                <div className="flex mb-4">
+                  <input
+                    type="text"
+                    placeholder="Add interest..."
+                    className="flex-grow border border-gray-300 p-2 rounded mr-2"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && e.target.value.trim() !== "") {
+                        setEditInterests([...editInterests, e.target.value.trim()]);
+                        e.target.value = "";
+                      }
+                    }}
+                  />
+                </div>
+
+                {/* Current interests (with delete buttons) */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {editInterests.map((interest, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center bg-[#FFE2B6] px-3 py-1 rounded-full text-sm"
+                    >
+                      {interest}
+                      <button
+                        className="ml-2 text-red-500 hover:text-red-700"
+                        onClick={() =>
+                          setEditInterests(editInterests.filter((_, i) => i !== index))
+                        }
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex justify-between mt-6">
+                  <button
+                    onClick={() => setShowEditInterests(false)}
+                    className="bg-[#E6D2B5] text-[#5C3D2E] font-medium px-2 py-0.5 rounded hover:bg-[#e3cba8] transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      setInterests(editInterests);
+                      setShowEditInterests(false);
+                    }}
+                    className="bg-[#639751] text-white font-medium px-4 py-1 rounded hover:bg-[#6bb053] transition"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </section>
 
-        {/* BIO SECTION (static for now, optional to remove since it's in profile card) */}
+        {/* BIO SECTION */}
         <section className="max-w-md mx-auto bg-white p-4 rounded-lg mt-6">
           <h2 className="font-semibold text-left text-lg text-[#8B4C24] mb-2">Bio</h2>
           <p className="text-sm text-[#5C3D2E] whitespace-pre-line">
-  {bio}
-</p>
-
+            {bio}
+          </p>
         </section>
 
         {/* TAGS */}
         <section className="max-w-md mx-auto bg-white p-4 rounded-lg mt-6">
           <h2 className="font-semibold text-left text-lg text-[#8B4C24] mb-2">My Interests</h2>
-          <div className="flex flex-wrap gap-2 text-sm">
-            <span className="bg-[#FFE2B6] px-3 py-1 rounded-full">Tech</span>
-            <span className="bg-[#FFE2B6] px-3 py-1 rounded-full">Budget Eats</span>
-            <span className="bg-[#FFE2B6] px-3 py-1 rounded-full">Events</span>
-            <span className="bg-[#FFE2B6] px-3 py-1 rounded-full">Hacks</span>
+          {/* Interests list */}
+          <div className="flex flex-wrap gap-2 text-sm mb-4">
+            {interests.map((interest, index) => (
+              <span
+                key={index}
+                className="bg-[#FFE2B6] px-4 py-2 rounded-full"
+              >
+                {interest}
+              </span>
+            ))}
+          </div>
+
+          {/* Edit button */}
+          <div className="flex justify-end">
+            <button
+              onClick={() => setShowEditInterests(true)}
+              className="flex items-center gap-1 px-3 py-1 border border-[#8B4C24] text-[#8B4C24] text-sm rounded-md hover:bg-[#F5E3C6] transition"
+            >
+              <span>Edit</span>
+            </button>
           </div>
         </section>
 
@@ -152,7 +247,7 @@ export default function ProfilePage() {
               />
               <button
                 onClick={() => setShowModal(false)}
-                className="mt-4 text-sm text-gray-600 hover:underline"
+                className="bg-[#E6D2B5] text-[#5C3D2E] font-medium px-6 py-2 rounded hover:bg-[#e3cba8] transition"
               >
                 Cancel
               </button>
@@ -164,7 +259,6 @@ export default function ProfilePage() {
           <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg max-w-md w-full">
               <h2 className="text-lg font-bold text-[#8B4C24] mb-4">Edit Profile</h2>
-
               <div className="mb-4">
                 <label className="block text-sm text-[#8B4C24] mb-1">Name</label>
                 <input
@@ -196,16 +290,15 @@ export default function ProfilePage() {
                 />
               </div>
 
-              <div className="flex justify-between">
+              <div className="flex justify-between mt-6">
                 <button
                   onClick={() => setShowEditModal(false)}
-                  className="text-gray-600 hover:underline text-sm"
+                  className="bg-[#E6D2B5] text-[#5C3D2E] font-medium px-3 py-2 rounded hover:bg-[#e3cba8] transition"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => {
-                    // Local update (Supabase update later)
                     setName(editName);
                     setSchool(editSchool);
                     setBio(editBio);
@@ -220,13 +313,12 @@ export default function ProfilePage() {
           </div>
         )}
 
-
         {/* FOOTER & NAVIGATION */}
         <div className="mt-auto">
           <Footer />
         </div>
         <BottomNav />
-      </main>
+      </main >
     </>
   );
 }
