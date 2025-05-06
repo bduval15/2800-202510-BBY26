@@ -1,4 +1,14 @@
-// src/app/hacks-page/page.jsx
+/**
+ * HacksPage.jsx
+ * Loaf Life - Hacks Page
+ * 
+ * This page lists the hacks that have been posted.
+ * 
+ * @author: Nathan O
+ * 
+ * Modified with assistance from Google Gemini 2.5 Flash
+ * @author https://gemini.google.com/app
+ */
 'use client'
 
 import FeedLayout from '@/components/FeedLayout'
