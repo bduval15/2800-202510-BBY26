@@ -1,7 +1,6 @@
 'use client';
 import React, { useState } from 'react';
 import Footer from "@/components/Footer";
-import StickyNavbar from "@/components/StickyNavbar";
 import { clientDB } from "@/services/supabaseClient";
 
 /**
@@ -67,7 +66,6 @@ export default function LoginPage() {
 
   return (
     <>
-      <StickyNavbar />
 
       <main className="min-h-screen flex items-center justify-center bg-[#F5E3C6]">
         <form
