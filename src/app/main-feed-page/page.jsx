@@ -19,7 +19,7 @@ import BottomNav from '@/components/BottomNav';
 import Footer from '@/components/Footer';
 import {
     MagnifyingGlassIcon,
-    ChatBubbleOvalLeftIcon,
+    ClipboardIcon,
 } from '@heroicons/react/24/outline';
 
 const threads = [
@@ -82,26 +82,26 @@ export default function MainFeed() {
     return (
         <div className="flex flex-col h-screen bg-[#F5E3C6] pt-16">
             <StickyNavbar />
-
             {/* Filters + Search */}
             <div className="p-4 border-b border-[#D1905A] max-w-md mx-auto w-full">
                 <div className="flex flex-wrap gap-2 mb-3">
                     {filterOptions.map((opt) => (
                         <button
                             key={opt}
-                            onClick={() => {
-                                if (activeFilter !== opt) setActiveFilter(opt);
-                            }}
-                            onDoubleClick={() => {
-                                if (activeFilter === opt) setActiveFilter(null);
-                            }}
+                            onClick={() =>
+                                setActiveFilter(prev =>
+                                    prev === opt
+                                        ? null
+                                        : opt
+                                )
+                            }
                             className={`
-                px-4 py-1 text-sm font-medium rounded-full transition
-                ${activeFilter === opt
+                                    px-4 py-1 text-sm font-medium rounded-full transition
+                                    ${activeFilter === opt
                                     ? 'bg-[#639751] text-white'
                                     : 'bg-white text-[#8B4C24] hover:bg-gray-100'
                                 }
-              `}
+                                `}
                         >
                             {opt}
                         </button>
@@ -176,8 +176,9 @@ export default function MainFeed() {
                           bg-white/90 text-[#8B4C24]
                           text-xs font-medium
                           px-2 py-0.5 rounded-full
+                          border-2 border-[#D1905A]
                         ">
-                            <ChatBubbleOvalLeftIcon className="w-4 h-4 mr-1" />
+                            <ClipboardIcon className="w-4 h-4 mr-1" />
                             {t.postCount}
                         </div>
                     </div>
