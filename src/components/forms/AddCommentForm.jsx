@@ -33,12 +33,14 @@ export default function AddCommentForm() {
         className="w-full p-2 border border-[#8B4C24]/30 rounded-lg focus:ring-[#A0522D] focus:border-[#A0522D] text-[#8B4C24] bg-[#F5EFE6]"
         rows="2"
       ></textarea>
-      <button
-        type="submit"
-        className="mt-2 px-3 py-1.5 bg-[#A0522D] text-white rounded-lg hover:bg-[#8B4C24] focus:outline-none focus:ring-2 focus:ring-[#A0522D] focus:ring-opacity-50"
-      >
-        Post Comment
-      </button>
+      <div className="mt-2 flex justify-end">
+        <button
+          type="submit"
+          className="px-3 py-1.5 bg-[#639751] text-white rounded-lg hover:bg-[#538741] focus:outline-none focus:ring-2 focus:ring-[#639751] focus:ring-opacity-50"
+        >
+          Post Comment
+        </button>
+      </div>
     </form>
   );
 } 
