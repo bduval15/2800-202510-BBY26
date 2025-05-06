@@ -1,19 +1,3 @@
-/**
- * HackDetails.jsx
- * Loaf Life - Hack Details Page
- * 
- * This page displays the details of a specific hack.
- * It includes the hack title, description, hack details, author, and timestamp.
- * It also includes a button to save the hack.
- * 
- * @author: Nathan O
- * 
- * Modified with assistance from Google Gemini 2.5 Flash
- * @author https://gemini.google.com/app
- */
-
-// Placeholder data currently being used, need to update implementation to use database later - Nate
-
 'use client';
 
 import React, { useState } from 'react';
@@ -25,6 +9,24 @@ import VoteButtons from '@/components/buttons/VoteButtons';
 import CommentDisplay from '@/components/buttons/CommentDisplay';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import Tag from '@/components/Tag';
+import Comment from '@/components/cards/Comment';
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+
+/**
+ * HackDetails.jsx
+ * Loaf Life - Hack Details Page
+ *
+ * This page displays the details of a specific hack.
+ * It includes the hack title, description, hack details, author, and timestamp.
+ * It also includes a button to save the hack.
+ *
+ * @author: Nathan O
+ *
+ * Modified with assistance from Google Gemini 2.5 Flash
+ * @author https://gemini.google.com/app
+ */
+
+// Placeholder data currently being used, need to update implementation to use database later - Nate
 
 // Placeholder data directly here
 const placeholderHack = {
@@ -47,6 +49,7 @@ export default function HackDetailPage({ params }) {
   const hackId = params.hackId;
   // Initialize state directly with placeholder data
   const [hack, setHack] = useState(placeholderHack);
+  const [showComments, setShowComments] = useState(false);
 
   // Render the component with placeholder data
   return (
@@ -92,9 +95,34 @@ export default function HackDetailPage({ params }) {
             <div className="mr-2">
               <VoteButtons upvotes={hack.upvotes} downvotes={hack.downvotes} />
             </div>
-            <CommentDisplay count={hack.comments} />
             <BookmarkButton />
           </div>
+        </div> 
+
+        {/* Comments Section */}
+        <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30 mt-4">
+          <button
+            onClick={() => setShowComments(!showComments)}
+            className="w-full flex justify-between items-center text-xl font-semibold text-[#8B4C24] focus:outline-none"
+          >
+            <span>Comments</span>
+            {showComments ? (
+              <ChevronUpIcon className="h-6 w-6 text-[#A0522D]" />
+            ) : (
+              <ChevronDownIcon className="h-6 w-6 text-[#A0522D]" />
+            )}
+          </button>
+
+          {showComments && (
+            <div className="mt-4">
+              <Comment
+                avatarSrc={null}
+                username="ToastedBagel"
+                timestamp="4h ago"
+                commentText='I love this hack!'
+              />
+            </div>
+          )}
         </div>
       </FeedLayout>
       <Footer /> {/* Includes Footer Navigation */}
