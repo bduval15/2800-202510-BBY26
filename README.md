@@ -1,11 +1,3 @@
-## 👥 Team Members
-
-- **Natalia Arseniuk** – Set 2D  
-- **Aleen Dawood** – Set 2D  
-- **Brady Duval** – Set 2D  
-- **Nathan Oloresisimo** – Set 2D  
-- **Conner Ponton** – Set 2D  
-
 # 🥖 Loaf Life (by bby26)
 
 Loaf Life is a mobile-first web application designed for students to find free or affordable campus-related resources like food events, student discounts, quick gigs, and creative life-hacks.
@@ -18,6 +10,16 @@ Students often rely on scattered sources like bulletin boards or Facebook groups
 - A categorized interactive map.
 - Peer-submitted tips and hacks.
 - Saveable content via user profiles.
+
+---
+
+## 👥 Team Members
+
+- **Natalia Arseniuk** – Set 2D  
+- **Aleen Dawood** – Set 2D  
+- **Brady Duval** – Set 2D  
+- **Nathan Oloresisimo** – Set 2D  
+- **Conner Ponton** – Set 2D  
 
 ---
 
