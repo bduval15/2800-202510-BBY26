@@ -5,6 +5,7 @@ import BaseCard from './BaseCard';
 import BookmarkButton from '../buttons/Bookmark';
 import VoteButtons from '../buttons/VoteButtons';
 import CommentDisplay from '../buttons/CommentDisplay';
+import Tag from '../Tag';
 
 /**
  * HackCard.jsx
@@ -18,7 +19,7 @@ import CommentDisplay from '../buttons/CommentDisplay';
  * @author https://gemini.google.com/app
  */
 
-const HackCard = ({ id, title, upvotes, downvotes, comments, className = '' }) => {
+const HackCard = ({ id, title, upvotes, downvotes, comments, tags = [], className = '' }) => {
   // Construct the detail page URL
   const detailPageUrl = `/hacks-page/${id}`; 
 
@@ -30,6 +31,15 @@ const HackCard = ({ id, title, upvotes, downvotes, comments, className = '' }) =
           <h3 className="text-lg font-semibold text-[#8B4C24] hover:underline cursor-pointer">{title}</h3>
         </Link>
       </div>
+
+      {/* Tags */}
+      {tags && tags.length > 0 && (
+        <div className="w-full mb-2 flex flex-wrap">
+          {tags.map((tag, index) => (
+            <Tag key={index} label={tag} />
+          ))}
+        </div>
+      )}
 
       {/* Interactions */}
       <div className="flex items-center space-x-2 text-xs w-full justify-start mt-2">
@@ -52,6 +62,7 @@ HackCard.propTypes = {
   upvotes: PropTypes.number.isRequired,
   downvotes: PropTypes.number.isRequired,
   comments: PropTypes.number.isRequired,
+  tags: PropTypes.arrayOf(PropTypes.string),
   className: PropTypes.string,
 };
 
