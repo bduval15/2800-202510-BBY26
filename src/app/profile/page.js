@@ -17,6 +17,7 @@ import Footer from "@/components/Footer";
 import StickyNavBar from "@/components/StickyNavbar";
 import { useState } from "react";
 import AvatarSelector from "@/components/AvatarSelector";
+import BottomNav from '@/components/BottomNav' 
 
 export default function ProfilePage() {
   // State to toggle the avatar selection modal
@@ -104,6 +105,8 @@ export default function ProfilePage() {
         <div className="mt-auto">
           <Footer />
         </div>
+
+        <BottomNav />
       </main>
     </>
   );

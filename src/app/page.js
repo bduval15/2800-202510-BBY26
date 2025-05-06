@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link  from 'next/link';
+import Footer from "@/components/Footer";
 /**
  * Home.jsx
  * Loaf Life – landing page with logo, main heading, CTA button, and how-it-works section.
@@ -11,9 +12,11 @@ import Link  from 'next/link';
  */
 export default function Home() {
   return (
+    <>
+    
     <main className="min-h-screen bg-[#F5E3C6] text-[#8B4C24] px-6 py-10 flex flex-col items-center font-sans">
       {/* Header / Logo */}
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3 mb-9">
         <img src="images/logo.png" alt="Loaf Life Logo" className="w-17 h-17" />
         <h1 className="text-3xl font-bold">LOAF LIFE</h1>
       </div>
@@ -34,7 +37,7 @@ export default function Home() {
       </Link>
 
       {/* How it Works */}
-      <section className="mt-14 grid grid-cols-3 gap-10 text-center text-sm">
+      <section className="mt-15 grid grid-cols-3 gap-10 text-center text-sm">
         <div>
           <img src="images/browse.png" alt="Browse" className="w-14 mx-auto mb-2" />
           <p>Browse</p>
@@ -49,5 +52,7 @@ export default function Home() {
         </div>
       </section>
     </main>
+    <Footer/>
+    </>
   );
 }
