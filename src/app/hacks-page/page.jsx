@@ -47,6 +47,7 @@ export default function HacksPage() {
         comments={7}
       />
     </FeedLayout>
+   
   )
 }
 
