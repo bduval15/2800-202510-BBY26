@@ -13,6 +13,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import Image from 'next/image';
 import StickyNavbar from '@/components/StickyNavbar';
 import BottomNav from '@/components/BottomNav';
 import Footer from '@/components/Footer';
@@ -128,23 +129,32 @@ export default function MainFeed() {
                     <div
                         key={t.id}
                         className="
-      relative
-      h-48
-      rounded-2xl
-      overflow-hidden
-      shadow-lg
-      bg-cover
-      bg-center
-      transition-transform duration-200
-      hover:scale-105 hover:shadow-2xl
-      cursor-pointer
-      shadow-xl  
-      ring-2 ring-[#D1905A]
-    "
+                        relative
+                        h-48
+                        rounded-2xl
+                        overflow-hidden
+                        shadow-lg
+                        bg-cover
+                        bg-center
+                        transition-transform duration-200
+                        hover:scale-105 hover:shadow-2xl
+                        cursor-pointer
+                        shadow-xl  
+                        ring-2 ring-[#D1905A]
+                        "
                         style={{
                             backgroundImage: `url(${t.imageUrl})`
                         }}
                     >
+                        <Image
+                            src={t.imageUrl}
+                            alt={t.title}
+                            fill
+                            className="object-cover"
+                            quality={100}
+                            sizes="(max-width: 768px) 100vw, 600px"
+                            priority
+                        />
                         {/* Dark gradient for legibility */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
@@ -160,13 +170,13 @@ export default function MainFeed() {
 
                         {/* Post-count badge */}
                         <div className="
-        absolute
-        top-4 right-4
-        inline-flex items-center
-        bg-white/90 text-[#8B4C24]
-        text-xs font-medium
-        px-2 py-0.5 rounded-full
-      ">
+                          absolute
+                          top-4 right-4
+                          inline-flex items-center
+                          bg-white/90 text-[#8B4C24]
+                          text-xs font-medium
+                          px-2 py-0.5 rounded-full
+                        ">
                             <ChatBubbleOvalLeftIcon className="w-4 h-4 mr-1" />
                             {t.postCount}
                         </div>
