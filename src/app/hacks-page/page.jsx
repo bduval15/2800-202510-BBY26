@@ -14,10 +14,11 @@
 import FeedLayout from '@/components/FeedLayout'
 import HackCard from '@/components/cards/HackCard'
 import Footer from '@/components/Footer'
+import BottomNav from '@/components/BottomNav'
 
 export default function HacksPage() {
   return (
-    <div className="bg-[#F5E3C6]">
+    <div className="bg-[#F5E3C6] pb-6">
     <FeedLayout>
       <div className="text-left text-2xl font-bold text-[#8B4C24] pl-4">
         Hacks
@@ -42,7 +43,7 @@ export default function HacksPage() {
         comments={7}
       />
       <HackCard
-        title="Budget Template"
+        title="Student Budget Template"
         upvotes={20}
         downvotes={4}
         comments={7}
@@ -59,9 +60,12 @@ export default function HacksPage() {
         downvotes={4}
         comments={7}
       />
+        <Footer />
     </FeedLayout>
-    <Footer />
+    <BottomNav />
+    
     </div>
+    
   )
 }
 

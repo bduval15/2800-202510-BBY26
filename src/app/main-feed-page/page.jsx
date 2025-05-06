@@ -14,6 +14,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import StickyNavbar from '@/components/StickyNavbar';
 import BottomNav from '@/components/BottomNav';
 import Footer from '@/components/Footer';
@@ -31,6 +32,7 @@ const threads = [
         createdAt: '2025-05-04T10:15:00Z',
         isMine: true,
         imageUrl: '/images/threads/dealsThread.png',
+        link: '/hacks-page'
     },
     {
         id: 2,
@@ -40,6 +42,7 @@ const threads = [
         createdAt: '2025-05-05T14:30:00Z',
         isMine: false,
         imageUrl: '/images/threads/hacksThread.png',
+        link: '/hacks-page'
     },
     {
         id: 3,
@@ -49,6 +52,7 @@ const threads = [
         createdAt: '2025-05-03T09:00:00Z',
         isMine: false,
         imageUrl: '/images/threads/savingsThread.png',
+        link: '/hacks-page'
     },
     {
         id: 4,
@@ -58,6 +62,7 @@ const threads = [
         createdAt: '2025-05-05T08:45:00Z',
         isMine: true,
         imageUrl: '/images/threads/eventsThread.png',
+        link: '/hacks-page'
     },
 ];
 
@@ -126,62 +131,63 @@ export default function MainFeed() {
             {/* Scrollable Image Feed */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4 max-w-md mx-auto w-full relative pb-16">
                 {visibleThreads.map((t) => (
-                    <div
-                        key={t.id}
-                        className="
-                        relative
-                        h-48
-                        rounded-2xl
-                        overflow-hidden
-                        shadow-lg
-                        bg-cover
-                        bg-center
-                        transition-transform duration-200
-                        hover:scale-105 hover:shadow-2xl
-                        cursor-pointer
-                        shadow-xl  
-                        ring-2 ring-[#D1905A]
-                        "
-                        style={{
-                            backgroundImage: `url(${t.imageUrl})`
-                        }}
-                    >
-                        <Image
-                            src={t.imageUrl}
-                            alt={t.title}
-                            fill
-                            className="object-cover"
-                            quality={100}
-                            sizes="(max-width: 768px) 100vw, 600px"
-                            priority
-                        />
-                        {/* Dark gradient for legibility */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <Link key={t.id} href={t.link} passHref className="block">
+                        <div
+                            className="
+                            relative
+                            h-48
+                            rounded-2xl
+                            overflow-hidden
+                            shadow-lg
+                            bg-cover
+                            bg-center
+                            transition-transform duration-200
+                            hover:scale-105 hover:shadow-2xl
+                            cursor-pointer
+                            shadow-xl  
+                            ring-2 ring-[#D1905A]
+                            "
+                            style={{
+                                backgroundImage: `url(${t.imageUrl})`
+                            }}
+                        >
+                            <Image
+                                src={t.imageUrl}
+                                alt={t.title}
+                                fill
+                                className="object-cover"
+                                quality={100}
+                                sizes="(max-width: 768px) 100vw, 600px"
+                                priority
+                            />
+                            {/* Dark gradient for legibility */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
-                        {/* Title */}
-                        <h2 className="absolute bottom-10 left-4 text-white text-lg font-semibold">
-                            {t.title}
-                        </h2>
+                            {/* Title */}
+                            <h2 className="absolute bottom-10 left-4 text-white text-lg font-semibold">
+                                {t.title}
+                            </h2>
 
-                        {/* Description */}
-                        <p className="absolute bottom-4 left-4 text-white/80 text-sm">
-                            {t.description}
-                        </p>
+                            {/* Description */}
+                            <p className="absolute bottom-4 left-4 text-white/80 text-sm">
+                                {t.description}
+                            </p>
 
-                        {/* Post-count badge */}
-                        <div className="
-                          absolute
-                          top-4 right-4
-                          inline-flex items-center
-                          bg-white/90 text-[#8B4C24]
-                          text-xs font-medium
-                          px-2 py-0.5 rounded-full
-                          border-2 border-[#D1905A]
-                        ">
-                            <ClipboardIcon className="w-4 h-4 mr-1" />
-                            {t.postCount}
+                            {/* Post-count badge */}
+                            <div className="
+                              absolute
+                              top-4 right-4
+                              inline-flex items-center
+                              bg-white/90 text-[#8B4C24]
+                              text-xs font-medium
+                              px-2 py-0.5 rounded-full
+                              border-2 border-[#D1905A]
+                            ">
+                                <ClipboardIcon className="w-4 h-4 mr-1" />
+                                {t.postCount}
+                            </div>
                         </div>
-                    </div>
+                    </Link>
                 ))}
                 <Footer />
             </div>
