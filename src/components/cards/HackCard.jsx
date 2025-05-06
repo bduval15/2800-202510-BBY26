@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 import BaseCard from './BaseCard';
-import { ArrowUpIcon, ArrowDownIcon, ChatBubbleOvalLeftEllipsisIcon, BookmarkIcon as BookmarkOutlineIcon } from '@heroicons/react/24/outline';
-import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid';
+import { ArrowUpIcon, ArrowDownIcon, ChatBubbleOvalLeftEllipsisIcon } from '@heroicons/react/24/outline';
+import BookmarkButton from '../buttons/Bookmark';
 
 /**
  * HackCard.jsx
@@ -16,12 +16,6 @@ import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid';
  */
 
 const HackCard = ({ id, title, upvotes, downvotes, comments, className = '' }) => {
-  const [isBookmarked, setIsBookmarked] = useState(false);
-
-  const handleBookmarkClick = () => {
-    setIsBookmarked(!isBookmarked);
-  };
-
   // Construct the detail page URL
   const detailPageUrl = `/hacks-page/${id}`; 
 
@@ -65,17 +59,7 @@ const HackCard = ({ id, title, upvotes, downvotes, comments, className = '' }) =
         </div>
 
         {/* Bookmark Button */}
-        <button
-          onClick={handleBookmarkClick}
-          aria-label={isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
-          className="p-1.5 rounded-full bg-[#d1905a] text-[#FFE2B6] ml-auto" // Use ml-auto to push to the right
-        >
-          {isBookmarked ? (
-            <BookmarkSolidIcon className="h-5 w-5" />
-          ) : (
-            <BookmarkOutlineIcon className="h-5 w-5" />
-          )}
-        </button>
+        <BookmarkButton />
       </div>
     </BaseCard>
   );
