@@ -25,7 +25,7 @@ const BookmarkButton = () => {
     <button
       onClick={handleBookmarkClick}
       aria-label={isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
-      className="p-1.5 rounded-full bg-[#d1905a] text-[#FFE2B6] ml-auto" 
+      className="p-1.5 rounded-lg bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] shadow-md ml-auto"
     >
       {isBookmarked ? (
         <BookmarkSolidIcon className="h-5 w-5" />

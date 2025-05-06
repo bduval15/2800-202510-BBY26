@@ -51,7 +51,7 @@ export default function HackDetailPage({ params }) {
       <FeedLayout>
         {/* Back Button */}
         <Link href="/hacks-page" className="mb-4 inline-block">
-          <button className="bg-[#D1905A] text-white hover:bg-[#B8733E] px-4 py-2 rounded">
+          <button className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] px-3 py-1.5 rounded-lg shadow-md">
             <ArrowLeftIcon className="h-5 w-5" />
           </button>
         </Link>
