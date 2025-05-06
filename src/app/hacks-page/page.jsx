@@ -19,8 +19,8 @@ export default function HacksPage() {
   return (
     <div className="bg-[#F5E3C6]">
     <FeedLayout>
-      <div className="text-center text-[#8B4C24] bg-[#F5E3C6] ">
-        Welcome to Student Hacks! Your posts will appear here.
+      <div className="text-left text-2xl font-bold text-[#8B4C24] uppercase pl-4">
+        Hacks
       </div>
       <HackCard 
         title="Free BCIT Gym Access"
