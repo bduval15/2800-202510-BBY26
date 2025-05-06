@@ -19,53 +19,51 @@ import BottomNav from '@/components/BottomNav'
 export default function HacksPage() {
   return (
     <div className="bg-[#F5E3C6] pb-6">
-    <FeedLayout>
-      <div className="text-left text-2xl font-bold text-[#8B4C24] pl-4">
-        Hacks
-      </div>
-      <HackCard 
-        title="Free BCIT Gym Access"
-        upvotes={20}
-        downvotes={4} 
-        comments={7} 
-        tags={['Campus Life', 'Health & Wellness']} 
-      />
-      <HackCard
-        title="Budget Stir Fry Noodles Recipe"
-        upvotes={20}
-        downvotes={4}
-        comments={7}
-      />
-      <HackCard
-        title="Peanut Butter Mug Cake Recipe"
-        upvotes={20}
-        downvotes={4}
-        comments={7}
-      />
-      <HackCard
-        title="Student Budget Template"
-        upvotes={20}
-        downvotes={4}
-        comments={7}
-      />
-      <HackCard
-        title="Streaming Service Alternatives"
-        upvotes={20}
-        downvotes={4}
-        comments={7}
-      />
-      <HackCard
-        title="Budget Night Out"
-        upvotes={20}
-        downvotes={4}
-        comments={7}
-      />
+      <FeedLayout>
+        <div className="text-left text-2xl font-bold text-[#8B4C24] pl-4">
+          Hacks
+        </div>
+        <HackCard
+          title="Free BCIT Gym Access"
+          upvotes={20}
+          downvotes={4}
+          comments={7}
+          tags={['Campus Life', 'Health & Wellness']}
+        />
+        <HackCard
+          title="Budget Stir Fry Noodles Recipe"
+          upvotes={20}
+          downvotes={4}
+          comments={7}
+        />
+        <HackCard
+          title="Peanut Butter Mug Cake Recipe"
+          upvotes={20}
+          downvotes={4}
+          comments={7}
+        />
+        <HackCard
+          title="Student Budget Template"
+          upvotes={20}
+          downvotes={4}
+          comments={7}
+        />
+        <HackCard
+          title="Streaming Service Alternatives"
+          upvotes={20}
+          downvotes={4}
+          comments={7}
+        />
+        <HackCard
+          title="Budget Night Out"
+          upvotes={20}
+          downvotes={4}
+          comments={7}
+        />
         <Footer />
-    </FeedLayout>
-    <BottomNav />
-    
+      </FeedLayout>
+      <BottomNav />
     </div>
-    
   )
 }
 
