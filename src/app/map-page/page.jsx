@@ -1,11 +1,23 @@
 'use client';
 
 import React from 'react';
+import dynamic from 'next/dynamic'
 import StickyNavbar from '@/components/StickyNavbar';
 import Footer from '@/components/Footer';
 import BottomNav from '@/components/BottomNav';
 
+const EventMap = dynamic(
+  () => import('@/components/mapComponents/EventMap'),
+  { 
+    ssr: false,
+    loading: () => <div className="h-full w-full flex items-center justify-center">Loading map…</div>
+  }
+)
+
 export default function MapPage() {
+
+    const dummyEvents = [];
+
     return (
       <>
         <StickyNavbar />
@@ -16,7 +28,7 @@ export default function MapPage() {
             </div>
             <div className="p-4">
               <div className="h-[65vh] w-full rounded bg-gray-100 border-3 border-[#D1905A] flex items-center justify-center">
-                <span className="text-gray-500">Map placeholder</span>
+              <EventMap events={dummyEvents} />
               </div>
             </div>
           </div>

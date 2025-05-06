@@ -18,7 +18,8 @@
 'use client';
 
 import React from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -29,39 +30,49 @@ L.Icon.Default.mergeOptions({
     shadowUrl: '/leaflet/marker-shadow.png',
 });
 
+function FitBounds({ bounds }) {
+    const map = useMap();
+    useEffect(() => {
+      map.fitBounds(bounds, { padding: [20, 20] });
+    }, [map, bounds]);
+    return null;
+  }
+
 export default function EventMap({
-    center = [49.25, -123.00],
-    zoom = 12,
-    events = []
-}) {
+    events = [],
+  }) {
 
     const vancouverBounds = [
-        [49.0, -123.5],
-        [49.5, -122.4],
+      [49.0, -123.5], 
+      [49.5, -122.4], 
     ];
-
+  
     return (
-        <MapContainer
-            center={center}
-            zoom={zoom}
-            scrollWheelZoom={true}
-            className="h-full w-full"
-            maxBounds={vancouverBounds}
-            maxBoundsViscosity={0.8}
-        >
-            <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution="&copy; OpenStreetMap contributors"
-            />
+      <MapContainer
+        bounds={vancouverBounds}
+        scrollWheelZoom={true}
+        className="h-full w-full"
+        maxBounds={vancouverBounds}
+        maxBoundsViscosity={1.0}
+        minZoom={10}
+        maxZoom={16}
+      >
+        <FitBounds bounds={vancouverBounds} />
+  
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution="&copy; OpenStreetMap contributors"
+        />
 
-            {events.map(evt => (
-                <Marker key={evt.id} position={[evt.lat, evt.lng]}>
-                    <Popup>
-                        <strong>{evt.title}</strong><br />
-                        {evt.description}
-                    </Popup>
-                </Marker>
-            ))}
-        </MapContainer>
+        {/* Temp for loading event markers */}
+        {events.map(evt => (
+          <Marker key={evt.id} position={[evt.lat, evt.lng]}>
+            <Popup>
+              <strong>{evt.title}</strong><br />
+              {evt.description}
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
     );
-}
+  }
