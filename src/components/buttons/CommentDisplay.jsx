@@ -26,7 +26,7 @@ const CommentDisplay = ({ count }) => {
       <button
         onClick={handleViewComments} 
         aria-label="View Comments"
-        className="p-0 rounded hover:bg-[#EADDCA]"
+        className="p-0.5 rounded hover:bg-[#EADDCA]"
       >
         <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5" />
       </button>

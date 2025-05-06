@@ -59,7 +59,7 @@ const VoteButtons = ({ upvotes: initialUpvotes, downvotes: initialDownvotes }) =
       <button
         onClick={handleUpvote}
         aria-label="Upvote"
-        className="p-0 rounded hover:bg-[#EADDCA]"
+        className="p-0.5 rounded hover:bg-[#EADDCA]"
       >
         <ArrowUpIcon 
           className={`h-5 w-5 ${userVote === 'upvoted' ? 'text-[#639751]' : ''}`}
@@ -70,7 +70,7 @@ const VoteButtons = ({ upvotes: initialUpvotes, downvotes: initialDownvotes }) =
       <button
         onClick={handleDownvote}
         aria-label="Downvote"
-        className="p-0 rounded hover:bg-[#EADDCA]"
+        className="p-0.5 rounded hover:bg-[#EADDCA]"
       >
         <ArrowDownIcon 
           className={`h-5 w-5 ${userVote === 'downvoted' ? 'text-red-500' : ''}`}
