@@ -18,7 +18,7 @@
 'use client';
 
 import React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -35,7 +35,7 @@ function FitBounds({ bounds }) {
     const map = useMap();
     useEffect(() => {
         map.fitBounds(bounds, { padding: [20, 20] });
-    }, [map, bounds]);
+    }, []);
     return null;
 }
 
@@ -43,10 +43,19 @@ export default function EventMap({
     events = [],
 }) {
 
+    const [userPos, setUserPos] = useState(null);
+
     const vancouverBounds = [
         [49.0, -123.5],
         [49.5, -122.4],
     ];
+
+    const logoIcon = L.icon({
+        iconUrl: '/images/logo.png',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+        popupAnchor: [0, -40]
+      });
 
     return (
         <MapContainer
@@ -79,15 +88,20 @@ export default function EventMap({
                 position="topright"
                 drawCircle={false}
                 follow={true}
-                strings={{
-                    title: 'Find me!',
-                    popup: 'Here I am 😎'
+                zoomTo={14}
+                onLocated={(coords) => {
+                    setUserPos(coords);
                 }}
                 locateOptions={{
                     enableHighAccuracy: true,
                     maximumAge: 0
                 }}
             />
+            {userPos && (
+                    <Marker position={userPos} icon={logoIcon}>
+                        <Popup>You are here!</Popup>
+                    </Marker>
+                )}
         </MapContainer>
     );
 }

@@ -14,54 +14,81 @@
  * @author Brady Duval
  * @author https://chatgpt.com/
  */
+// File: components/LocateControl.jsx
 'use client';
 
 import React, { useEffect } from 'react';
-import { useMap }    from 'react-leaflet';
-import L             from 'leaflet';
+import { useMap } from 'react-leaflet';
+import L from 'leaflet';
 
 export default function LocateControl({
-  position     = 'topright',
-  iconHtml     = '📍',              
-  tooltip      = 'Find my location',
-  locateOptions= { enableHighAccuracy: true, timeout:10000, maximumAge:0 },
-  onLocated    = () => {},
-  zoomTo       = 15              
+  position      = 'topright',
+  iconHtml      = '📍',
+  tooltip       = 'Find my location',
+  locateOptions = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
+  onLocated     = () => {},
+  zoomTo        = 15
 }) {
   const map = useMap();
 
   useEffect(() => {
+    // 1) Define a custom Control
     const Control = L.Control.extend({
       onAdd() {
-        const c = L.DomUtil.create('div','leaflet-bar leaflet-control');
-        c.innerHTML       = iconHtml;
-        c.title           = tooltip;
-        c.style.cursor    = 'pointer';
-        c.style.fontSize  = '1.2rem';
-        c.style.padding   = '6px';
-        c.style.background= 'white';
-        c.style.border    = '1px solid rgba(0,0,0,.2)';
-        c.style.borderRadius = '4px';
-        L.DomEvent.disableClickPropagation(c);
-        c.onclick = () => map.locate(locateOptions);
-        return c;
+        // Create a simple DIV button
+        const button = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+        button.innerHTML = iconHtml;
+        button.title     = tooltip;
+        // Inline styles instead of classList
+        Object.assign(button.style, {
+          cursor: 'pointer',
+          padding: '6px',
+          background: 'white',
+          border: '1px solid rgba(0,0,0,0.2)',
+          borderRadius: '4px',
+          fontSize: '1.2rem',
+        });
+        L.DomEvent.disableClickPropagation(button);
+
+        // 2) When clicked, call locate with both recenter + zoom options
+        button.onclick = () => {
+          map.locate({
+            ...locateOptions,  // enableHighAccuracy, timeout, etc.
+            setView: true,     // recenter the map
+            maxZoom: zoomTo    // zoom in to this level
+          });
+        };
+
+        return button;
       }
     });
 
+    // 3) Add control to map
     const ctl = new Control({ position });
     map.addControl(ctl);
 
-    function onLocationFound(e) {
-        const { latitude: lat, longitude: lng } = e;
-        map.setView([lat, lng], zoomTo);
-        onLocated([lat, lng]);
+    // 4) Listen for locationfound
+    function handleFound(e) {
+      // Normalize coords
+      const latlng = e.latlng || (e.latitude != null && e.longitude != null
+        ? L.latLng(e.latitude, e.longitude)
+        : null);
+
+      if (!latlng) {
+        console.warn('LocateControl: could not find coordinates in event', e);
+        return;
       }
 
-    map.on('locationfound', onLocationFound);
-    map.on('locationerror', () => console.warn('Location denied'));
+      // Notify parent (e.g. EventMap) so it can drop your ping/avatar
+      onLocated([latlng.lat, latlng.lng]);
+    }
 
+    map.on('locationfound', handleFound);
+    map.on('locationerror', () => console.warn('LocateControl: location denied'));
+
+    // 5) Clean up on unmount
     return () => {
-      map.off('locationfound', onLocationFound);
+      map.off('locationfound', handleFound);
       map.removeControl(ctl);
     };
   }, [map, position, iconHtml, tooltip, locateOptions, onLocated, zoomTo]);
