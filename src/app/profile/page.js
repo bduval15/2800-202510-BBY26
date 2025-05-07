@@ -38,9 +38,40 @@ export default function ProfilePage() {
   const [editBio, setEditBio] = useState(bio);
 
   // === INTERESTS STATE ===
-  const [interests, setInterests] = useState(["Tech", "Budget Eats", "Events", "Hacks"]);
-  const [editInterests, setEditInterests] = useState([...interests]);
+  const [interests, setInterests] = useState([]);
+  const [editInterests, setEditInterests] = useState([]);
   const [showEditInterests, setShowEditInterests] = useState(false);
+
+  // === PREDEFINED VALUES FOR INTERESTS ===
+  const MAX_SELECTION = 5;
+  const PREDEFINED_INTERESTS = [
+    { emoji: "🎮", label: "Gaming" },
+    { emoji: "👨‍🍳", label: "Cooking" },
+    { emoji: "💻", label: "Coding" },
+    { emoji: "📸", label: "Photography" },
+    { emoji: "📖", label: "Reading" },
+    { emoji: "🎬", label: "Movies" },
+    { emoji: "🎨", label: "Art" },
+    { emoji: "🎵", label: "Music" },
+    { emoji: "📈", label: "Investing" },
+    { emoji: "🧘‍♀️", label: "Yoga" },
+    { emoji: "🎯", label: "Hacks" },
+    { emoji: "🚴‍♀️", label: "Cycling" },
+    { emoji: "⚽", label: "Football" },
+    { emoji: "🏋️", label: "Fitness" },
+    { emoji: "🗣️", label: "Public Speaking" },
+    { emoji: "📚", label: "Study Groups" },
+    { emoji: "🌍", label: "Sustainability" },
+    { emoji: "💼", label: "Entrepreneurship" },
+    { emoji: "🏞️", label: "Hiking" },
+    { emoji: "🧠", label: "Mental Health" },
+    { emoji: "🐶", label: "Animal Care" },
+    { emoji: "🧩", label: "Board Games" },
+    { emoji: "🎭", label: "Comedy" },
+    { emoji: "🎮", label: "Esports" },
+  ];
+
+
 
   // === FETCH PROFILE FROM SUPABASE ON MOUNT ===
   useEffect(() => {
@@ -61,6 +92,16 @@ export default function ProfilePage() {
         setSchool(data.school || "");
         setBio(data.bio || "");
         setSelectedAvatar(data.avatar_url || "/images/avatars/avatar1.png");
+        setInterests(
+          (data.interests || []).map((label) =>
+            PREDEFINED_INTERESTS.find((i) => i.label === label)
+          ).filter(Boolean)
+        );
+        setEditInterests(
+          (data.interests || []).map((label) =>
+            PREDEFINED_INTERESTS.find((i) => i.label === label)
+          ).filter(Boolean)
+        );
       }
     };
 
@@ -128,57 +169,72 @@ export default function ProfilePage() {
 
           {showEditInterests && (
             <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-              <div className="bg-white p-6 rounded-lg max-w-md w-full">
-                <h2 className="text-lg font-bold text-[#8B4C24] mb-4">Edit Interests</h2>
+              <div className="bg-white p-6 rounded-xl max-w-md w-full max-h-[80vh] overflow-y-auto shadow-lg">
+                <h2 className="text-lg font-bold text-[#8B4C24] mb-4 text-center">Choose up to 5 Interests</h2>
 
-                {/* Input to add new interest */}
-                <div className="flex mb-4">
-                  <input
-                    type="text"
-                    placeholder="Add interest..."
-                    className="flex-grow border border-gray-300 p-2 rounded mr-2"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && e.target.value.trim() !== "") {
-                        setEditInterests([...editInterests, e.target.value.trim()]);
-                        e.target.value = "";
-                      }
-                    }}
-                  />
-                </div>
+                {/* Predefined Tags */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6 justify-items-center">
+                  {PREDEFINED_INTERESTS.map((interest) => {
+                    const isSelected = editInterests.some((i) => i.label === interest.label);
 
-                {/* Current interests (with delete buttons) */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {editInterests.map((interest, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center bg-[#FFE2B6] px-3 py-1 rounded-full text-sm"
-                    >
-                      {interest}
+                    return (
                       <button
-                        className="ml-2 text-red-500 hover:text-red-700"
-                        onClick={() =>
-                          setEditInterests(editInterests.filter((_, i) => i !== index))
-                        }
+                        key={interest.label}
+                        type="button"
+                        onClick={() => {
+                          if (isSelected) {
+                            setEditInterests(editInterests.filter((i) => i.label !== interest.label));
+                          } else if (editInterests.length < MAX_SELECTION) {
+                            setEditInterests([...editInterests, interest]);
+                          }
+                        }}
+                        className={`flex items-center justify-center px-4 py-1.5 text-sm rounded-full border transition duration-200 ease-in-out shadow-sm whitespace-nowrap
+        ${isSelected
+                            ? "bg-[#D0F0C0] text-[#23472D] border-[#7DC383]"
+                            : "bg-white text-[#4B3E2A] border-gray-300 hover:bg-[#f4f4f4]"}`}
                       >
-                        ✕
+                        <span className="mr-1">{interest.emoji}</span> {interest.label}
                       </button>
-                    </div>
-                  ))}
+                    );
+                  })}
+
                 </div>
 
-                <div className="flex justify-between mt-6">
+
+
+                {/* Buttons */}
+                <div className="flex justify-between mt-4">
                   <button
                     onClick={() => setShowEditInterests(false)}
-                    className="bg-[#E6D2B5] text-[#5C3D2E] font-medium px-2 py-0.5 rounded hover:bg-[#e3cba8] transition"
+                    className="bg-[#E6D2B5] text-[#5C3D2E] font-medium px-4 py-1.5 rounded hover:bg-[#e3cba8] transition"
                   >
                     Cancel
                   </button>
                   <button
-                    onClick={() => {
-                      setInterests(editInterests);
-                      setShowEditInterests(false);
+                    onClick={async () => {
+                      const {
+                        data: { session },
+                        error: sessionError
+                      } = await clientDB.auth.getSession();
+
+                      if (sessionError || !session?.user) {
+                        console.error("No session, cannot save interests.");
+                        return;
+                      }
+
+                      const { error: updateError } = await clientDB
+                        .from("user_profiles")
+                        .update({ interests: editInterests.map((i) => i.label) })
+                        .eq("id", session.user.id);
+
+                      if (updateError) {
+                        console.error("Error saving interests:", updateError);
+                      } else {
+                        setInterests(editInterests);
+                        setShowEditInterests(false);
+                      }
                     }}
-                    className="bg-[#639751] text-white font-medium px-4 py-1 rounded hover:bg-[#6bb053] transition"
+                    className="bg-[#639751] text-white font-medium px-6 py-1.5 rounded hover:bg-[#6bb053] transition"
                   >
                     Save
                   </button>
@@ -204,11 +260,13 @@ export default function ProfilePage() {
             {interests.map((interest, index) => (
               <span
                 key={index}
-                className="bg-[#FFE2B6] px-4 py-2 rounded-full"
+                className="bg-[#FFE2B6] px-4 py-2 rounded-full flex items-center gap-1"
               >
-                {interest}
+                <span>{interest.emoji}</span>
+                <span>{interest.label}</span>
               </span>
             ))}
+
           </div>
 
           {/* Edit button */}
@@ -315,7 +373,8 @@ export default function ProfilePage() {
                         name: editName,
                         school: editSchool,
                         bio: editBio,
-                        avatar_url: selectedAvatar
+                        avatar_url: selectedAvatar,
+                        interests: editInterests.map((i) => i.label),
                       });
 
                     if (updateError) {
