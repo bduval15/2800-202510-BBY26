@@ -1,3 +1,11 @@
+'use client'
+
+import { useState } from 'react';
+import FeedLayout from '@/components/FeedLayout'
+import HackCard from '@/components/cards/HackCard'
+import Footer from '@/components/Footer'
+import BottomNav from '@/components/BottomNav'
+
 /**
  * HacksPage.jsx
  * Loaf Life - Hacks Page
@@ -9,13 +17,6 @@
  * Written with assistance from Google Gemini 2.5 Flash
  * @author https://gemini.google.com/app
  */
-'use client'
-
-import { useState } from 'react';
-import FeedLayout from '@/components/FeedLayout'
-import HackCard from '@/components/cards/HackCard'
-import Footer from '@/components/Footer'
-import BottomNav from '@/components/BottomNav'
 
 export default function HacksPage() {
   const [selectedTag, setSelectedTag] = useState("All Tags");
@@ -23,13 +24,14 @@ export default function HacksPage() {
   const hackTags = ['Campus Life', 'Health & Wellness', 'Study Tips', 'Food', 'Career', 'Finance', 'Technology', 'Social'];
 
   // Placeholder data simulating a Supabase fetch
-  const allHacks = [
+  const [allHacks, setAllHacks] = useState([
     {
       id: 1,
       title: "Free BCIT Gym Access",
       upvotes: 20,
       downvotes: 4,
       comments: 7,
+      description: "Students have free access to the BCIT gym. Just show your student ID!",
       tags: ['Campus Life', 'Health & Wellness']
     },
     {
@@ -38,6 +40,7 @@ export default function HacksPage() {
       upvotes: 20,
       downvotes: 4,
       comments: 7,
+      description: "Quick and easy stir fry noodles that won't break the bank.",
       tags: ['Food']
     },
     {
@@ -46,6 +49,7 @@ export default function HacksPage() {
       upvotes: 20,
       downvotes: 4,
       comments: 7,
+      description: "A delicious and simple mug cake you can make in minutes.",
       tags: ['Food']
     },
     {
@@ -54,6 +58,7 @@ export default function HacksPage() {
       upvotes: 20,
       downvotes: 4,
       comments: 7,
+      description: "A helpful template to manage your finances as a student.",
       tags: ['Finance', 'Study Tips']
     },
     {
@@ -62,6 +67,7 @@ export default function HacksPage() {
       upvotes: 20,
       downvotes: 4,
       comments: 7,
+      description: "Save money with these alternatives to popular streaming services.",
       tags: ['Technology', 'Finance']
     },
     {
@@ -70,6 +76,7 @@ export default function HacksPage() {
       upvotes: 20,
       downvotes: 4,
       comments: 7,
+      description: "Fun and affordable ideas for a night out with friends.",
       tags: ['Social', 'Finance']
     },
     {
@@ -78,6 +85,7 @@ export default function HacksPage() {
       upvotes: 35,
       downvotes: 2,
       comments: 12,
+      description: "Learn how to take better notes and improve your study habits.",
       tags: ['Study Tips']
     },
     {
@@ -86,9 +94,10 @@ export default function HacksPage() {
       upvotes: 28,
       downvotes: 3,
       comments: 9,
+      description: "Tips and resources for finding part-time employment at BCIT.",
       tags: ['Career', 'Campus Life']
     }
-  ];
+  ]);
 
   const filteredHacks = selectedTag === "All Tags" 
     ? allHacks 
@@ -101,19 +110,24 @@ export default function HacksPage() {
         selectedTag={selectedTag}
         onTagChange={setSelectedTag}
       >
-        <div className="text-left text-2xl font-bold text-[#8B4C24] pl-4">
+        <div className="text-left text-2xl font-bold text-[#8B4C24] pl-4 mb-4 mt-4">
           Hacks
         </div>
-        {filteredHacks.map(hack => (
-          <HackCard
-            key={hack.id}
-            title={hack.title}
-            upvotes={hack.upvotes}
-            downvotes={hack.downvotes}
-            comments={hack.comments}
-            tags={hack.tags}
-          />
-        ))}
+        {filteredHacks.length > 0 ? (
+          filteredHacks.map(hack => (
+            <HackCard
+              key={hack.id}
+              title={hack.title}
+              upvotes={hack.upvotes}
+              downvotes={hack.downvotes}
+              comments={hack.comments}
+              tags={hack.tags}
+              description={hack.description}
+            />
+          ))
+        ) : (
+          <p className="text-center text-gray-500 px-4">No hacks found for the selected tag. Try adding one!</p>
+        )}
         <Footer />
       </FeedLayout>
       <BottomNav />
