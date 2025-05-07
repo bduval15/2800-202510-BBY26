@@ -30,7 +30,7 @@ export default function LoginPage() {
         const { error } = await clientDB.auth.signInWithPassword({ email, password });
         if (error) throw error;
 
-        window.location.href = '/profile';
+        window.location.href = '/main-feed-page';
         setMessage({ 
           text: 'Logged in successfully!', 
           type: 'success' 
@@ -69,7 +69,7 @@ export default function LoginPage() {
           .insert([{ id: user.id, name: username }]);
         if (profileInsertError) throw profileInsertError;
 
-        window.location.href = '/profile';
+        window.location.href = '/main-feed-page';
       }
     } catch (error) {
       setMessage({ text: error.message, type: 'error' });
