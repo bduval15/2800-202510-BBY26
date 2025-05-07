@@ -13,6 +13,7 @@ import { clientDB } from "@/services/supabaseClient";
  */
 
 export default function LoginPage() {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLogin, setIsLogin] = useState(true); //Toggle between login/signup
@@ -29,7 +30,7 @@ export default function LoginPage() {
         const { error } = await clientDB.auth.signInWithPassword({ email, password });
         if (error) throw error;
 
-        window.location.href = '/profile';
+        window.location.href = '/main-feed-page';
         setMessage({ 
           text: 'Logged in successfully!', 
           type: 'success' 
@@ -37,16 +38,18 @@ export default function LoginPage() {
       }
       else {
         // Signup flow
-        const { data, error } = await clientDB.auth.signUp({
+        const { error: signUpError } = await clientDB.auth.signUp({
           email,
           password,
           options: {
             emailRedirectTo: window.location.origin,
-            skipEmailConfirmation: true
+            skipEmailConfirmation: true,
+            data: {
+              username: username, 
+            }
           }
         });
-
-        if (error) throw error;
+        if (signUpError) throw signUpError;
 
         const { error: signInError } = await clientDB.auth.signInWithPassword({ 
           email, 
@@ -54,8 +57,19 @@ export default function LoginPage() {
         });
         
         if (signInError) throw signInError;
+
+        const {
+          data: { user },
+          error: userError,
+        } = await clientDB.auth.getUser();
+        if (userError) throw userError;
         
-        window.location.href = '/profile';
+        const { error: profileInsertError } = await clientDB
+          .from('user_profiles')
+          .insert([{ id: user.id, name: username }]);
+        if (profileInsertError) throw profileInsertError;
+
+        window.location.href = '/main-feed-page';
       }
     } catch (error) {
       setMessage({ text: error.message, type: 'error' });
@@ -93,6 +107,20 @@ export default function LoginPage() {
               }`}>
               {message.text}
             </div>
+          )}
+
+          {!isLogin && (
+            <label className="block mb-2">
+              <span className="text-sm font-medium">Username</span>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="mt-1 block w-full rounded border-1 border-[#F5E3C6] px-3 py-2 text-[#8B4C24] focus:border-[#639751] focus:outline-none focus:ring-0 transition"
+                placeholder="John Bread"
+                required
+              />
+            </label>
           )}
 
           <label className="block mb-2">

@@ -23,7 +23,7 @@ export default function Footer() {
           <span className="text-lg font-semibold text-[#8B4C24]">LOAF LIFE</span>
         </Link>
         <Link
-          href="/about"
+          href="/about-page"
           className="text-sm font-medium text-[#8B4C24] hover:text-[#639751]"
         >
           About Us
