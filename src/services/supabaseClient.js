@@ -52,7 +52,3 @@ export const getServerDB = () => {
     },
   });
 };
-
-//import supabase variables with these
-//import { serverDB } from "@/services/supabaseClient";
-//import { clientDB } from "@/services/supabaseClient";

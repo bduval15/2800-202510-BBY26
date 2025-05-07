@@ -7,7 +7,6 @@ import HackCard from '@/components/cards/HackCard'
 
 export default function HacksPage() {
   return (
-    <>
    
     <FeedLayout>
       {/* Placeholder content so you can see it’s working */}
@@ -52,8 +51,7 @@ export default function HacksPage() {
         comments={7}
       />
     </FeedLayout>
-    <BottomNav/>
-    </>
+   
   )
 }
 

@@ -9,6 +9,7 @@
  * 
  * Modified with assistance from ChatGPT o4-mini-high.
  * 
+ * @author Brady Duval 
  * @author https://chatgpt.com/
  */
 import Link from 'next/link'
@@ -22,7 +23,7 @@ export default function Footer() {
           <span className="text-lg font-semibold text-[#8B4C24]">LOAF LIFE</span>
         </Link>
         <Link
-          href="/about"
+          href="/about-page"
           className="text-sm font-medium text-[#8B4C24] hover:text-[#639751]"
         >
           About Us

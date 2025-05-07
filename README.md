@@ -1,12 +1,89 @@
-## About Us
-**Team Name:**  
-BBY-26  
+# 🥖 Loaf Life (by bby26)
 
-**Team Members:**
-- Arseniuk, Natalia 2D
-- Dawood, Aleen 2D
-- Duval, Brady 2D
-- Oloresisimo, Nathan 2D
-- Ponton, Conner 2D
-## More details to come
-TBA
+Loaf Life is a mobile-first web application designed for students to find free or affordable campus-related resources like food events, student discounts, quick gigs, and creative life-hacks.
+
+---
+
+## 📌 Overview
+
+Students often rely on scattered sources like bulletin boards or Facebook groups for useful, money-saving opportunities. Loaf Life brings these into one place via:
+- A categorized interactive map.
+- Peer-submitted tips and hacks.
+- Saveable content via user profiles.
+
+---
+
+## 👥 Team Members
+
+- **Natalia Arseniuk** – Set 2D  
+- **Aleen Dawood** – Set 2D  
+- **Brady Duval** – Set 2D  
+- **Nathan Oloresisimo** – Set 2D  
+- **Conner Ponton** – Set 2D  
+
+---
+
+## ⚙️ Tech Stack
+
+| Layer     | Technology           |
+|----------|-----------------------|
+| Frontend | React (Next.js)       |
+| Styling  | Tailwind CSS          |
+| Backend  | Supabase (Auth + DB)  |
+| Hosting  | Vercel                |
+
+---
+
+## 🧩 Core Features (MVP)
+
+### 🗺️ Interactive Map
+- Add/edit/delete pins (Free Food, Discounts, Gigs)
+- Filters by category and distance
+- Popups with detailed info and “Save” button
+
+### 💡 Hacks Page
+- Static markdown-style hack posts
+- Save favorites to a "Pocket Cheatsheet"
+
+### 🧾 Submissions
+- Simple forms for tips or opportunities
+- Upload photo/link + location + category
+
+### 🔐 User Auth + Profile
+- Supabase email/password login
+- Dashboard: submissions & saved items
+
+---
+
+## 🗂️ Project Structure
+```
+BBY26REPO/
+├── public/                  # Static assets (e.g., images, favicon)
+├── src/
+│   ├── app/                 # Next.js App Router directory
+│   │   ├── authentication/  # Auth pages (login, register)
+│   │   ├── hacks-page/      # Static or dynamic tips/hacks
+│   │   ├── login-page/      # Login form/page
+│   │   ├── map/             # Interactive map and pin components
+│   │   ├── profile/         # User dashboard
+│   │   ├── favicon.ico      # App icon
+│   │   ├── globals.css      # Global styles
+│   │   ├── layout.js        # App layout wrapper
+│   │   └── page.js          # Root landing page
+│   ├── components/          # Reusable UI components
+│   ├── contexts/            # React context providers (e.g., AuthContext)
+│   ├── hooks/               # Custom React hooks
+│   ├── layouts/             # Page-specific layouts
+│   ├── services/            # API logic (e.g., Supabase interactions)
+│   └── utils/               # Utility functions/helpers
+├── .gitignore               # Files to ignore in Git
+├── about.html               # Static info page
+├── eslint.config.mjs        # Linting config
+├── jsconfig.json            # JS path aliases/settings
+├── next.config.mjs          # Next.js config
+├── package.json             # Dependencies and scripts
+├── package-lock.json        # Dependency tree lock
+├── postcss.config.mjs       # PostCSS config
+├── tailwind.config.js       # Tailwind setup
+└── README.md                # Project overview and instructions
+```

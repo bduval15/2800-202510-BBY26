@@ -10,7 +10,6 @@
  * Modified with assistance from ChatGPT o4-mini-high.
  * @author https://chatgpt.com/*
  */
-
 "use client";
 
 // Import dependencies
