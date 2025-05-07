@@ -297,11 +297,35 @@ export default function ProfilePage() {
                   Cancel
                 </button>
                 <button
-                  onClick={() => {
-                    setName(editName);
-                    setSchool(editSchool);
-                    setBio(editBio);
-                    setShowEditModal(false);
+                  onClick={async () => {
+                    const {
+                      data: { session },
+                      error: sessionError
+                    } = await clientDB.auth.getSession();
+
+                    if (sessionError || !session?.user) {
+                      console.error("No session, cannot save.");
+                      return;
+                    }
+
+                    const { error: updateError } = await clientDB
+                      .from("user_profiles")
+                      .upsert({
+                        id: session.user.id,
+                        name: editName,
+                        school: editSchool,
+                        bio: editBio,
+                        avatar_url: selectedAvatar
+                      });
+
+                    if (updateError) {
+                      console.error("Error saving profile:", updateError.message || updateError);
+                    } else {
+                      setName(editName);
+                      setSchool(editSchool);
+                      setBio(editBio);
+                      setShowEditModal(false);
+                    }
                   }}
                   className="bg-[#639751] text-white font-medium px-4 py-1.5 rounded hover:bg-[#6bb053] transition"
                 >
