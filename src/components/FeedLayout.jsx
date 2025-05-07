@@ -14,7 +14,6 @@ import { useState } from "react"
 import SortDropdown from "./SortDropdown"
 import StickyNavbar from './StickyNavbar'
 
-
 export default function FeedLayout({ children, title = 'Student Hacks' }) {
   const [bestSort, setBestSort] = useState("Best")
   const [dateSort, setDateSort] = useState("Newest")

@@ -1,15 +1,19 @@
 // src/app/hacks-page/page.jsx
 'use client'
 
+import BottomNav from '@/components/BottomNav'
 import FeedLayout from '@/components/FeedLayout'
 import HackCard from '@/components/cards/HackCard'
+
 export default function HacksPage() {
   return (
+   
     <FeedLayout>
       {/* Placeholder content so you can see it’s working */}
       <div className="text-center text-[#8B4C24]">
         Welcome to Student Hacks! Your posts will appear here.
       </div>
+    
       <HackCard 
         title="Free McDonald's Coffee"
         upvotes={20}
