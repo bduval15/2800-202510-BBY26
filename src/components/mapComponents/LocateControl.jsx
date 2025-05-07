@@ -14,16 +14,17 @@
  * @author Brady Duval
  * @author https://chatgpt.com/
  */
-// File: components/LocateControl.jsx
+
 'use client';
 
 import React, { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
+import { createRoot }      from 'react-dom/client'; 
+import { MapPinIcon } from '@heroicons/react/24/solid'; 
 import L from 'leaflet';
 
 export default function LocateControl({
   position      = 'topright',
-  iconHtml      = '📍',
   tooltip       = 'Find my location',
   locateOptions = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
   onLocated     = () => {},
@@ -35,31 +36,26 @@ export default function LocateControl({
     // 1) Define a custom Control
     const Control = L.Control.extend({
       onAdd() {
-        // Create a simple DIV button
-        const button = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-        button.innerHTML = iconHtml;
-        button.title     = tooltip;
-        // Inline styles instead of classList
-        Object.assign(button.style, {
-          cursor: 'pointer',
-          padding: '6px',
-          background: 'white',
-          border: '1px solid rgba(0,0,0,0.2)',
-          borderRadius: '4px',
-          fontSize: '1.2rem',
-        });
-        L.DomEvent.disableClickPropagation(button);
+        const container = L.DomUtil.create('div','leaflet-bar leaflet-control locate-btn');
+        container.title = tooltip;
+        L.DomEvent.disableClickPropagation(container);
 
-        // 2) When clicked, call locate with both recenter + zoom options
-        button.onclick = () => {
+        // 3) Render your Heroicon into that container
+        const root = createRoot(container);
+        root.render(
+          <MapPinIcon className="h-6 w-6 text-white" />
+        );
+
+        // 4) Wire up the locate click
+        container.onclick = () => {
           map.locate({
-            ...locateOptions,  // enableHighAccuracy, timeout, etc.
-            setView: true,     // recenter the map
-            maxZoom: zoomTo    // zoom in to this level
+            ...locateOptions,
+            setView: true,
+            maxZoom: zoomTo
           });
         };
 
-        return button;
+        return container;
       }
     });
 
@@ -91,7 +87,7 @@ export default function LocateControl({
       map.off('locationfound', handleFound);
       map.removeControl(ctl);
     };
-  }, [map, position, iconHtml, tooltip, locateOptions, onLocated, zoomTo]);
+  }, [map, position, tooltip, locateOptions, onLocated, zoomTo]);
 
   return null;
 }

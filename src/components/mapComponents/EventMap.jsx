@@ -23,6 +23,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import LocateControl from '@/components/mapComponents/LocateControl';
+import styles from './EventMap.module.css';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -38,6 +39,16 @@ function FitBounds({ bounds }) {
     }, []);
     return null;
 }
+
+function ResizeMap() {
+    const map = useMap();
+    useEffect(() => {
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 0);
+    }, [map]);
+    return null;
+  }
 
 export default function EventMap({
     events = [],
@@ -55,9 +66,10 @@ export default function EventMap({
         iconSize: [40, 40],
         iconAnchor: [20, 40],
         popupAnchor: [0, -40]
-      });
+    });
 
     return (
+        <div className={`${styles.container} h-full w-full`}>
         <MapContainer
             bounds={vancouverBounds}
             scrollWheelZoom={true}
@@ -67,12 +79,15 @@ export default function EventMap({
             minZoom={10}
             maxZoom={16}
         >
+            <ResizeMap/>
             <FitBounds bounds={vancouverBounds} />
 
             <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution="&copy; OpenStreetMap contributors"
+                url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
+                attribution="© OpenStreetMap contributors © CARTO"
+                subdomains={['a', 'b', 'c', 'd']}
             />
+
 
             {/* Temp for loading event markers */}
             {events.map(evt => (
@@ -98,10 +113,11 @@ export default function EventMap({
                 }}
             />
             {userPos && (
-                    <Marker position={userPos} icon={logoIcon}>
-                        <Popup>You are here!</Popup>
-                    </Marker>
-                )}
+                <Marker position={userPos} icon={logoIcon}>
+                    <Popup>You are here!</Popup>
+                </Marker>
+            )}
         </MapContainer>
+        </div>
     );
 }
