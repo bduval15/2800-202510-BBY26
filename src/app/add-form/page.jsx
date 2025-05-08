@@ -58,7 +58,6 @@ export default function AddFormPage() {
         title: formData.title,
         location: formData.location,
         price: formData.price,
-        distance: formData.distance, // Assuming your table schema uses 'distance'
         user_id: userId
         // created_at will be set by Supabase by default
       };

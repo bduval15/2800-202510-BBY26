@@ -22,7 +22,6 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
   const [postType, setPostType] = useState('hack'); 
   const [location, setLocation] = useState('');
   const [price, setPrice] = useState('');
-  const [distance, setDistance] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,7 +29,7 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
     if (postType === 'hack') {
       formData = { ...formData, description, tags: selectedTags };
     } else { // postType === 'deal'
-      formData = { ...formData, location, price: parseFloat(price) || 0, distance: parseFloat(distance) || 0 };
+      formData = { ...formData, location, price: parseFloat(price) || 0 };
     }
     console.log(formData);
     if (onSubmit) {
@@ -178,20 +177,6 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
               required={postType === 'deal'}
               className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400 text-gray-900"
               placeholder="e.g., 5.99"
-            />
-          </div>
-          <div>
-            <label htmlFor="distance" className="block text-sm font-medium text-[#6A401F] mb-1">
-              Distance (km, optional)
-            </label>
-            <input
-              type="number"
-              id="distance"
-              value={distance}
-              onChange={(e) => setDistance(e.target.value)}
-              step="0.1"
-              className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400 text-gray-900"
-              placeholder="e.g., 0.5"
             />
           </div>
         </>
