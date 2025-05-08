@@ -1,13 +1,13 @@
 /**
- * ==============================================
- * AI-GENERATED CODE ACKNOWLEDGMENT
- * ==============================================
- * This file contains code generated with the assistance of AI tools (Deep Seek)
+ * supabaseClient.js
+ * Loaf Life - supabase client files
  * 
- * AI was used for:
- * - Reviewing for correctness
- * - Adapting to project-specific requirements (explaining public vs service keys)
- * ==============================================
+ * Connects and accesses supabase DB
+ * 
+ * @author: Conner Ponton
+ * 
+ * Written with assistance from Deepseek
+ * @author https://chat.deepseek.com/
  */
 import { createClient } from '@supabase/supabase-js';
 

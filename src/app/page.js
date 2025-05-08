@@ -8,7 +8,6 @@
  * Modified with assistance from ChatGPT o4-mini-high.
  * @author https://chatgpt.com/*
  */
-
 import Image from "next/image";
 import Link from 'next/link';
 import Footer from "@/components/Footer";
@@ -16,7 +15,8 @@ import Footer from "@/components/Footer";
 export default function Home() {
   return (
     <>
-      <main className="min-h-screen bg-[#F5E3C6] text-[#8B4C24] px-6 pt-25 pb-10 flex flex-col items-center font-sans">
+      <main className="min-h-screen bg-[#F5E3C6] text-[#8B4C24] px-6 py-10 pt-25 flex flex-col items-center font-sans">
+        {/* Header / Logo */}
         <div className="flex items-center gap-3 mb-6">
           <img src="images/logo.png" alt="Loaf Life Logo" className="w-17 h-17" />
           <h1 className="text-3xl font-bold">LOAF LIFE</h1>
@@ -51,12 +51,11 @@ export default function Home() {
             <img src="images/live.png" alt="Live Well" className="w-14 mx-auto mb-2" />
             <p>Live Well</p>
           </div>
-
         </section>
-
-
       </main>
-      <Footer />
+      <div>
+        <Footer />
+      </div>
     </>
   );
 }
