@@ -46,7 +46,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const loadProfile = async (session) => {
       const { data, error } = await clientDB
-        .from("profiles")
+        .from("user_profiles")
         .select("*")
         .eq("id", session.user.id)
         .single();
