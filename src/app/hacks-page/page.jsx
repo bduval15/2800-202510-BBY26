@@ -104,7 +104,6 @@ export default function HacksPage() {
     : allHacks.filter(hack => hack.tags && hack.tags.includes(selectedTag));
 
   return (
-<<<<<<< HEAD
     <div className="bg-[#F5E3C6] pb-6">
       <FeedLayout
         tagOptions={hackTags}
@@ -133,53 +132,6 @@ export default function HacksPage() {
       </FeedLayout>
       <BottomNav />
     </div>
-=======
-   
-    <FeedLayout>
-      {/* Placeholder content so you can see it’s working */}
-      <div className="text-center text-[#8B4C24]">
-        Welcome to Student Hacks! Your posts will appear here.
-      </div>
-    
-      <HackCard 
-        title="Free McDonald's Coffee"
-        upvotes={20}
-        downvotes={4}
-        comments={7}
-      />
-      <HackCard
-        title="Free McDonald's Coffee"
-        upvotes={20}
-        downvotes={4}
-        comments={7}
-      />
-      <HackCard
-        title="Free McDonald's Coffee"
-        upvotes={20}
-        downvotes={4}
-        comments={7}
-      />
-      <HackCard
-        title="Free McDonald's Coffee"
-        upvotes={20}
-        downvotes={4}
-        comments={7}
-      />
-      <HackCard
-        title="Free McDonald's Coffee"
-        upvotes={20}
-        downvotes={4}
-        comments={7}
-      />
-      <HackCard
-        title="Free McDonald's Coffee"
-        upvotes={20}
-        downvotes={4}
-        comments={7}
-      />
-    </FeedLayout>
-   
->>>>>>> a01be7ce93cf6d696a0675d03cd7858dd23b4fc7
   )
 }
 
