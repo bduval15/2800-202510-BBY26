@@ -1,33 +1,40 @@
-/**
- * Footer.jsx
- * Loaf Life – fixed bottom footer with Logo, App Name, and AboutUs Link.
- *  
- * Brady took this template for the sticky footer from flowbite.com
- * 
- * @author flowbite 
- * @see https://flowbite.com/docs/components/footer/
- * 
- * Modified with assistance from ChatGPT o4-mini-high.
- * 
- * @author Brady Duval 
- * @author https://chatgpt.com/
- */
 import Link from 'next/link'
+import { FaInstagram, FaTwitter, FaFacebookF, FaTiktok } from 'react-icons/fa'
 
 export default function Footer() {
   return (
-    <footer className="bg-[#F5E3C6] border-t border-[#D1905A]">
+    <footer className="bg-[#F5E3C6] border-t border-[#D1905A] text-[#8B4C24]">
+      {/* Top Row */}
       <div className="max-w-screen-xl mx-auto flex items-center justify-between p-4">
         <Link href="/" className="flex items-center space-x-3">
           <img src="/images/logo.png" alt="Loaf Life Logo" className="h-8 w-8" />
-          <span className="text-lg font-semibold text-[#8B4C24]">LOAF LIFE</span>
+          <span className="text-lg font-semibold">LOAF LIFE</span>
         </Link>
         <Link
           href="/about-page"
-          className="text-sm font-medium text-[#8B4C24] hover:text-[#639751]"
+          className="text-sm font-medium hover:text-[#639751]"
         >
           About Us
         </Link>
+      </div>
+
+      {/* Bottom Row */}
+      <div className="max-w-screen-xl mx-auto flex flex-col sm:flex-row items-center justify-between px-4 pb-4 gap-3">
+        {/* Social Icons */}
+        <div className="flex gap-4 text-xl">
+          <a href="#" className="hover:text-[#639751]" aria-label="Instagram"><FaInstagram /></a>
+          <a href="#" className="hover:text-[#639751]" aria-label="Twitter"><FaTwitter /></a>
+          <a href="#" className="hover:text-[#639751]" aria-label="Facebook"><FaFacebookF /></a>
+          <a href="#" className="hover:text-[#639751]" aria-label="TikTok"><FaTiktok /></a>
+        </div>
+
+        {/* Slogan */}
+        <p className="text-sm italic text-center">“Always enjoy each slice of life.”</p>
+
+        {/* Copyright */}
+        <p className="text-xs text-[#5C3D2E] text-center sm:text-right">
+          &copy; 2025 Loaf Life. All rights reserved.
+        </p>
       </div>
     </footer>
   )
