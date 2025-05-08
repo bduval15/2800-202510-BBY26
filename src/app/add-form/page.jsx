@@ -45,8 +45,8 @@ export default function AddFormPage() {
       .insert([{ 
         title: hackData.title, 
         description: hackData.description, 
-        user_id: userId, // Use the fetched user_id
-        tags: hackData.tags, // Corrected from hackData.tag to hackData.tags
+        user_id: userId, 
+        tags: hackData.tags, 
         upvotes: 0,
         downvotes: 0 
       }]);
