@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react';
+import { clientDB } from '@/services/supabaseClient';
 
 /**
  * AddHackForm.jsx
@@ -17,13 +18,13 @@ import { useState } from 'react';
 export default function AddHackForm({ hackTags, onSubmit, onClose }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [selectedTag, setSelectedTag] = useState(hackTags && hackTags.length > 0 ? hackTags[0] : '');
+  const [selectedTags, setSelectedTags] = useState([]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({ title, description, tag: selectedTag });
+    console.log({ title, description, tags: selectedTags });
     if (onSubmit) {
-      onSubmit({ title, description, tag: selectedTag });
+      onSubmit({ title, description, tags: selectedTags });
     }
   };
 
@@ -31,6 +32,16 @@ export default function AddHackForm({ hackTags, onSubmit, onClose }) {
     if (onClose) {
       onClose();
     }
+  };
+
+  const handleTagChange = (tagValue) => {
+    setSelectedTags(prevSelectedTags => {
+      if (prevSelectedTags.includes(tagValue)) {
+        return prevSelectedTags.filter(t => t !== tagValue); // Remove tag
+      } else {
+        return [...prevSelectedTags, tagValue]; // Add tag
+      }
+    });
   };
 
   return (
@@ -46,7 +57,7 @@ export default function AddHackForm({ hackTags, onSubmit, onClose }) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
-          className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400"
+          className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400 text-gray-900"
           placeholder="e.g., Free BCIT Gym Access"
         />
       </div>
@@ -61,30 +72,38 @@ export default function AddHackForm({ hackTags, onSubmit, onClose }) {
           onChange={(e) => setDescription(e.target.value)}
           required
           rows="4"
-          className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400"
+          className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400 text-gray-900"
           placeholder="Share the details of your hack..."
         />
       </div>
       
       <div>
-        <label htmlFor="tag" className="block text-sm font-medium text-[#6A401F] mb-1">
-          Tag
+        <label className="block text-sm font-medium text-[#6A401F] mb-1">
+          Tags
         </label>
-        <select
-          id="tag"
-          value={selectedTag}
-          onChange={(e) => setSelectedTag(e.target.value)}
-          required
-          className="mt-1 block w-full pl-4 pr-10 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white text-gray-700"
-        >
+        <div className="mt-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 p-2.5 border border-[#D1905A] rounded-lg shadow-sm bg-white">
           {hackTags && hackTags.map(tag => (
-            <option key={tag} value={tag}>
-              {tag}
-            </option>
+            <div key={tag} className="flex items-center">
+              <input
+                type="checkbox"
+                id={`tag-${tag}`}
+                value={tag}
+                checked={selectedTags.includes(tag)}
+                onChange={() => handleTagChange(tag)}
+                className="h-4 w-4 text-[#8B4C24] border-[#D1905A] rounded focus:ring-[#8B4C24] cursor-pointer"
+              />
+              <label htmlFor={`tag-${tag}`} className="ml-2 text-sm text-gray-700 cursor-pointer">
+                {tag}
+              </label>
+            </div>
           ))}
-        </select>
+        </div>
+        {/* Basic validation message example - can be improved */}
+        {selectedTags.length === 0 && (
+          <p className="text-xs text-red-500 mt-1">Please select at least one tag.</p>
+        )}
       </div>
-      
+
       <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-2">
         <button
           type="submit"
