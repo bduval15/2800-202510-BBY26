@@ -30,7 +30,6 @@ export default function HamburgerDropdown() {
 
     return (
         <div ref={ref} className="relative">
-            {/* hit area and focus ring on hamburger*/}
             <button
                 onClick={() => setOpen(o => !o)}
                 className="
