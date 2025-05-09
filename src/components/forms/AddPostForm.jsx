@@ -62,7 +62,7 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 bg-[#FDFAF5] shadow-md rounded-lg space-y-6 mb-6">
+    <form onSubmit={handleSubmit} className="p-4 bg-[#FDFAF5] shadow-md rounded-lg space-y-6 mb-6 ">
       <h2 className="text-xl font-semibold text-[#8B4C24]">
         {postType === 'hack' ? 'Add a New Hack' : 'Add a New Deal'}
       </h2>
@@ -78,7 +78,7 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
             className={`py-2 px-6 rounded-full text-sm font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${ 
               postType === 'hack'
                 ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
-                : 'bg-white text-[#8B4C24] hover:bg-gray-100'
+                : 'bg-white text-[#8B4C24] hover:bg-gray-100 border border-[#D1905A]'
             }`}
           >
             Hack
@@ -89,7 +89,7 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
             className={`py-2 px-6 rounded-full text-sm font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${ 
               postType === 'deal'
                 ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
-                : 'bg-white text-[#8B4C24] hover:bg-gray-100'
+                : 'bg-white text-[#8B4C24] hover:bg-gray-100 border border-[#D1905A]'
             }`}
           >
             Deal
