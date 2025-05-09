@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import Footer from "@/components/Footer";
-import { clientDB } from "@/services/supabaseClient";
+import { clientDB } from "../../../supabaseClient";
 
 /**
  * page.js

@@ -10,6 +10,8 @@
 import { NextResponse } from 'next/server';
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 
+console.log('🔍 Middleware is running!');
+
 export async function middleware(req) {
   const res = NextResponse.next();
   const supabase = createMiddlewareClient({ req, res });
@@ -19,11 +21,11 @@ export async function middleware(req) {
   } = await supabase.auth.getSession();
 
   // Redirect to /login if user is not authenticated
-  const isAuthPage = req.nextUrl.pathname === '/login';
+  const isAuthPage = req.nextUrl.pathname === '/login-page';
 
   if (!session && !isAuthPage) {
     const redirectUrl = req.nextUrl.clone();
-    redirectUrl.pathname = '/login';
+    redirectUrl.pathname = '/login-page';
     return NextResponse.redirect(redirectUrl);
   }
 
@@ -31,5 +33,5 @@ export async function middleware(req) {
 }
 
 export const config = {
-  matcher: ['/main-feed-page', '/dashboard/:path*', '/profile', '/app/:path*'],
+  matcher: ['/main-feed-page', '/profile', '/dashboard/:path*', '/app/:path*'],
 };

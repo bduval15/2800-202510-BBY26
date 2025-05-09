@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react';
-import { clientDB } from '@/services/supabaseClient';
+import { clientDB } from '../../../supabaseClient';
 
 /**
  * AddHackForm.jsx

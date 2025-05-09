@@ -13,7 +13,7 @@
 "use client";
 
 // Import dependencies
-import { clientDB } from '@/services/supabaseClient';
+import { clientDB } from '../../../supabaseClient';
 import Footer from "@/components/Footer";
 import StickyNavBar from "@/components/StickyNavbar";
 import { useState } from "react";
