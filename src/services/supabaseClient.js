@@ -1,54 +1,25 @@
 /**
  * supabaseClient.js
- * Loaf Life - supabase client files
+ * Loaf Life – Supabase client for App Router of client data
+ *
+ * Uses @supabase/auth-helpers-nextjs to enable cookie-based auth persistence.
+ *
+ * @author Conner Ponton
  * 
- * Connects and accesses supabase DB
- * 
- * @author: Conner Ponton
- * 
- * Written with assistance from Deepseek
- * @author https://chat.deepseek.com/
+ * @author ChatGPT
+ * Utilized for guidance on persistent sessions and error checking 
  */
-import { createClient } from '@supabase/supabase-js';
 
-// Client-side variables
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+'use client';
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(`
-    Missing Supabase client environmental variables
-    - NEXT_PUBLIC_SUPABASE_URL ${!supabaseUrl}
-    - NEXT_PUBLIC_SUPABASE_ANON_KEY ${supabaseAnonKey}
-  `);
-}
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
-export const clientDB = createClient(supabaseUrl, supabaseAnonKey, {
-  db: { schema: 'public' },
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-  },
-  global: {
-    headers: { 'bby26-supabase-client': 'LoafLife' },
+//Client-side Supabase instance for use in React components.
+export const clientDB = createClientComponentClient({
+  cookieOptions: {
+    maxAge: 3600, // 1 hour
+    secure: true,
+    sameSite: 'lax',
+    path: '/',
   },
 });
-
-//For server-side usage only
-export const getServerDB = () => {
-  if (typeof window !== 'undefined') {
-    throw new Error('ServerDB should only be used on the server');
-  }
-  
-  const serviceKey = process.env.SUPABASE_SERVICE_KEY;
-  if (!serviceKey) {
-    throw new Error('SUPABASE_SERVICE_KEY is required for serverDB');
-  }
-
-  return createClient(supabaseUrl, serviceKey, {
-    auth: {
-      persistSession: false,
-    },
-  });
-};

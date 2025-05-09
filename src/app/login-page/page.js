@@ -6,6 +6,7 @@ import { clientDB } from "@/services/supabaseClient";
 /**
  * page.js
  * Loaf Life – login page where users can enter credentials.
+ * 
  *
  * Modified with assistance from ChatGPT o4-mini-high.
  * Further assistance in sign up logic
@@ -30,10 +31,12 @@ export default function LoginPage() {
         const { error } = await clientDB.auth.signInWithPassword({ email, password });
         if (error) throw error;
 
+        await clientDB.auth.getSession();
+
         window.location.href = '/main-feed-page';
-        setMessage({ 
-          text: 'Logged in successfully!', 
-          type: 'success' 
+        setMessage({
+          text: 'Logged in successfully!',
+          type: 'success'
         });
       }
       else {
@@ -45,17 +48,17 @@ export default function LoginPage() {
             emailRedirectTo: window.location.origin,
             skipEmailConfirmation: true,
             data: {
-              username: username, 
+              username: username,
             }
           }
         });
         if (signUpError) throw signUpError;
 
-        const { error: signInError } = await clientDB.auth.signInWithPassword({ 
-          email, 
-          password 
+        const { error: signInError } = await clientDB.auth.signInWithPassword({
+          email,
+          password
         });
-        
+
         if (signInError) throw signInError;
 
         const {
@@ -63,7 +66,7 @@ export default function LoginPage() {
           error: userError,
         } = await clientDB.auth.getUser();
         if (userError) throw userError;
-        
+
         const { error: profileInsertError } = await clientDB
           .from('user_profiles')
           .insert([{ id: user.id, name: username }]);
@@ -80,22 +83,10 @@ export default function LoginPage() {
 
   return (
     <>
-
       <main className="min-h-screen flex items-center justify-center bg-[#F5E3C6]">
         <form
           onSubmit={handleSubmit}
-          className="
-                    bg-white
-                    rounded
-                    p-7
-                    border-3
-                    border-[#8B4C24]
-                    shadow-md
-                    w-full
-                    max-w-sm
-                    text-[#8B4C24]
-                "
-        >
+          className="bg-white rounded p-7 border-3 border-[#8B4C24] shadow-md w-full max-w-sm text-[#8B4C24]">
           <h1 className="text-2xl font-bold mb-4 text-center">
             {isLogin ? 'Log In' : 'Sign Up'}
           </h1>
