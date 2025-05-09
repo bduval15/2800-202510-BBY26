@@ -1,64 +1,173 @@
-import React from 'react'
-import Footer from "@/components/Footer"
-import StickyNavbar from "@/components/StickyNavbar"
+'use client';
+import React, { useState } from 'react';
+import Footer from "@/components/Footer";
+import { clientDB } from '../../../supabaseClient';
 
 /**
  * page.js
  * Loaf Life – login page where users can enter credentials.
+ * 
  *
  * Modified with assistance from ChatGPT o4-mini-high.
+ * Further assistance in sign up logic
  * @author https://chatgpt.com/*
  */
 
 export default function LoginPage() {
-    return (
-        <>
-    <StickyNavbar/>
-        
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLogin, setIsLogin] = useState(true); //Toggle between login/signup
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState({ text: '', type: '' });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      if (isLogin) {
+        // Login flow
+        const { error } = await clientDB.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+
+        await clientDB.auth.getSession();
+
+        window.location.href = '/main-feed-page';
+        setMessage({
+          text: 'Logged in successfully!',
+          type: 'success'
+        });
+      }
+      else {
+        // Signup flow
+        const { error: signUpError } = await clientDB.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: window.location.origin,
+            skipEmailConfirmation: true,
+            data: {
+              username: username,
+            }
+          }
+        });
+        if (signUpError) throw signUpError;
+
+        const { error: signInError } = await clientDB.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (signInError) throw signInError;
+
+        const {
+          data: { user },
+          error: userError,
+        } = await clientDB.auth.getUser();
+        if (userError) throw userError;
+
+        const { error: profileInsertError } = await clientDB
+          .from('user_profiles')
+          .insert([{ id: user.id, name: username }]);
+        if (profileInsertError) throw profileInsertError;
+
+        window.location.href = '/main-feed-page';
+      }
+    } catch (error) {
+      setMessage({ text: error.message, type: 'error' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
       <main className="min-h-screen flex items-center justify-center bg-[#F5E3C6]">
         <form
-          className="
-            bg-white
-            rounded
-            p-7
-            border-3
-            border-[#8B4C24]
-            shadow-md
-            w-full
-            max-w-sm
-            text-[#8B4C24]
-          "
-        >
-          <h1 className="text-2xl font-bold mb-4 text-center">Log In / Sign Up</h1>
+          onSubmit={handleSubmit}
+          className="bg-white rounded p-7 border-3 border-[#8B4C24] shadow-md w-full max-w-sm text-[#8B4C24]">
+          <h1 className="text-2xl font-bold mb-4 text-center">
+            {isLogin ? 'Log In' : 'Sign Up'}
+          </h1>
+
+          {message.text && (
+            <div className={`mb-4 p-2 rounded text-center text-sm ${message.type === 'error'
+              ? 'bg-red-100 text-red-700'
+              : 'bg-green-100 text-green-700'
+              }`}>
+              {message.text}
+            </div>
+          )}
+
+          {!isLogin && (
+            <label className="block mb-2">
+              <span className="text-sm font-medium">Username</span>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="mt-1 block w-full rounded border-1 border-[#F5E3C6] px-3 py-2 text-[#8B4C24] focus:border-[#639751] focus:outline-none focus:ring-0 transition"
+                placeholder="John Bread"
+                required
+              />
+            </label>
+          )}
+
           <label className="block mb-2">
             <span className="text-sm font-medium">Email</span>
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="mt-1 block w-full rounded border-1 border-[#F5E3C6] px-3 py-2 text-[#8B4C24] focus:border-[#639751] focus:outline-none focus:ring-0 transition"
               placeholder="you@example.com"
+              required
             />
           </label>
+
           <label className="block mb-4">
             <span className="text-sm font-medium">Password</span>
             <input
               type="password"
-              className="mt-1 block w-full rounded border-1 border-[#F5E3C6]  px-3 py-2 text-[#8B4C24] focus:border-[#639751] focus:outline-none focus:ring-0 transition"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 block w-full rounded border-1 border-[#F5E3C6] px-3 py-2 text-[#8B4C24] focus:border-[#639751] focus:outline-none focus:ring-0 transition"
               placeholder="••••••••"
+              required
+              minLength="6"
             />
           </label>
+
           <button
             type="submit"
-            className="w-full bg-[#639751] text-white font-semibold py-2 rounded hover:bg-[#6bb053] transition"
+            disabled={loading}
+            className="w-full bg-[#639751] text-white font-semibold py-2 rounded hover:bg-[#6bb053] transition disabled:opacity-50"
           >
-            Sign In
+            {loading ? (
+              <span>Processing...</span>
+            ) : (
+              <span>{isLogin ? 'Sign In' : 'Create Account'}</span>
+            )}
           </button>
+
+          <div className="mt-4 text-center text-sm">
+            <button
+              type="button"
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-[#8B4C24] hover:text-[#639751] underline"
+            >
+              {isLogin
+                ? "Don't have an account? Sign up"
+                : "Already have an account? Log in"}
+            </button>
+          </div>
         </form>
       </main>
+
       <div className="mt-auto">
         <Footer />
       </div>
-      </>
-      
-    );
-  }
-  
+    </>
+  );
+}
