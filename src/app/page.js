@@ -6,6 +6,7 @@
  * Portions of styling and layout were assisted by ChatGPT for educational purposes (e.g., Tailwind class structuring, semantic HTML structure).
  *
  * Modified with assistance from ChatGPT o4-mini-high.
+ * 
  * @author https://chatgpt.com/*
  */
 import Image from "next/image";
