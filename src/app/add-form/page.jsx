@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AddPostForm from '@/components/forms/AddPostForm';
 import Footer from '@/components/Footer';
@@ -14,9 +13,9 @@ import { clientDB } from '@/services/supabaseClient';
  * 
  * This page allows users to add a new hack or deal to the database.
  * 
- * @author: Nathan O
+ * Modified with assistance from Google Gemini 2.5 Flash
  * 
- * Written with assistance from Google Gemini 2.5 Flash
+ * @author: Nathan O
  * @author https://gemini.google.com/app
  */
 
@@ -59,7 +58,6 @@ export default function AddFormPage() {
         location: formData.location,
         price: formData.price,
         user_id: userId
-        // created_at will be set by Supabase by default
       };
     } else {
       console.error('Unknown post type:', formData.postType);
