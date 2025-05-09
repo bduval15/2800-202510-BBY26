@@ -74,9 +74,9 @@ export default function DealDetailPage() {
           {/* Deal Specific Info */}
           {deal.location && (
             <div className="mb-4">
-              <div className="flex justify-between items-center mb-1">
-                <h2 className="text-lg font-semibold text-[#6A4C3C]">Location</h2>
-                <Link href="/map" passHref>
+              <div className="flex items-center mb-1">
+                <h2 className="text-lg font-semibold text-[#6A4C3C] mr-2">Location</h2>
+                <Link href="/map" passHref legacyBehavior>
                   <a className="text-sm text-[#B87333] hover:text-[#8B4C24] flex items-center">
                     <MapPinIcon className="h-4 w-4 mr-1" /> View on Map
                   </a>
