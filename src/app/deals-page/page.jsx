@@ -34,7 +34,8 @@ export default function DealsPage() {
       price: 10.99, // float4
       distance: 2.5, // float4
       user_id: "a1b2c3d4-e5f6-7890-1234-567890abcdef", // uuid
-      tags: ['Food']
+      tags: ['Food'],
+      expirationDate: "December 31, 2024"
     },
     {
       id: "e0c9b2a1-6d8c-4b8a-9a2d-0c8f7a8b1c2d",
@@ -44,7 +45,8 @@ export default function DealsPage() {
       price: 8.00,
       distance: 5.1,
       user_id: "b2c3d4e5-f6a7-8901-2345-678901bcdef0",
-      tags: ['Entertainment']
+      tags: ['Entertainment'],
+      expirationDate: "January 15, 2025"
     },
     {
       id: "f3b4a5c6-1e2d-3f4a-5b6c-7d8e9f0a1b2c",
@@ -54,7 +56,8 @@ export default function DealsPage() {
       price: null, // Assuming price can be null if it's a discount
       distance: 0.5,
       user_id: "c3d4e5f6-a7b8-9012-3456-789012cdef01",
-      tags: ['Shopping', 'Services']
+      tags: ['Shopping', 'Services'],
+      expirationDate: "Valid until end of semester"
     },
     {
       id: "a4b5c6d7-2f3e-4a5b-6c7d-8e9f0a1b2c3d",
@@ -64,7 +67,8 @@ export default function DealsPage() {
       price: 199.00,
       distance: 75.0,
       user_id: "d4e5f6a7-b8c9-0123-4567-890123def012",
-      tags: ['Travel', 'Accommodation']
+      tags: ['Travel', 'Accommodation'],
+      expirationDate: "Book by November 30th"
     },
     {
       id: "b5c6d7e8-3a4b-5c6d-7e8f-9a0b1c2d3e4f",
@@ -74,7 +78,8 @@ export default function DealsPage() {
       price: 5.00, 
       distance: 1.2,
       user_id: "e5f6a7b8-c9d0-1234-5678-901234ef0123",
-      tags: ['Food']
+      tags: ['Food'],
+      expirationDate: "October 31, 2024"
     }
   ]);
 
@@ -102,8 +107,7 @@ export default function DealsPage() {
               price={deal.price}
               distance={deal.distance}
               tags={deal.tags}
-              // We might want to add user info or created_at later
-              // For now, keeping it simple like HackCard              
+              expirationDate={deal.expirationDate}
             />
           ))
         ) : (
