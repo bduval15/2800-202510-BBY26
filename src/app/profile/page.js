@@ -36,6 +36,7 @@ export default function ProfilePage() {
   const [editName, setEditName] = useState(name);
   const [editSchool, setEditSchool] = useState(school);
   const [editBio, setEditBio] = useState(bio);
+  const [errors, setErrors] = useState({});
 
   // === INTERESTS STATE ===
   const [interests, setInterests] = useState([]);
@@ -70,8 +71,6 @@ export default function ProfilePage() {
     { emoji: "🎭", label: "Comedy" },
     { emoji: "🎮", label: "Esports" },
   ];
-
-
 
   // === FETCH PROFILE FROM SUPABASE ON MOUNT ===
   useEffect(() => {
@@ -133,6 +132,15 @@ export default function ProfilePage() {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Check if fields are not empty and within character limits
+  const isFormValid =
+    editName.trim() &&
+    editSchool.trim() &&
+    editBio.trim() &&
+    editName.length <= 50 &&
+    editSchool.length <= 100 &&
+    editBio.length <= 200;
+
   return (
     <>
       <StickyNavBar />
@@ -160,6 +168,11 @@ export default function ProfilePage() {
                 setEditSchool(school);
                 setEditBio(bio);
                 setShowEditModal(true);
+                setErrors({
+                  name: !name.trim() ? "Name is required" : "",
+                  school: !school.trim() ? "School is required" : "",
+                  bio: !bio.trim() ? "Bio is required" : ""
+                });
               }}
               className="flex items-center gap-1 px-3 py-1 border border-[#8B4C24] text-[#8B4C24] text-sm rounded-md hover:bg-[#F5E3C6] transition"
             >
@@ -189,7 +202,7 @@ export default function ProfilePage() {
                           }
                         }}
                         className={`flex items-center justify-center px-4 py-1.5 text-sm rounded-full border transition duration-200 ease-in-out shadow-sm whitespace-nowrap
-        ${isSelected
+                          ${isSelected
                             ? "bg-[#D0F0C0] text-[#23472D] border-[#7DC383]"
                             : "bg-white text-[#4B3E2A] border-gray-300 hover:bg-[#f4f4f4]"}`}
                       >
@@ -199,8 +212,6 @@ export default function ProfilePage() {
                   })}
 
                 </div>
-
-
 
                 {/* Buttons */}
                 <div className="flex justify-between mt-4">
@@ -266,7 +277,6 @@ export default function ProfilePage() {
                 <span>{interest.label}</span>
               </span>
             ))}
-
           </div>
 
           {/* Edit button */}
@@ -320,31 +330,62 @@ export default function ProfilePage() {
                 <label className="block text-sm text-[#8B4C24] mb-1">Name</label>
                 <input
                   value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className="w-full border border-gray-300 p-2 rounded"
+                  onChange={(e) => {
+                    setEditName(e.target.value);
+                    setErrors((prev) => ({
+                      ...prev,
+                      name: e.target.value.trim() ? "" : "Name is required"
+                    }));
+                  }}
+                  className={`w-full border p-2 rounded ${editName.length > 50 ? "border-red-500" : "border-gray-300"}`}
                   maxLength={50}
                 />
+                <div className="flex justify-between mt-1 text-xs">
+                  <span className="text-gray-500">{editName.length}/50 characters</span>
+                  {errors.name && <span className="text-red-500">{errors.name}</span>}
+                </div>
               </div>
 
               <div className="mb-4">
                 <label className="block text-sm text-[#8B4C24] mb-1">School</label>
                 <input
                   value={editSchool}
-                  onChange={(e) => setEditSchool(e.target.value)}
-                  className="w-full border border-gray-300 p-2 rounded"
+                  onChange={(e) => {
+                    setEditSchool(e.target.value);
+                    setErrors((prev) => ({
+                      ...prev,
+                      school: e.target.value.trim() ? "" : "School is required"
+                    }));
+                  }}
+                  className={`w-full border p-2 rounded ${editSchool.length > 100 ? "border-red-500" : "border-gray-300"}`}
                   maxLength={100}
                 />
+                <div className="flex justify-between mt-1 text-xs">
+                  <span className="text-gray-500">{editSchool.length}/100 characters</span>
+                  {errors.school && <span className="text-red-500">{errors.school}</span>}
+                </div>
               </div>
 
               <div className="mb-4">
                 <label className="block text-sm text-[#8B4C24] mb-1">Bio</label>
                 <textarea
                   value={editBio}
-                  onChange={(e) => setEditBio(e.target.value)}
-                  className="w-full border border-gray-300 p-2 rounded"
+                  onChange={(e) => {
+                    setEditBio(e.target.value);
+                    setErrors((prev) => ({
+                      ...prev,
+                      bio: e.target.value.trim() ? "" : "Bio is required"
+                    }));
+                  }}
+                  className={`w-full border p-2 rounded ${editBio.length > 200 ? "border-red-500" : "border-gray-300"}`}
                   rows={3}
                   maxLength={200}
+                  placeholder="Tell us something about yourself..."
                 />
+                <div className="flex justify-between mt-1 text-xs">
+                  <span className="text-gray-500">{editBio.length}/200 characters</span>
+                  {errors.bio && <span className="text-red-500">{errors.bio}</span>}
+                </div>
               </div>
 
               <div className="flex justify-between mt-6">
@@ -355,6 +396,7 @@ export default function ProfilePage() {
                   Cancel
                 </button>
                 <button
+                  disabled={!isFormValid}
                   onClick={async () => {
                     const {
                       data: { session },
@@ -370,9 +412,9 @@ export default function ProfilePage() {
                       .from("user_profiles")
                       .upsert({
                         id: session.user.id,
-                        name: editName,
-                        school: editSchool,
-                        bio: editBio,
+                        name: editName.trim(),
+                        school: editSchool.trim(),
+                        bio: editBio.trim(),
                         avatar_url: selectedAvatar,
                         interests: editInterests.map((i) => i.label),
                       });
@@ -386,7 +428,10 @@ export default function ProfilePage() {
                       setShowEditModal(false);
                     }
                   }}
-                  className="bg-[#639751] text-white font-medium px-4 py-1.5 rounded hover:bg-[#6bb053] transition"
+                  className={`font-medium px-4 py-1.5 rounded transition
+                   ${!isFormValid
+                      ? "bg-gray-400 text-white cursor-not-allowed"
+                      : "bg-[#639751] text-white hover:bg-[#6bb053]"}`}
                 >
                   Save
                 </button>
