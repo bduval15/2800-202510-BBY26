@@ -32,7 +32,7 @@ const threads = [
         createdAt: '2025-05-04T10:15:00Z',
         isMine: true,
         imageUrl: '/images/threads/dealsThread.png',
-        link: '/hacks-page'
+        link: '/deals-page'
     },
     {
         id: 2,
