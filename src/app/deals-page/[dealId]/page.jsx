@@ -7,10 +7,8 @@ import Footer from '@/components/Footer';
 import BottomNav from '@/components/BottomNav';
 import StickyNavbar from '@/components/StickyNavbar';
 import BookmarkButton from '@/components/buttons/Bookmark';
-import VoteButtons from '@/components/buttons/VoteButtons';
 import Tag from '@/components/Tag';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import CommentSection from '@/components/sections/CommentSection';
 
 /**
  * DealDetailPage.jsx
@@ -30,19 +28,15 @@ const placeholderDeal = {
   title: "Half-Price Pizza Wednesdays",
   location: "Pizza Place Downtown",
   price: 10.99,
-  distance: 2.5,
-  descriptionTitle: "Amazing Mid-Week Treat!",
-  description: "Enjoy delicious pizzas at half the price every Wednesday. A perfect way to break up the week without breaking the bank. Valid at participating locations. Show your student ID for an extra 5% off!",
   author: "DealHunter23",
   timestamp: "1 day ago",
-  upvotes: 120,
-  downvotes: 8,
-  tags: ['Food', 'Discount', 'Student Deal']
+  tags: ['Food', 'Discount', 'Student Deal'],
+  expirationDate: "December 31, 2024"
 };
 
 export default function DealDetailPage() {
   const params = useParams();
-  const dealId = params.dealId; 
+  const dealId = params.dealId;
 
   // Initialize state with placeholder deal data
   const [deal, setDeal] = useState(placeholderDeal);
@@ -85,34 +79,22 @@ export default function DealDetailPage() {
               <p className="text-[#8B4C24]">${typeof deal.price === 'number' ? deal.price.toFixed(2) : deal.price}</p>
             </div>
           )}
-          {deal.distance !== null && deal.distance !== undefined && (
+          {deal.expirationDate && (
             <div className="mb-4">
-              <h2 className="text-lg font-semibold mb-1 text-[#6A4C3C]">Distance</h2>
-              <p className="text-[#8B4C24]">{deal.distance} km</p>
+              <h2 className="text-lg font-semibold mb-1 text-[#6A4C3C]">Expires On</h2>
+              <p className="text-[#8B4C24]">{deal.expirationDate}</p>
             </div>
           )}
 
-          {/* Description Section */}
-          {deal.description && (
-            <div className="mb-6">
-              {deal.descriptionTitle && <h2 className="text-xl font-semibold mb-2 text-[#8B4C24]">{deal.descriptionTitle}</h2>}
-              <p className="text-[#8B4C24] whitespace-pre-line">{deal.description}</p>
-            </div>
-          )}
-          
           {/* Author/Timestamp */}
           <p className="text-sm text-[#8B4C24]/80 mb-8">Posted by {deal.author} - {deal.timestamp}</p>
 
           {/* Interactive Buttons Row */}
-          <div className="flex justify-between items-center mb-6">
-            <div className="mr-2">
-              <VoteButtons upvotes={deal.upvotes} downvotes={deal.downvotes} />
-            </div>
+          <div className="flex justify-end items-center mb-6">
             <BookmarkButton />
           </div>
         </div>
 
-        <CommentSection /> {/* Comments section like in hacks detail page */}
         <Footer />
       </div>
       <BottomNav />
