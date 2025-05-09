@@ -56,8 +56,8 @@ export default function DealDetailPage() {
 
           {/* Combined Deal Title and Bookmark Button */}
           <div className="flex justify-between items-start mb-6">
-            <h1 className="text-3xl font-bold text-[#8B4C24] mr-4">{deal.title}</h1> {/* Added mr-4 for spacing */}
-            <div className="shrink-0"> {/* shrink-0 to prevent button from shrinking */}
+            <h1 className="text-3xl font-bold text-[#8B4C24] mr-4">{deal.title}</h1> 
+            <div className="shrink-0"> 
               <BookmarkButton />
             </div>
           </div>
@@ -99,12 +99,7 @@ export default function DealDetailPage() {
           )}
 
           {/* Author/Timestamp */}
-          <p className="text-sm text-[#8B4C24]/80 mb-8">Posted by {deal.author} - {deal.timestamp}</p>
-
-          {/* Interactive Buttons Row (now empty or can be removed if nothing else goes here) */}
-          {/* <div className="flex justify-end items-center mb-6"> */}
-            {/* BookmarkButton was here */}
-          {/* </div> */}
+          <p className="text-sm text-[#8B4C24]/80 mb-8">Posted by {deal.author} - {deal.timestamp}</p>        
         </div>
 
         <Footer />
