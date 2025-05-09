@@ -523,8 +523,16 @@ export default function ProfilePage() {
 
   useEffect(() => {
     const loadProfile = async (session) => {
-      const { data, error } = await clientDB.from("user_profiles").select("*").eq("id", session.user.id).single();
-      if (error) return console.error("Error fetching profile:", error);
+      const { data, error } = await clientDB
+        .from("user_profiles")
+        .select("*")
+        .eq("id", session.user.id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching profile:", error);
+        return;
+      }
 
       if (data) {
         setName(data.name || "");
