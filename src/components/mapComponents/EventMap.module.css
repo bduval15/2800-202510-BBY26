@@ -38,6 +38,7 @@
 /* —— Popup “card” styling —— */
 .container :global(.leaflet-popup-content-wrapper) {
   background: #FFF9F0;
+  border: 1px solid #D1905A;
   border-radius: 0.75rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 1rem;
@@ -51,6 +52,7 @@
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
 }
 
+/* —— Locate button styling —— */
 .container :global(.locate-btn) {
   background: #F5E3C6;        
   color:       white;
