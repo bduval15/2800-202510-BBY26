@@ -17,6 +17,13 @@ import BookmarkButton from '../buttons/Bookmark';
  * @author Nate O
  */
 const DealCard = ({ id, title, location, price, distance, tags }) => {
+  const handleBookmarkClick = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    // Future: Add actual bookmarking logic here
+    console.log("Bookmark clicked, navigation prevented.");
+  };
+
   return (
     <Link href={`/deals-page/${id}`} passHref>
       <BaseCard className="flex-col items-start bg-[#F5E3C6] border border-[#D1905A] mb-4">
@@ -49,7 +56,7 @@ const DealCard = ({ id, title, location, price, distance, tags }) => {
             ) : (
               <div />
             )}
-            <div className="shrink-0">
+            <div className="shrink-0" onClick={handleBookmarkClick}>
               <BookmarkButton />
             </div>
           </div>
