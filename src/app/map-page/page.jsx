@@ -35,13 +35,11 @@ export default function MapPage() {
       <StickyNavbar />
       <div className="flex flex-col min-h-screen bg-[#F5E3C6] pt-16">
         <div className="flex-1 overflow-auto pb-20">
-          <div className="p-4 bg-white border-b-3 border-[#D1905A]">
             <FilterBar
               threads={threads}
               initialFilters={{}}
               onApplyFilters={handleApply}
             />
-          </div>
           <div className="p-4">
             <div className="h-[65vh]
             w-full 
