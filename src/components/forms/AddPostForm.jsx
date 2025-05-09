@@ -62,7 +62,7 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 bg-white shadow-md rounded-lg space-y-6 mb-6">
+    <form onSubmit={handleSubmit} className="p-4 bg-[#FDFAF5] shadow-md rounded-lg space-y-6 mb-6">
       <h2 className="text-xl font-semibold text-[#8B4C24]">
         {postType === 'hack' ? 'Add a New Hack' : 'Add a New Deal'}
       </h2>

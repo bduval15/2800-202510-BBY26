@@ -46,7 +46,8 @@ export default function DealDetailPage() {
       <StickyNavbar />
       <div className="max-w-md mx-auto px-4 py-6 space-y-6 pt-20"> 
         
-        <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30"> {/* Main content card */}
+        {/* Main content card */}
+        <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30"> 
           {/* Back Button */}
           <Link href="/deals-page" className="mb-4 inline-block">
             <button className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] px-3 py-1.5 rounded-lg shadow-md flex items-center">
