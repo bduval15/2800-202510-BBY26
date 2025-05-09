@@ -16,7 +16,7 @@ import BookmarkButton from '../buttons/Bookmark';
  * @author https://gemini.google.com/app
  * @author Nate O
  */
-const DealCard = ({ id, title, location, price, distance, tags, expirationDate }) => {
+const DealCard = ({ id, title, location, price, tags, expirationDate }) => {
   const handleBookmarkClick = (e) => {
     e.stopPropagation();
     e.preventDefault();
@@ -37,13 +37,8 @@ const DealCard = ({ id, title, location, price, distance, tags, expirationDate }
             </p>
           )}
           {price !== null && price !== undefined && (
-            <p className="text-sm text-gray-700 mb-1">
+            <p className={`text-sm text-gray-700 ${expirationDate ? 'mb-1' : 'mb-2'}`}>
               <span className="font-medium text-[#6A4C3C]">Price:</span> ${typeof price === 'number' ? price.toFixed(2) : price}
-            </p>
-          )}
-          {distance !== null && distance !== undefined && (
-            <p className="text-sm text-gray-700 mb-1">
-              <span className="font-medium text-[#6A4C3C]">Distance:</span> {distance} km
             </p>
           )}
           {expirationDate && (
