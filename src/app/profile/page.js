@@ -464,7 +464,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { clientDB } from '@/services/supabaseClient';
+import { clientDB } from '../supabaseClient';
 import StickyNavBar from "@/components/StickyNavbar";
 import Footer from "@/components/Footer";
 import BottomNav from "@/components/BottomNav";
