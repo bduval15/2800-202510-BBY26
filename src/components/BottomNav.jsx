@@ -22,7 +22,7 @@ export default function BottomNav() {
   const items = [
     { href: '/main-feed-page', icon: <HomeIcon className="h-8 w-8" /> },
     { href: '/add-form', icon: <PlusCircleIcon className="h-8 w-8" /> },
-    { href: '/map', icon: <MapIcon className="h-8 w-8" /> },
+    { href: '/map-page', icon: <MapIcon className="h-8 w-8" /> },
     { href: '/profile', icon: <UserIcon className="h-8 w-8" /> },
   ]
 
