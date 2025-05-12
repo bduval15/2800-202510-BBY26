@@ -474,6 +474,7 @@ import InterestsSection from "@/components/InterestsSection";
 import SavedHacksSection from "@/components/SavedHacksSection";
 import AvatarModal from "@/components/AvatarModal";
 import EditProfileModal from "@/components/EditProfileModal";
+import SkeletonLoaf from "@/components/SkeletonLoaf";
 
 export default function ProfilePage() {
   const [showModal, setShowModal] = useState(false);
@@ -481,6 +482,7 @@ export default function ProfilePage() {
   const [showEditInterests, setShowEditInterests] = useState(false);
 
   const [selectedAvatar, setSelectedAvatar] = useState("/images/avatars/avatar1.png");
+  const [isLoading, setIsLoading] = useState(true);
   const [name, setName] = useState("");
   const [school, setSchool] = useState("");
   const [bio, setBio] = useState("");
@@ -523,23 +525,42 @@ export default function ProfilePage() {
 
   useEffect(() => {
     const loadProfile = async (session) => {
-      const { data, error } = await clientDB.from("user_profiles").select("*").eq("id", session.user.id).single();
-      if (error) return console.error("Error fetching profile:", error);
+      setIsLoading(true);
+
+      const { data, error } = await clientDB
+        .from("user_profiles")
+        .select("*")
+        .eq("id", session.user.id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching profile:", error);
+        setIsLoading(false);
+        return;
+      }
 
       if (data) {
         setName(data.name || "");
         setSchool(data.school || "");
         setBio(data.bio || "");
         setSelectedAvatar(data.avatar_url || "/images/avatars/avatar1.png");
-        const interestObjs = (data.interests || []).map(label => PREDEFINED_INTERESTS.find(i => i.label === label)).filter(Boolean);
+        const interestObjs = (data.interests || [])
+          .map(label => PREDEFINED_INTERESTS.find(i => i.label === label))
+          .filter(Boolean);
         setInterests(interestObjs);
         setEditInterests(interestObjs);
       }
+
+      setIsLoading(false);
     };
 
     const initSession = async () => {
       const { data: { session } } = await clientDB.auth.getSession();
-      if (session) loadProfile(session);
+      if (session) {
+        loadProfile(session);
+      } else {
+        setIsLoading(false);
+      }
     };
 
     initSession();
@@ -585,47 +606,72 @@ export default function ProfilePage() {
     setShowEditInterests(false);
   };
 
+  const handleSaveAvatar = async (avatarUrl) => {
+    setSelectedAvatar(avatarUrl);
+
+    const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
+    if (sessionError || !session?.user) {
+      console.error("No session, cannot save avatar.");
+      return;
+    }
+
+    const { error: updateError } = await clientDB
+      .from("user_profiles")
+      .update({ avatar_url: avatarUrl })
+      .eq("id", session.user.id);
+
+    if (updateError) {
+      console.error("Error saving avatar:", updateError.message);
+    }
+  };
+
   return (
     <>
       <StickyNavBar />
       <main className="min-h-screen bg-[#F5E3C6] text-[#8B4C24] px-6 py-10 font-sans">
-        <ProfileCard
-          selectedAvatar={selectedAvatar}
-          name={name}
-          school={school}
-          onEditClick={() => {
-            setEditName(name);
-            setEditSchool(school);
-            setEditBio(bio);
-            setShowEditModal(true);
-            setErrors({
-              name: !name.trim() ? "Name is required" : "",
-              school: !school.trim() ? "School is required" : "",
-              bio: !bio.trim() ? "Bio is required" : ""
-            });
-          }}
-          onAvatarClick={() => setShowModal(true)} 
-        />
+        {isLoading ? (
+          <SkeletonLoaf />
+        ) : (
+          <>
+            <ProfileCard
+              selectedAvatar={selectedAvatar}
+              name={name}
+              school={school}
+              onEditClick={() => {
+                setEditName(name);
+                setEditSchool(school);
+                setEditBio(bio);
+                setShowEditModal(true);
+                setErrors({
+                  name: !name.trim() ? "Name is required" : "",
+                  school: !school.trim() ? "School is required" : "",
+                  bio: !bio.trim() ? "Bio is required" : ""
+                });
+              }}
+              onAvatarClick={() => setShowModal(true)}
+            />
 
-        <BioSection bio={bio} />
+            <BioSection bio={bio} />
 
-        <InterestsSection
-          interests={interests}
-          editInterests={editInterests}
-          setEditInterests={setEditInterests}
-          showEditInterests={showEditInterests}
-          setShowEditInterests={setShowEditInterests}
-          onSaveInterests={handleSaveInterests}
-          predefinedInterests={PREDEFINED_INTERESTS}
-          maxSelection={MAX_SELECTION}
-        />
+            <InterestsSection
+              interests={interests}
+              editInterests={editInterests}
+              setEditInterests={setEditInterests}
+              showEditInterests={showEditInterests}
+              setShowEditInterests={setShowEditInterests}
+              onSaveInterests={handleSaveInterests}
+              predefinedInterests={PREDEFINED_INTERESTS}
+              maxSelection={MAX_SELECTION}
+            />
 
-        <SavedHacksSection hacks={["Cheap Eats List", "Student Discounts", "Free Events"]} />
+            <SavedHacksSection hacks={["Cheap Eats List", "Student Discounts", "Free Events"]} />
+          </>
+        )}
 
         {showModal && (
           <AvatarModal
             selectedAvatar={selectedAvatar}
-            onSelect={setSelectedAvatar}
+            onSave={handleSaveAvatar}
             onClose={() => setShowModal(false)}
           />
         )}
