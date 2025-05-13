@@ -39,6 +39,31 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
     }
     setShowTagError(false);
 
+    if (postType === 'deal' && (location.lat == null || location.lng == null)) {
+      try {
+        const params = new URLSearchParams({
+          q: location.address,
+          format: 'json',
+          limit: '1',
+          viewbox: '-123.5,49.5,-122.4,49.0',
+          bounded: '1'
+        });
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?${params}`,
+          { headers: { 'Accept-Language': 'en' } }
+        );
+        const data = await res.json();
+        if (data[0]) {
+          const lat = parseFloat(data[0].lat);
+          const lng = parseFloat(data[0].lon);
+          setLocation(loc => ({ ...loc, lat, lng }));
+          setCoords([lat, lng]);
+        }
+      } catch (err) {
+        console.error('fallback geocode failed', err);
+      }
+    }
+
     let formData = { title, postType };
     if (postType === 'hack') {
       formData = { ...formData, description, tags: selectedTags };
@@ -82,8 +107,8 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
             type="button"
             onClick={() => setPostType('hack')}
             className={`py-2 px-6 rounded-full text-sm font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${postType === 'hack'
-                ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
-                : 'bg-white text-[#8B4C24] hover:bg-gray-100 border border-[#D1905A]'
+              ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
+              : 'bg-white text-[#8B4C24] hover:bg-gray-100 border border-[#D1905A]'
               }`}
           >
             Hack
@@ -92,8 +117,8 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
             type="button"
             onClick={() => setPostType('deal')}
             className={`py-2 px-6 rounded-full text-sm font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${postType === 'deal'
-                ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
-                : 'bg-white text-[#8B4C24] hover:bg-gray-100 border border-[#D1905A]'
+              ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
+              : 'bg-white text-[#8B4C24] hover:bg-gray-100 border border-[#D1905A]'
               }`}
           >
             Deal
@@ -144,8 +169,8 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
                   key={tag}
                   onClick={() => handleTagChange(tag)}
                   className={`py-2 px-4 rounded-full text-xs font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${selectedTags.includes(tag)
-                      ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
-                      : 'bg-white text-[#8B4C24] hover:bg-gray-100 ring-1 ring-inset ring-[#D1905A]'
+                    ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
+                    : 'bg-white text-[#8B4C24] hover:bg-gray-100 ring-1 ring-inset ring-[#D1905A]'
                     }`}
                 >
                   {tag}
@@ -166,7 +191,7 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
             <LocationAutoComplete
               placeholder="e.g., Canada Place"
               onSelect={({ address, lat, lng }) => {
-                setLocation(address);
+                setLocation({ address, lat, lng });
                 setCoords([lat, lng]);
               }}
             />
