@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
@@ -7,9 +7,9 @@ import Footer from '@/components/Footer';
 import BottomNav from '@/components/BottomNav';
 import StickyNavbar from '@/components/StickyNavbar';
 import BookmarkButton from '@/components/buttons/Bookmark';
-// import Tag from '@/components/Tag'; // Tag component might not be needed if tags are removed
+
 import { ArrowLeftIcon, MapPinIcon } from '@heroicons/react/24/outline';
-import { clientDB } from '@/supabaseClient.js'; // Import Supabase client
+import { clientDB } from '@/supabaseClient.js';
 
 /**
  * DealDetailPage.jsx
@@ -69,7 +69,7 @@ export default function DealDetailPage() {
         setError(null);
         const { data, error: fetchError } = await supabase
           .from('deals')
-          .select('*, user_profiles(name)') // Fetch user_profile name
+          .select('*, user_profiles(name)') 
           .eq('id', dealId)
           .single();
 
@@ -132,14 +132,14 @@ export default function DealDetailPage() {
     );
   }
 
-  if (!deal) {    
+  if (!deal) {
     return (
         <div className="bg-[#F5E3C6] min-h-screen flex items-center justify-center">
             <StickyNavbar />
             <p className="text-[#8B4C24]">Deal information is not available.</p>
             <BottomNav />
         </div>
-    ); 
+    );
   }
 
   return (
