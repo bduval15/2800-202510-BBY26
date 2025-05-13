@@ -18,7 +18,7 @@
 'use client';
 
 import React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -57,17 +57,17 @@ function ResizeMap() {
 }
 
 function ClosePopupsOnClick() {
-  const map = useMapEvents({
-    click() {
-      map.closePopup();
-    },
-    keydown(e) {
-      if (e.originalEvent.key === 'Escape') {
-        map.closePopup();
-      }
-    }
-  });
-  return null;
+    const map = useMapEvents({
+        click() {
+            map.closePopup();
+        },
+        keydown(e) {
+            if (e.originalEvent.key === 'Escape') {
+                map.closePopup();
+            }
+        }
+    });
+    return null;
 }
 
 export default function EventMap({
@@ -83,35 +83,30 @@ export default function EventMap({
     ];
 
     useEffect(() => {
-    async function fetchAvatar() {
-      const {
-        data: { session }
-      } = await clientDB.auth.getSession();
+        async function fetchAvatar() {
+            const { data: { session } } = await clientDB.auth.getSession();
+            if (!session?.user?.id) return;
+            const { data, error } = await clientDB
+                .from('user_profiles')
+                .select('avatar_url')
+                .eq('id', session.user.id)
+                .single();
 
-      if (!session?.user?.id) return;
-      const userId = session.user.id;
-      const { data, error } = await clientDB
-        .from('profiles')
-        .select('avatar_url')
-        .eq('id', userId)
-        .single();
 
-      if (error) {
-        console.error('Error loading avatar:', error);
-      } else if (data?.avatar_url) {
-        setAvatarUrl(data.avatar_url);
-      }
-    }
+            if (error) console.error(error);
+            else if (data?.avatar_url) setAvatarUrl(data.avatar_url);
+        }
+        fetchAvatar();
+    }, []);
 
-    fetchAvatar();
-  }, []);
-
-    const logoIcon = L.icon({
-        iconUrl: avatarUrl,
-        iconSize: [40, 40],
-        iconAnchor: [20, 40],
-        popupAnchor: [0, -40]
-    });
+    const logoIcon = useMemo(() => {
+        return L.icon({
+            iconUrl: avatarUrl,
+            iconSize: [64, 64],
+            iconAnchor: [20, 40],
+            popupAnchor: [12, -35]
+        });
+    }, [avatarUrl]);
 
     return (
         <div className={`${styles.container} h-full w-full`}>
