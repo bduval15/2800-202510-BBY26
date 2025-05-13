@@ -6,7 +6,6 @@
 
 /* —— Map container styling —— */
 .container :global(.leaflet-container) {
-  border-radius: 1rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   background: rgba(245, 227, 198, 0.2);
@@ -72,4 +71,21 @@
 
 .container :global(.leaflet-top .leaflet-bar) {
   margin: 1rem;      
+}
+
+.mapWrapper {
+  position: relative;
+  z-index: 0;      
+  height: 65vh;      
+  width: 100%;
+  border: 3px solid #D1905A;
+  border-radius: 0.5rem;
+  overflow: hidden;  
+  background: #F5E3C6; 
+}
+
+.mapWrapper :global(.leaflet-container) {
+  height: 100%;
+  width: 100%;
+  z-index: 0; 
 }

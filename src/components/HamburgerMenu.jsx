@@ -45,7 +45,7 @@ export default function HamburgerDropdown() {
             </button>
 
             {open && (
-                <div className="absolute right-0 mt-2 w-24 bg-white border border-[#D1905A] rounded-lg shadow-lg overflow-hidden z-50 
+                <div className="absolute right-0 mt-2 w-24 bg-white border border-[#D1905A] rounded-lg shadow-lg overflow-hidden z-200 
                         transition ease-out duration-150">
                     <ul className="flex flex-col">
                         <li>

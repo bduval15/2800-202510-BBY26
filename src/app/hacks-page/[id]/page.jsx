@@ -245,7 +245,7 @@ export default function HackDetailPage({ params }) {
               <div className="mr-2">
                 <VoteButtons hackId={hack.id} upvotes={hack.upvotes || 0} downvotes={hack.downvotes || 0} />
               </div>
-              <BookmarkButton />
+              <BookmarkButton itemId={hack.id} itemType="hack" />
             </div>
           </div>
         </div>
