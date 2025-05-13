@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+'use client'
+
+import React, { useState } from 'react';
 import { BookmarkIcon as BookmarkOutlineIcon } from '@heroicons/react/24/outline';
 import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid';
 import { clientDB } from '@/supabaseClient'; 
@@ -34,7 +36,7 @@ const BookmarkButton = ({ itemId, itemType }) => {
         if (session && session.user) {
           setUserId(session.user.id);
         } else {
-          setUserId(null); // No active session
+          setUserId(null);
         }
       } catch (err) {
         console.error('Error fetching user session:', err);
