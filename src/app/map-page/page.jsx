@@ -6,7 +6,6 @@ import StickyNavbar from '@/components/StickyNavbar';
 import Footer from '@/components/Footer';
 import BottomNav from '@/components/BottomNav';
 import FilterBar from '@/components/mapComponents/FilterBar';
-import EventList from '@/components/mapComponents/EventList';
 import styles from '@/components/mapComponents/EventMap.module.css';
 
 const EventMap = dynamic(
@@ -62,9 +61,6 @@ export default function MapPage() {
                 events={dummyEvents}
                 className="h-full w-full"
               />
-            </div>
-            <div className="mt-4">
-              <EventList events={dummyEvents} />
             </div>
           </div>
           <Footer />

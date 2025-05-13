@@ -23,17 +23,18 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import greenMarker2x from 'leaflet-color-markers/img/marker-icon-2x-green.png';
-import greenMarker   from 'leaflet-color-markers/img/marker-icon-green.png';
-import markerShadow  from 'leaflet-color-markers/img/marker-shadow.png';
+import greenMarker from 'leaflet-color-markers/img/marker-icon-green.png';
+import markerShadow from 'leaflet-color-markers/img/marker-shadow.png';
 import LocateControl from '@/components/mapComponents/LocateControl';
 import styles from '@/components/mapComponents/EventMap.module.css';
+import EventPopup from '@/components/mapComponents/EventPopup';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: greenMarker2x,
-  iconUrl:     greenMarker,
-  shadowUrl:   markerShadow
+    iconRetinaUrl: greenMarker2x,
+    iconUrl: greenMarker,
+    shadowUrl: markerShadow
 });
 
 function FitBounds({ bounds }) {
@@ -95,10 +96,7 @@ export default function EventMap({
 
                 {events.map(evt => (
                     <Marker key={evt.id} position={[evt.lat, evt.lng]}>
-                        <Popup>
-                            <strong>{evt.title}</strong><br />
-                            {evt.description}
-                        </Popup>
+                        <EventPopup evt={evt} />
                     </Marker>
                 ))}
 

@@ -34,16 +34,27 @@
   color: #c17f4f;
 }
 
-/* —— Popup “card” styling —— */
-.container :global(.leaflet-popup-content-wrapper) {
-  background: #FFF9F0;
-  border: 1px solid #D1905A;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
+:global(.custom-popup .leaflet-popup-content-wrapper) {
+  background: #FFF9F0 !important;
+  border: 2px solid #D1905A !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  padding: 0.15rem !important;
 }
-.container :global(.leaflet-popup-tip) {
-  background: #FFF9F0;
+
+:global(.custom-popup .leaflet-popup-tip) {
+  background-color: #D1905A !important;
+}
+
+:global(.custom-popup .leaflet-popup-close-button) {
+  display: block !important;
+  top: 0.5rem !important;
+  right: 0.5rem !important;
+  font-size: 0.75rem;
+  color: #8B4C24;
+  text-shadow: none;
+  background: transparent;
+  border: none;
 }
 
 /* —— Marker drop-shadow —— */
