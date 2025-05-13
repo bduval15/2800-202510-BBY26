@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
 import BookmarkButton from '@/components/buttons/Bookmark';
@@ -28,7 +28,8 @@ import { clientDB } from '@/supabaseClient';
  */
 
 export default function HackDetailPage({ params }) {
-  const hackId = params.id; 
+  const resolvedParams = use(params);
+  const hackId = resolvedParams.id;
   const [hack, setHack] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
