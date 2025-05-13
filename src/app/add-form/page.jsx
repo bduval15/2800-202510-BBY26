@@ -5,9 +5,9 @@ import AddPostForm from '@/components/forms/AddPostForm';
 import Footer from '@/components/Footer';
 import BottomNav from '@/components/BottomNav';
 import StickyNavbar from '@/components/StickyNavbar';
-import { clientDB } from '../../../supabaseClient';
 
 import { clientDB } from '@/supabaseClient';
+
 /**
  * AddFormPage.jsx
  * Loaf Life - Add Form Page
