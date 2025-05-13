@@ -41,7 +41,7 @@ const HackCard = ({ id, href, title, upvotes, downvotes, comments = 0, tags = []
       {/* Interactions */}
       <div className="flex items-center space-x-2 text-xs w-full justify-start mt-2">
         {/* Upvotes / Downvotes Group */}
-        <VoteButtons upvotes={upvotes} downvotes={downvotes} />
+        <VoteButtons hackId={id} upvotes={upvotes} downvotes={downvotes} />
 
         {/* Comments Group - uses default 0 if comments not provided */}
         <CommentDisplay count={comments} />
