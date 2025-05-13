@@ -27,6 +27,7 @@ export const AVATAR_OPTIONS = [
     "/images/avatars/avatar6.png",
     "/images/avatars/avatar7.png",
     "/images/avatars/avatar8.png",
+    "/images/avatars/avatar9.png",
 ];
 
 // Functional component takes 2 parts:
@@ -36,7 +37,7 @@ export default function AvatarSelector({ onSelect, selectedAvatar }) {
     const [hovered, setHovered] = useState(null);
 
     return (
-        <div className="grid grid-cols-4 gap-4 p-4">
+        <div className="grid grid-cols-3 gap-4 p-4">
             {AVATAR_OPTIONS.map((avatar, index) => (
                 <div
                     key={index}
@@ -65,5 +66,4 @@ export default function AvatarSelector({ onSelect, selectedAvatar }) {
             ))}
         </div>
     );
-
 }
