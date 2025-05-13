@@ -5,8 +5,6 @@ import AddPostForm from '@/components/forms/AddPostForm';
 import Footer from '@/components/Footer';
 import BottomNav from '@/components/BottomNav';
 import StickyNavbar from '@/components/StickyNavbar';
-import { clientDB } from '../../../supabaseClient';
-
 import { clientDB } from '@/supabaseClient';
 /**
  * AddFormPage.jsx
@@ -22,7 +20,32 @@ import { clientDB } from '@/supabaseClient';
 
 export default function AddFormPage() {
   const router = useRouter();
-  const hackTags = ['Campus Life', 'Health & Wellness', 'Study Tips', 'Food', 'Career', 'Finance', 'Technology', 'Social'];
+  const hackTags = [
+    "Gaming",
+    "Cooking",
+    "Coding",
+    "Photography",
+    "Reading",
+    "Movies",
+    "Art",
+    "Music",
+    "Investing",
+    "Yoga",
+    "Hacks",
+    "Cycling",
+    "Football",
+    "Fitness",
+    "Public Speaking",
+    "Study Groups",
+    "Sustainability",
+    "Entrepreneurship",
+    "Hiking",
+    "Mental Health",
+    "Animal Care",
+    "Board Games",
+    "Comedy",
+    "Esports",
+  ];
 
   const handleSubmitHack = async (formData) => {
     const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
