@@ -22,7 +22,7 @@ import { clientDB } from '@/supabaseClient';
 
 export default function AddFormPage() {
   const router = useRouter();
-  const hackTags = ['Campus Life', 'Health & Wellness', 'Study Tips', 'Food', 'Career', 'Finance', 'Technology', 'Social'];
+  const hackTags = ['Campus Life', 'Health & Wellness', 'Study Tips', 'Food', 'Career', 'Finance', 'Technology', 'Social', 'Gaming', 'Photography', 'Cooking','Music', 'Art','Movies'];
 
   const handleSubmitHack = async (formData) => {
     const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
