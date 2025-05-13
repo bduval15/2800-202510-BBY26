@@ -36,6 +36,32 @@ export default function DealDetailPage() {
   const [error, setError] = useState(null);
   const [displayLocation, setDisplayLocation] = useState('');
 
+  // Helper function to format time ago
+  const formatTimeAgo = (timestamp) => {
+    if (!timestamp) return 'N/A';
+    const now = new Date();
+    const past = new Date(timestamp);
+    const diffInSeconds = Math.floor((now - past) / 1000);
+
+    if (diffInSeconds < 60) {
+      return `${diffInSeconds} second${diffInSeconds === 1 ? '' : 's'} ago`;
+    }
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) {
+      return `${diffInMinutes} minute${diffInMinutes === 1 ? '' : 's'} ago`;
+    }
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) {
+      return `${diffInHours} hour${diffInHours === 1 ? '' : 's'} ago`;
+    }
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) {
+      return `${diffInDays} day${diffInDays === 1 ? '' : 's'} ago`;
+    }
+    const diffInWeeks = Math.floor(diffInDays / 7);
+    return `${diffInWeeks} week${diffInWeeks === 1 ? '' : 's'} ago`;
+  };
+
   useEffect(() => {
     if (dealId && supabase) {
       const fetchDealDetails = async () => {
@@ -43,17 +69,20 @@ export default function DealDetailPage() {
         setError(null);
         const { data, error: fetchError } = await supabase
           .from('deals')
-          .select('*')
+          .select('*, user_profiles(name)') // Fetch user_profile name
           .eq('id', dealId)
-          .single(); 
+          .single();
 
         if (fetchError) {
           console.error('Error fetching deal details:', fetchError);
-          setError('Failed to load deal. Please try again.');
+          if (fetchError.code === 'PGRST116') { // Not found error code
+            setError('Deal not found.');
+          } else {
+            setError('Failed to load deal. Please try again.');
+          }
           setDeal(null);
         } else if (data) {
           setDeal(data);
-          // Parse location
           let loc = data.location;
           if (data.location && typeof data.location === 'string') {
             try {
@@ -63,7 +92,6 @@ export default function DealDetailPage() {
               }
             } catch (e) {
               console.warn("Failed to parse location JSON for deal detail:", data.location, e);
-              // loc remains data.location
             }
           } else if (data.location && typeof data.location === 'object' && data.location.address) {
             loc = data.location.address;
@@ -114,13 +142,6 @@ export default function DealDetailPage() {
     ); 
   }
 
-  // Format timestamp (created_at)
-  const formattedTimestamp = deal.created_at 
-    ? new Date(deal.created_at).toLocaleDateString('en-US', { 
-        year: 'numeric', month: 'long', day: 'numeric' 
-      })
-    : 'Not available';
-
   return (
     <div className="bg-[#F5E3C6] min-h-screen pb-6"> 
       <StickyNavbar />
@@ -161,7 +182,7 @@ export default function DealDetailPage() {
           )}
 
           <p className="text-sm text-[#8B4C24]/80 mb-8">
-            Posted by User {deal.user_id} - {formattedTimestamp}
+            Posted by {deal.user_profiles && deal.user_profiles.name ? deal.user_profiles.name : (deal.user_id ? `User ${deal.user_id.substring(0,8)}...` : 'Unknown')} - {formatTimeAgo(deal.created_at)}
           </p>        
         </div>
 
