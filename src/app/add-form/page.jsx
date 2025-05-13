@@ -74,8 +74,16 @@ export default function AddFormPage() {
       return;
     }
 
-    // For now, always redirect to hacks-page. This can be changed later.
-    router.push('/hacks-page');
+    // Redirect based on post type
+    if (formData.postType === 'hack') {
+      router.push('/hacks-page');
+    } else if (formData.postType === 'deal') {
+      router.push('/deals-page'); // Assuming this is the correct route for deals
+    } else {
+      // Fallback redirection if postType is somehow unknown at this point
+      console.warn('Unknown post type for redirection:', formData.postType);
+      router.push('/'); // Or a more appropriate default page
+    }
   };
 
   const handleCancel = () => {
