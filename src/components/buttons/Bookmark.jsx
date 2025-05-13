@@ -18,9 +18,9 @@ import { clientDB } from '@/supabaseClient';
 
 const BookmarkButton = ({ itemId, itemType }) => {
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState(null);
-  const [error, setError] = useState(null); 
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -34,7 +34,7 @@ const BookmarkButton = ({ itemId, itemType }) => {
         if (session && session.user) {
           setUserId(session.user.id);
         } else {
-          setUserId(null); // No active session
+          setUserId(null); 
         }
       } catch (err) {
         console.error('Error fetching user session:', err);
@@ -49,8 +49,6 @@ const BookmarkButton = ({ itemId, itemType }) => {
 
   useEffect(() => {
     if (!userId || !itemId || !itemType) {
-      // Don't fetch if essential info is missing, or user not logged in
-      // You might want to set isBookmarked to false or handle this differently
       setIsBookmarked(false);
       return;
     }
@@ -70,11 +68,10 @@ const BookmarkButton = ({ itemId, itemType }) => {
         if (fetchError) {
           throw fetchError;
         }
-        setIsBookmarked(!!data); // If data exists, it's bookmarked
+        setIsBookmarked(!!data); 
       } catch (err) {
         console.error('Error checking bookmark status:', err);
         setError('Could not check bookmark status.');
-        // Potentially set isBookmarked to a default or handle error state
       } finally {
         setIsLoading(false);
       }
@@ -86,7 +83,6 @@ const BookmarkButton = ({ itemId, itemType }) => {
   const handleBookmarkClick = async () => {
     if (!userId) {
       setError("You must be logged in to bookmark items.");
-      // Optionally, redirect to login or show a modal
       return;
     }
     if (!itemId || !itemType) {
@@ -151,7 +147,7 @@ const BookmarkButton = ({ itemId, itemType }) => {
   return (
     <button
       onClick={handleBookmarkClick}
-      disabled={isLoading || !itemId || !itemType} // Disable if loading or missing essential props
+      disabled={isLoading || !itemId || !itemType}
       aria-label={isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
       className="p-1 rounded-lg bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] shadow-md ml-auto disabled:opacity-50 disabled:cursor-not-allowed"
     >
