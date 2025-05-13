@@ -257,13 +257,13 @@ export default function EditHackPage({ params }) {
             {submitError && <p className="text-sm text-red-600 mt-2">{submitError}</p>}
 
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-4">
-                          <button
-                              type="submit"
-                              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#A0522D] hover:bg-[#8B4C24] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#A0522D] transition duration-150 ease-in-out disabled:opacity-50"
-                              disabled={isLoading}
-                          >
-                              {isLoading ? 'Saving...' : 'Save Changes'}
-                          </button>
+            <button
+                    type="submit"
+                              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#77A06B] hover:bg-[#668d5b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#A0522D] transition duration-150 ease-in-out disabled:opacity-50"
+                    disabled={isLoading}
+                >
+                    {isLoading ? 'Saving...' : 'Save Changes'}
+                </button>
               <button
                 type="button"
                 onClick={() => router.back()} 
