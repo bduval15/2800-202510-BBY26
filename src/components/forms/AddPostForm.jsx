@@ -66,7 +66,7 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
 
     let formData = { title, postType };
     if (postType === 'hack') {
-      formData = { ...formData, description, tags: selectedTags };
+      formData = { ...formData, description,location, tags: selectedTags };
     } else {
       formData = { ...formData, location, coords, price: parseFloat(price) || 0 };
     }
@@ -157,7 +157,15 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
               placeholder="Share the details of your hack..."
             />
           </div>
-
+          <div>
+            <LocationAutoComplete
+              placeholder="(Optional)"
+              onSelect={({ address, lat, lng }) => {
+                setLocation({ address, lat, lng });
+                setCoords([lat, lng]);
+              }}
+            />
+          </div>
           <div>
             <label className="block text-sm font-medium text-[#6A401F] mb-2">
               Tags

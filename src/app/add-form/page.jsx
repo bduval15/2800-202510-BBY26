@@ -49,7 +49,8 @@ export default function AddFormPage() {
         user_id: userId,
         tags: formData.tags,
         upvotes: 0,
-        downvotes: 0
+        downvotes: 0,
+        location: formData.location
       };
     } else if (formData.postType === 'deal') {
       tableName = 'deals';
