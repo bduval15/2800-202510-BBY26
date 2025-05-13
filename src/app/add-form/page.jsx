@@ -7,6 +7,7 @@ import BottomNav from '@/components/BottomNav';
 import StickyNavbar from '@/components/StickyNavbar';
 
 import { clientDB } from '@/supabaseClient';
+
 /**
  * AddFormPage.jsx
  * Loaf Life - Add Form Page
