@@ -47,7 +47,7 @@ export default function HackDetailPage({ params }) {
       try {
         const { data: hackData, error: fetchError } = await clientDB
           .from('hacks')
-          .select('id, title, description, created_at, user_id, tags, upvotes, downvotes')
+          .select('id, title, description, created_at, user_id, tags, upvotes, downvotes, user_profiles(name)')
           .eq('id', hackId)
           .single(); 
 
@@ -86,8 +86,31 @@ export default function HackDetailPage({ params }) {
     return <div className="max-w-md mx-auto px-4 py-6 space-y-6 text-center">Hack not found.</div>;
   }
 
-  // Format date for display (optional, you can use a library like date-fns)
-  const formattedTimestamp = hack.created_at ? new Date(hack.created_at).toLocaleDateString() : 'N/A';
+  // Helper function to format time ago
+  const formatTimeAgo = (timestamp) => {
+    if (!timestamp) return 'N/A';
+    const now = new Date();
+    const past = new Date(timestamp);
+    const diffInSeconds = Math.floor((now - past) / 1000);
+
+    if (diffInSeconds < 60) {
+      return `${diffInSeconds} seconds ago`;
+    }
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) {
+      return `${diffInMinutes} minutes ago`;
+    }
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) {
+      return `${diffInHours} hours ago`;
+    }
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) {
+      return `${diffInDays} days ago`;
+    }
+    const diffInWeeks = Math.floor(diffInDays / 7);
+    return `${diffInWeeks} weeks ago`;
+  };
 
   return (
     <div className="pb-6">
@@ -119,7 +142,9 @@ export default function HackDetailPage({ params }) {
           </div>         
 
           {/* Author/Timestamp */}
-          <p className="text-sm text-[#8B4C24]/80 mb-8">By {hack.user_id} - {formattedTimestamp}</p>
+          <p className="text-sm text-[#8B4C24]/80 mb-8">
+             By {hack.user_profiles && hack.user_profiles.name ? hack.user_profiles.name : 'Unknown'} - {formatTimeAgo(hack.created_at)}
+          </p>
 
           {/* Interactive Buttons Row */}
           <div className="flex justify-between items-center mb-6">
