@@ -14,7 +14,8 @@ import { useState } from "react"
 import SortDropdown from "./SortDropdown"
 import StickyNavbar from './StickyNavbar'
 
-export default function FeedLayout({ children, title = 'Student Hacks' }) {
+
+export default function FeedLayout({ children, title = 'Student Hacks', tagOptions = [], selectedTag = "All Tags", onTagChange = () => {} }) {
   const [bestSort, setBestSort] = useState("Best")
   const [dateSort, setDateSort] = useState("Newest")
 
@@ -38,12 +39,22 @@ export default function FeedLayout({ children, title = 'Student Hacks' }) {
             options={dateOptions}
             onChange={setDateSort}
           />
+          {tagOptions.length > 0 && (
+            <>
+              <span className="h-4 border-l border-[#D1905A]" />
+              <SortDropdown
+                label={selectedTag}
+                options={["All Tags", ...tagOptions]}
+                onChange={onTagChange}
+              />
+            </>
+          )}
         </div>
       </div>
 
       <main className="max-w-md mx-auto px-4 py-6 space-y-6">
         <h1 className="text-2xl font-bold text-[#8B4C24]">{title}</h1>
-        {/* pass bestSort and dateSort down to your feed-rendering logic */}
+        {/* pass bestSort, dateSort, and selectedTag down to your feed-rendering logic */}
         {children}
       </main>
     </>
