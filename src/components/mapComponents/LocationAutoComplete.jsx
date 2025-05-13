@@ -1,4 +1,4 @@
-/**
+ /**
  * LocationAutoComplete.jsx
  * Loaf Life – Gives the user suggestions for 
  * addresses based on input. 
@@ -14,131 +14,144 @@
  * @author Brady Duval
  * @author https://chatgpt.com/
  */
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 
+// simple debounce hook
+function useDebounce(value, delay = 100) {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  return debounced;
+}
+
 export default function LocationAutocomplete({
   placeholder = 'Enter a location…',
-  onSelect    // (place: { address, lat, lng }) => void  
+  onSelect    // (place: { address, lat, lng }) => void
 }) {
-  const [query, setQuery]     = useState('');
-  const [results, setResults] = useState([]);
-  const [open, setOpen]       = useState(false);
-  const wrapperRef            = useRef(null);
+  const [query, setQuery]       = useState('');
+  const debouncedQuery          = useDebounce(query, 300);
+  const [results, setResults]   = useState([]);
+  const [open, setOpen]         = useState(false);
+  const wrapperRef              = useRef(null);
+  const cacheRef                = useRef({});
 
-  // Fetch suggestions as user types
+  // close dropdown on outside click
   useEffect(() => {
-    if (query.length < 3) {
-      setResults([]);
-      return;
-    }
-
-    const controller = new AbortController();
-    const viewbox    = '-123.5,49.5,-122.4,49.0';
-
-    fetch(
-      `https://nominatim.openstreetmap.org/search?` +
-      new URLSearchParams({
-        format:         'json',
-        addressdetails: '1',
-        limit:          '3',
-        q:              query,
-        viewbox,
-        bounded:        '1'
-      }),
-      { signal: controller.signal }
-    )
-      .then(r => r.json())
-      .then(data => {
-        setResults(data);
-        setOpen(true);
-      })
-      .catch(() => { /* ignore */ });
-
-    return () => controller.abort();
-  }, [query]);
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    function onClick(e) {
+    function handleClickOutside(e) {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
         setOpen(false);
       }
     }
-    document.addEventListener('mousedown', onClick);
-    return () => document.removeEventListener('mousedown', onClick);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Build a nice “street number + road” label, fallback to first two parts of display_name
+  // fetch suggestions (debounced) and cache
+  useEffect(() => {
+    setResults([]);
+    setOpen(false);
+    if (debouncedQuery.length < 5) return;
+
+    // return cached results if available
+    if (cacheRef.current[debouncedQuery]) {
+      setResults(cacheRef.current[debouncedQuery]);
+      setOpen(!!cacheRef.current[debouncedQuery].length);
+      return;
+    }
+
+    const ctrl = new AbortController();
+    const params = new URLSearchParams({
+      q:             debouncedQuery,
+      format:        'json',
+      addressdetails:'1',
+      limit:         '5',
+      viewbox:       '-123.5,49.5,-122.4,49.0',
+      bounded:       '1'
+    });
+
+    fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
+      signal: ctrl.signal,
+      headers: { 'Accept-Language': 'en' }
+    })
+      .then(r => r.json())
+      .then(data => {
+        cacheRef.current[debouncedQuery] = data;
+        setResults(data);
+        if (data.length) setOpen(true);
+      })
+      .catch(err => {
+        if (err.name !== 'AbortError') console.error(err);
+      });
+
+    return () => ctrl.abort();
+  }, [debouncedQuery]);
+
+  // helper: build label (business + street + city + postal)
   function formatLabel(place) {
-    const adr = place.address || {};
-    let label = '';
+    const addr = place.address || {};
+    const parts = place.display_name.split(',').map(s => s.trim());
+    const first = parts[0] || '';
+    const isAddress = /^\d/.test(first);
 
-    if (adr.house_number && adr.road) {
-      label = `${adr.house_number} ${adr.road}`;
-    } else if (adr.road) {
-      label = adr.road;
+    const city = addr.city || addr.town || addr.village || '';
+    const pc   = addr.postcode || '';
+
+    if (isAddress) {
+      return [first, city, pc].filter(Boolean).join(', ');
     } else {
-      label = place.display_name
-        .split(',')
-        .map(s => s.trim())
-        .slice(0, 2)
-        .join(', ');
+      const street = addr.house_number && addr.road
+        ? `${addr.house_number} ${addr.road}`
+        : addr.road || parts[1] || '';
+      return [first, street, city, pc].filter(Boolean).join(', ');
     }
-
-    // optionally append city/town for context
-    const city = adr.city || adr.town || adr.village || adr.county;
-    if (city) {
-      label += `, ${city}`;
-    }
-    return label;
   }
+
+  // user selected a place
+  const pick = place => {
+    const label = formatLabel(place);
+    setQuery(label);
+    setOpen(false);
+    onSelect({
+      address: label,
+      lat:      parseFloat(place.lat),
+      lng:      parseFloat(place.lon)
+    });
+  };
 
   return (
     <div ref={wrapperRef} className="relative w-full">
-      <label
-        htmlFor="location-autocomplete"
-        className="block text-sm font-medium text-[#6A401F] mb-1"
-      >
+      <label htmlFor="loc-geo" className="block text-sm font-medium text-[#6A401F] mb-1">
         Location
       </label>
       <input
+        id="loc-geo"
         type="text"
-        id="location-autocomplete"
-        value={query}
-        onChange={e => setQuery(e.target.value)}
-        onFocus={() => query.length >= 3 && setOpen(true)}
-        placeholder={placeholder}
         className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm
                    focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24]
                    sm:text-sm bg-white placeholder-gray-400 text-gray-900"
+        placeholder={placeholder}
+        value={query}
+        onChange={e => setQuery(e.target.value)}
+        onFocus={() => debouncedQuery.length >= 5 && results.length > 0 && setOpen(true)}
+        autoComplete="off"
       />
 
-      {open && results.length > 0 && (
-        <ul
-          className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-lg 
-                     shadow-lg max-h-60 overflow-y-auto text-sm text-gray-800"
-        >
-          {results.map(place => {
-            const label = formatLabel(place);
-            return (
-              <li
-                key={place.place_id}
-                className="px-4 py-2 hover:bg-[#FFE2B6] cursor-pointer"
-                onClick={() => {
-                  const lat = parseFloat(place.lat);
-                  const lng = parseFloat(place.lon);
-                  setQuery(label);
-                  setOpen(false);
-                  onSelect({ address: label, lat, lng });
-                }}
-              >
-                {label}
-              </li>
-            );
-          })}
+      {open && (
+        <ul className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-lg
+                       shadow-lg max-h-56 overflow-auto text-sm text-gray-800">
+          {results.map(place => (
+            <li
+              key={place.place_id}
+              className="px-4 py-2 hover:bg-[#FFE2B6] cursor-pointer"
+              onClick={() => pick(place)}
+            >
+              {formatLabel(place)}
+            </li>
+          ))}
         </ul>
       )}
     </div>

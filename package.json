@@ -15,6 +15,7 @@
     "dotenv": "^16.5.0",
     "leaflet": "^1.9.4",
     "leaflet-color-markers": "^0.1.0",
+    "leaflet-control-geocoder": "^3.1.0",
     "leaflet.locatecontrol": "^0.84.2",
     "next": "15.3.1",
     "next-images": "^1.8.5",
