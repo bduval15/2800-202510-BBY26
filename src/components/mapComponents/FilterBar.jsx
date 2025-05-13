@@ -21,7 +21,7 @@ const THREADS = [
 ];
 
 export default function FilterBar() {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [maxPrice, setMaxPrice] = useState(500);
   const [maxDist, setMaxDist] = useState(50);
   const [checked, setChecked] = useState(

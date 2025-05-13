@@ -19,7 +19,7 @@
 
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import greenMarker2x from 'leaflet-color-markers/img/marker-icon-2x-green.png';
@@ -28,6 +28,7 @@ import markerShadow from 'leaflet-color-markers/img/marker-shadow.png';
 import LocateControl from '@/components/mapComponents/LocateControl';
 import styles from '@/components/mapComponents/EventMap.module.css';
 import EventPopup from '@/components/mapComponents/EventPopup';
+import { clientDB } from '@/supabaseClient';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -55,19 +56,58 @@ function ResizeMap() {
     return null;
 }
 
+function ClosePopupsOnClick() {
+  const map = useMapEvents({
+    click() {
+      map.closePopup();
+    },
+    keydown(e) {
+      if (e.originalEvent.key === 'Escape') {
+        map.closePopup();
+      }
+    }
+  });
+  return null;
+}
+
 export default function EventMap({
     events = [],
 }) {
 
     const [userPos, setUserPos] = useState(null);
+    const [avatarUrl, setAvatarUrl] = useState('/images/logo.png');
 
     const vancouverBounds = [
         [49.0, -123.5],
         [49.5, -122.4],
     ];
 
+    useEffect(() => {
+    async function fetchAvatar() {
+      const {
+        data: { session }
+      } = await clientDB.auth.getSession();
+
+      if (!session?.user?.id) return;
+      const userId = session.user.id;
+      const { data, error } = await clientDB
+        .from('profiles')
+        .select('avatar_url')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        console.error('Error loading avatar:', error);
+      } else if (data?.avatar_url) {
+        setAvatarUrl(data.avatar_url);
+      }
+    }
+
+    fetchAvatar();
+  }, []);
+
     const logoIcon = L.icon({
-        iconUrl: '/images/logo.png',
+        iconUrl: avatarUrl,
         iconSize: [40, 40],
         iconAnchor: [20, 40],
         popupAnchor: [0, -40]
@@ -94,6 +134,8 @@ export default function EventMap({
                     subdomains={['a', 'b', 'c', 'd']}
                 />
 
+                <ClosePopupsOnClick />
+
                 {events.map(evt => (
                     <Marker key={evt.id} position={[evt.lat, evt.lng]}>
                         <EventPopup evt={evt} />
@@ -115,7 +157,15 @@ export default function EventMap({
                 />
                 {userPos && (
                     <Marker position={userPos} icon={logoIcon}>
-                        <Popup>You are here!</Popup>
+                        <Popup
+                            className="you-are-here"
+                            closeButton={false}
+                            closeOnClick={false}
+                            minWidth={80}
+                            maxWidth={100}
+                        >
+                            You are here!
+                        </Popup>
                     </Marker>
                 )}
             </MapContainer>

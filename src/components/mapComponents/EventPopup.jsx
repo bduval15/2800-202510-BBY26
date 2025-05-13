@@ -22,6 +22,7 @@ export default function EventPopup({ evt }) {
       closeOnClick={false}
       minWidth={140}
       maxWidth={160}
+      offset={[0, -1]}
     >
       {/* Header */}
       <div className="relative flex items-center mb-1">
