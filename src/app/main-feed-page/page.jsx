@@ -12,7 +12,7 @@
 
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import StickyNavbar from '@/components/StickyNavbar';
@@ -22,6 +22,9 @@ import {
     MagnifyingGlassIcon,
     ClipboardIcon,
 } from '@heroicons/react/24/outline';
+
+import AIbutton from '@/components/buttons/AIbutton';
+import { clientDB } from '@/supabaseClient';
 
 const threads = [
     {
@@ -68,7 +71,34 @@ const threads = [
 
 export default function MainFeed() {
     const [activeFilter, setActiveFilter] = useState(null);
+    const [interests, setInterests] = useState([]);
+    const [loading, setLoading] = useState(true);
     const filterOptions = ['Popular', 'Recent', 'My Threads'];
+
+    useEffect(() => {
+        const fetchInterests = async () => {
+          const { data: { user } } = await clientDB.auth.getUser();
+          if (!user) return;
+      
+          const { data, error } = await clientDB
+            .from('user_profiles')
+            .select('interests')
+            .eq('id', user.id)
+            .single();
+      
+          if (error) {
+            console.error('Failed to fetch interests:', error.message);
+          } else if (data?.interests) {
+            setInterests(Array.isArray(data.interests)
+              ? data.interests
+              : data.interests.split(','));
+          }
+      
+          setLoading(false);
+        };
+      
+        fetchInterests();
+      }, []);
 
     const visibleThreads = useMemo(() => {
         let arr = [...threads];
@@ -189,6 +219,12 @@ export default function MainFeed() {
                         </div>
                     </Link>
                 ))}
+
+                <div className="px-4 py-2 max-w-md mx-auto w-full">
+                    {!loading && interests.length > 0 && (
+                        <AIbutton interests={interests} />
+                    )}
+                </div>
                 <Footer />
             </div>
             <BottomNav />
