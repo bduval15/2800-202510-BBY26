@@ -10,9 +10,11 @@
 
 'use client'
 
+import { clientDB } from '@/supabaseClient';
 import { useState, useRef, useEffect } from "react"
 import { Bars3Icon } from "@heroicons/react/24/outline"
 import Link from "next/link"
+import { redirect } from 'next/dist/server/api-utils';
 
 export default function HamburgerDropdown() {
     const [open, setOpen] = useState(false)
@@ -65,6 +67,7 @@ export default function HamburgerDropdown() {
                         <li>
                             <button
                                 className="w-full text-left block px-4 py-3 text-sm text-[#8B4C24] hover:bg-[#F5E3C6] transition-colors"
+                                onClick={async function logout() {await clientDB.auth.signOut(); window.location.reload();}}
                             >
                                 Logout
                             </button>
