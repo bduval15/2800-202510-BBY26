@@ -119,7 +119,6 @@ export default function EventMap({
                 minZoom={10}
                 maxZoom={16}
             >
-
                 <ResizeMap />
                 <FitBounds bounds={vancouverBounds} />
 
