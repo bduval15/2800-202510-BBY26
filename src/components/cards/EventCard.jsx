@@ -33,6 +33,15 @@ const EventCard = ({
   tags = [],
   className = ''
 }) => {
+  let parsedLocation = {};
+  try {
+    parsedLocation = JSON.parse(location);
+  } catch (error) {
+    console.error("Error parsing location JSON:", error);
+    // Handle the error appropriately, maybe set a default or show an error message
+    parsedLocation = { address: "Error: Invalid location data" };
+  }
+
   return (
     <BaseCard className={`flex-col items-start bg-[#F5E3C6] border border-[#D1905A] ${className}`}>
       {/* Title */}
@@ -46,7 +55,7 @@ const EventCard = ({
 
       {/* Location & Price */}
       <div className="w-full mb-2 text-sm text-[#8B4C24]/80">
-        <span>📍 {location}</span>
+        <span>📍 {parsedLocation.address}</span>
         {price != null && (
           <span className="ml-4">💵 {price.toFixed(2)}</span>
         )}

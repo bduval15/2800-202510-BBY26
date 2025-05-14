@@ -1,249 +1,282 @@
+'use client';
+
+import React, { useState, useEffect, use } from 'react';
+import { useRouter } from 'next/navigation';
+import { clientDB } from '@/supabaseClient';
+import Footer from '@/components/Footer';
+import BottomNav from '@/components/BottomNav';
+import StickyNavbar from '@/components/StickyNavbar';
+
 /**
- * EventDetails.jsx
- * Loaf Life - Event Details Page
- *
- * This page displays the details of a specific event.
- * Fetches data from Supabase based on event ID.
- * It includes the event title, description, hack details, author, timestamp, and location.
- * It also includes a button to save the event.
- *
- * Converted from HackPage with table changes for 'events'
+ * EditEventPage.jsx
+ * Loaf Life - Edit Event Page
+ * 
+ * This page allows users to edit an event.
+ * 
+ * Converted from EditHackPage with table changes for 'events'
  * @author: Nathan O
  * @author: Conner P
  * @author: ChatGPT used to simplify conversion 
  */
 
-'use client';
+const MAX_TAGS = 5;
 
-import React, { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import Footer from '@/components/Footer';
-import Link from 'next/link';
-import BookmarkButton from '@/components/buttons/Bookmark';
-import VoteButtons from '@/components/buttons/VoteButtons';
-import { ArrowLeftIcon, PencilIcon, TrashIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
-import Tag from '@/components/Tag';
-import BottomNav from '@/components/BottomNav';
-import CommentSection from '@/components/sections/CommentSection';
-import StickyNavbar from '@/components/StickyNavbar';
-import { clientDB } from '@/supabaseClient';
-import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
+const availableTags = [
+  "Campus Life",
+  "Health & Wellness",
+  "Study Tips",
+  "Food",
+  "Career",
+  "Finance",
+  "Technology",
+  "Social"
+];
 
-export default function EventDetailPage({ params }) {
-  const eventId = params.id;                 // ↪️ read directly from props
-  const [event, setEvent] = useState(null);
+export default function EditEventPage({ params }) {
+  const resolvedParams = use(params);
+  const eventId = resolvedParams.id;
+  const router = useRouter();
+
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [currentTags, setCurrentTags] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [submitError, setSubmitError] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
-  const [isOptionsMenuOpen, setIsOptionsMenuOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const router = useRouter();
-  const optionsMenuRef = useRef(null);
+  const [eventAuthorId, setEventAuthorId] = useState(null);
 
-  // Fetch current user session
   useEffect(() => {
-    const fetchCurrentUser = async () => {
-      const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
-      if (sessionError) {
-        console.error('Error fetching session:', sessionError);
-        return;
-      }
-      if (session?.user) setCurrentUserId(session.user.id);
-    };
-    fetchCurrentUser();
-  }, []);
-
-  // Fetch event details
-  useEffect(() => {
-    if (!eventId) {
-      setIsLoading(false);
-      setError("Event ID is missing.");
-      return;
-    }
-
-    const fetchEventDetails = async () => {
+    const fetchCurrentUserAndEvent = async () => {
       setIsLoading(true);
       setError(null);
 
+      // 1. get session & user
+      const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
+      if (sessionError) {
+        setError('Error fetching user session.');
+        setIsLoading(false);
+        return;
+      }
+      if (!session?.user) {
+        router.push('/login');
+        return;
+      }
+      setCurrentUserId(session.user.id);
+
+      // 2. ensure we have an ID
+      if (!eventId) {
+        setError("Event ID is missing.");
+        setIsLoading(false);
+        return;
+      }
+
+      // 3. fetch the event row
       try {
         const { data: eventData, error: fetchError } = await clientDB
-          .from('events')   // ← table name stays events
-          .select(
-            'id, title, description, location, created_at, user_id, tags, upvotes, downvotes, user_profiles(name)'
-          )
+          .from('events')             // ← only table name changed
+          .select('title, description, tags, user_id')
           .eq('id', eventId)
           .single();
 
         if (fetchError) {
           if (fetchError.code === 'PGRST116') {
-            setError("Event not found.");
-            setEvent(null);
+            setError("Event not found or you don't have permission to edit it.");
           } else {
             throw fetchError;
           }
-        } else if (!eventData) {
-          setError("Event not found.");
-        } else {
-          setEvent(eventData);
+          setIsLoading(false);
+          return;
         }
+        if (!eventData) {
+          setError("Event not found.");
+          setIsLoading(false);
+          return;
+        }
+        // 4. authorization
+        if (eventData.user_id !== session.user.id) {
+          setError("You are not authorized to edit this event.");
+          setIsLoading(false);
+          return;
+        }
+
+        // 5. populate form
+        setEventAuthorId(eventData.user_id);
+        setTitle(eventData.title || '');
+        setDescription(eventData.description || '');
+        setCurrentTags(eventData.tags || []);
       } catch (err) {
-        setError(err.message);
-        console.error(`Error fetching event ${eventId}:`, err);
+        console.error(err);
+        setError(err.message || "Unexpected error.");
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchEventDetails();
-  }, [eventId]);
+    fetchCurrentUserAndEvent();
+  }, [eventId, router]);
 
-  // Close options menu on outside click
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (optionsMenuRef.current && !optionsMenuRef.current.contains(e.target)) {
-        setIsOptionsMenuOpen(false);
+  const handleSelectTag = (tagValue) => {
+    setSubmitError(null);
+    setCurrentTags(prev => {
+      if (prev.includes(tagValue)) return prev.filter(t => t !== tagValue);
+      if (prev.length >= MAX_TAGS) {
+        setSubmitError(`You can select up to ${MAX_TAGS} tags.`);
+        return prev;
       }
-    };
-    if (isOptionsMenuOpen) document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOptionsMenuOpen]);
-
-  if (isLoading) {
-    return <div className="max-w-md mx-auto px-4 py-6 text-center">Loading event details...</div>;
-  }
-
-  if (error) {
-    return <div className="max-w-md mx-auto px-4 py-6 text-center text-red-500">Error: {error}</div>;
-  }
-
-  if (!event) {
-    return <div className="max-w-md mx-auto px-4 py-6 text-center">Event not found.</div>;
-  }
-
-  const formatTimeAgo = (timestamp) => {
-    if (!timestamp) return 'N/A';
-    const now = new Date();
-    const past = new Date(timestamp);
-    const diff = Math.floor((now - past) / 1000);
-    if (diff < 60) return `${diff} seconds ago`;
-    const mins = Math.floor(diff / 60);
-    if (mins < 60) return `${mins} minutes ago`;
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `${hrs} hours ago`;
-    const days = Math.floor(hrs / 24);
-    if (days < 7) return `${days} days ago`;
-    return `${Math.floor(days / 7)} weeks ago`;
+      return [...prev, tagValue];
+    });
   };
 
-  const handleDelete = () => {
-    setIsOptionsMenuOpen(false);
-    setIsDeleteModalOpen(true);
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitError(null);
+    setIsLoading(true);
 
-  const confirmDeleteEvent = async () => {
-    setIsDeleteModalOpen(false);
+    // same validations
+    if (!title.trim()) {
+      setSubmitError("Title cannot be empty.");
+      setIsLoading(false);
+      return;
+    }
+    if (!description.trim()) {
+      setSubmitError("Description cannot be empty.");
+      setIsLoading(false);
+      return;
+    }
+    if (currentTags.length === 0) {
+      setSubmitError("Please select at least one tag.");
+      setIsLoading(false);
+      return;
+    }
+    if (currentUserId !== eventAuthorId) {
+      setSubmitError("Authorization error.");
+      setIsLoading(false);
+      return;
+    }
+
+    // update
     try {
-      const { error: deleteError } = await clientDB
-        .from('events')
-        .delete()
-        .eq('id', eventId);
+      const { error: updateError } = await clientDB
+        .from('events')            // ← only table name changed
+        .update({
+          title,
+          description,
+          tags: currentTags,
+        })
+        .eq('id', eventId)
+        .eq('user_id', currentUserId);
 
-      if (deleteError) throw deleteError;
+      if (updateError) throw updateError;
 
-      alert('Event deleted successfully!');
-      router.push('/events-page');
+      router.push(`/events-page/${eventId}`);  // ← route adjusted
     } catch (err) {
-      console.error('Error deleting event:', err);
-      alert(`Error deleting event: ${err.message}`);
+      console.error(err);
+      setSubmitError(err.message || "Failed to save.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  // loading / error guards unchanged:
+  if (isLoading && !title) {
+    return <div className="max-w-md mx-auto p-6 text-center">Loading event editor...</div>;
+  }
+  if (error) {
+    return <div className="max-w-md mx-auto p-6 text-red-500 text-center">Error: {error}</div>;
+  }
+  if (eventAuthorId && currentUserId !== eventAuthorId) {
+    return <div className="max-w-md mx-auto p-6 text-red-500 text-center">You cannot edit this event.</div>;
+  }
+
   return (
     <div className="pb-6">
-      <div className="max-w-md mx-auto px-4 py-6 space-y-6">
+      <div className="max-w-md mx-auto p-6 space-y-6">
         <StickyNavbar />
-
         <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30 pt-16">
-          {/* Header */}
-          <div className="flex justify-between items-center mb-4">
-            <Link href="/events-page">
-              <button className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] p-2 rounded-lg">
-                <ArrowLeftIcon className="h-5 w-5" />
-              </button>
-            </Link>
+          <h1 className="text-3xl font-bold mb-6 text-[#8B4C24]">Edit Event</h1>
 
-            {event.user_id === currentUserId && (
-              <div className="relative" ref={optionsMenuRef}>
-                <button
-                  onClick={() => setIsOptionsMenuOpen(!isOptionsMenuOpen)}
-                  className="bg-[#F5EFE6] p-2 rounded-lg border-2 border-[#A0522D] hover:bg-[#EADDCA]"
-                >
-                  <EllipsisVerticalIcon className="h-5 w-5" />
-                </button>
-                {isOptionsMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-10">
-                    <button
-                      onClick={() => {
-                        router.push(`/events-page/${eventId}/edit`);
-                        setIsOptionsMenuOpen(false);
-                      }}
-                      className="w-full flex items-center px-4 py-2 text-sm hover:bg-gray-100"
-                    >
-                      <PencilIcon className="h-5 w-5 mr-2" /> Edit
-                    </button>
-                    <button
-                      onClick={handleDelete}
-                      className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                    >
-                      <TrashIcon className="h-5 w-5 mr-2" /> Delete
-                    </button>
-                  </div>
-                )}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Title */}
+            <div>
+              <label htmlFor="title" className="block text-sm font-medium text-[#6A401F] mb-1">
+                Title
+              </label>
+              <input
+                id="title"
+                name="title"
+                type="text"
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                required
+                className="mt-1 block w-full border-[#D1905A] rounded-lg px-4 py-2.5 focus:ring-[#8B4C24]"
+              />
+            </div>
+
+            {/* Description */}
+            <div>
+              <label htmlFor="description" className="block text-sm font-medium text-[#6A401F] mb-1">
+                Description
+              </label>
+              <textarea
+                id="description"
+                name="description"
+                rows={6}
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+                required
+                className="mt-1 block w-full border-[#D1905A] rounded-lg px-4 py-2.5 focus:ring-[#8B4C24]"
+              />
+            </div>
+
+            {/* Tags */}
+            <div>
+              <label className="block text-sm font-medium text-[#6A401F] mb-1">
+                Tags (up to {MAX_TAGS})
+              </label>
+              <div className="mt-1 flex flex-wrap gap-2 p-2.5 border-[#D1905A] rounded-lg min-h-[40px]">
+                {availableTags.map(tag => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => handleSelectTag(tag)}
+                    className={`px-4 py-2 rounded-full text-xs font-semibold ${currentTags.includes(tag)
+                      ? 'bg-[#8B4C24] text-white'
+                      : 'bg-white ring-1 ring-[#D1905A] text-[#8B4C24]'
+                      }`}
+                  >
+                    {tag}
+                  </button>
+                ))}
               </div>
-            )}
-          </div>
+            </div>
 
-          {/* Title */}
-          <h1 className="text-3xl font-bold mb-2 text-[#8B4C24]">{event.title}</h1>
+            {submitError && <p className="text-sm text-red-600">{submitError}</p>}
 
-          {/* Location */}
-          <p className="text-sm font-medium mb-4 text-[#8B4C24]">
-            Location: {event.location}
-          </p>
-
-          {/* Tags */}
-          <div className="mb-6 flex flex-wrap gap-2">
-            {event.tags?.map((tag, i) => (
-              <Tag key={i} label={tag} />
-            ))}
-          </div>
-
-          {/* Description */}
-          <p className="mb-6 text-[#8B4C24]">{event.description}</p>
-
-          {/* Author & Timestamp */}
-          <p className="text-sm text-[#8B4C24]/80 mb-6">
-            By {event.user_profiles?.name || 'Unknown'} – {formatTimeAgo(event.created_at)}
-          </p>
-
-          {/* Votes & Bookmark */}
-          <div className="flex items-center mb-6">
-            <VoteButtons hackId={event.id} upvotes={event.upvotes} downvotes={event.downvotes} />
-            <BookmarkButton hackId={event.id} />
-          </div>
+            {/* Actions */}
+            <div className="flex space-x-4 pt-4">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="flex-1 py-3 rounded-lg bg-[#77A06B] text-white disabled:opacity-50"
+              >
+                {isLoading ? 'Saving...' : 'Save Changes'}
+              </button>
+              <button
+                type="button"
+                onClick={() => router.back()}
+                disabled={isLoading}
+                className="flex-1 py-3 rounded-lg border border-[#D1905A] text-[#8B4C24]"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
         </div>
 
-        <CommentSection hackId={event.id} />
         <Footer />
       </div>
-
       <BottomNav />
-      <ConfirmDeleteModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={confirmDeleteEvent}
-        itemName="event"
-      />
     </div>
   );
 }
