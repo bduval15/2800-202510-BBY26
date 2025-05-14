@@ -38,63 +38,64 @@ export default function MapPage() {
 
   useEffect(() => {
     (async () => {
-      // 1) load the raw event rows
+      // 1) load raw rows (with table_id on each)
       const raw = await loadAllEvents();
 
-      // 2) gather all unique poster IDs
-      const userIds = [
-        ...new Set(raw.map(e => e.user_id).filter(Boolean))
-      ];
+      // 2) gather all poster IDs
+      const userIds = Array.from(
+        new Set(raw.map(e => e.user_id).filter(Boolean))
+      );
 
-      // 3) batch‐fetch their avatars
-      const { data: profiles, error: profErr } = await clientDB
+      // 3) batch‐fetch their avatar_url
+      const { data: profiles = [], error: profErr } = await clientDB
         .from('user_profiles')
         .select('id, avatar_url')
         .in('id', userIds);
 
-      if (profErr) {
-        console.error('Error loading profiles:', profErr);
-      }
+      if (profErr) console.error('Error loading profiles:', profErr);
 
-      const profileMap = profiles
-        ? Object.fromEntries(profiles.map(p => [p.id, p.avatar_url]))
-        : {};
+      const profileMap = Object.fromEntries(
+        profiles.map(p => [p.id, p.avatar_url])
+      );
 
-      // 4) format each event into the exact shape your popup needs
+      // 4) build the final shape
       const formatted = raw
         .map(e => {
-          // parse your JSON‐string location or fallback to top‐level lat/lng
+          // 4a) coordinates can be top‐level or JSON in e.location
           let lat = e.lat, lng = e.lng;
           if (typeof e.location === 'string') {
             try {
               const loc = JSON.parse(e.location);
               lat = loc.lat;
               lng = loc.lng;
-            } catch {
-              lat = null; lng = null;
-            }
+            } catch {}
           }
 
+          // 4b) format date/time
           const date = e.date
             ? new Date(e.date).toLocaleDateString(undefined, {
-              month: 'short', day: 'numeric', year: 'numeric'
-            })
+                month: 'short', day: 'numeric', year: 'numeric'
+              })
             : '';
-
           const time = e.start_time && e.end_time
             ? `${e.start_time} – ${e.end_time}`
             : '';
 
           return {
-            id: e.id,
-            title: e.title,
-            description: e.description,
+            id:          e.id,
+            title:       e.title,
+            description: e.description || 'No description provided',
             date,
             time,
-            price: e.price != null ? `$${e.price}` : '$0',
+            price:       e.price != null ? `$${e.price}` : '$0',
             lat,
             lng,
-            avatarUrl: profileMap[e.user_id] || '/images/logo.png',
+
+            // key for your popup label
+            table_id:    e.table_id,
+
+            // avatar
+            userAvatar:  profileMap[e.user_id] || '/images/logo.png'
           };
         })
         .filter(e => e.lat != null && e.lng != null);

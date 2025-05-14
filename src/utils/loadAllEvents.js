@@ -9,36 +9,29 @@
  * @author https://chatgpt.com/
  */
 
-import { createClient } from '@supabase/supabase-js';
+// utils/loadAllEvents.js
+import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
+)
 
 export async function loadAllEvents() {
-  const [hRes, dRes, sRes, feRes] = await Promise.all([
-    supabase.from('hacks').select('*'),
-    supabase.from('deals').select('*'),
-    supabase.from('savings').select('*'),
-    supabase.from('events').select('*'),
-  ]);
+  const tables = ['hacks', 'deals', 'events']
 
-  if (hRes.error || dRes.error || sRes.error || feRes.error) {
-    console.error(
-      'Error fetching threads:',
-      hRes.error, dRes.error, sRes.error, feRes.error
-    );
-  }
+  const results = await Promise.all(
+    tables.map(table => supabase.from(table).select('*'))
+  )
 
-  const annotate = (rows, id, name) =>
-    (rows || []).map(r => ({ ...r, threadId: id, threadName: name }));
+  results.forEach((res, i) => {
+    if (res.error) console.error(`Error loading ${tables[i]}:`, res.error)
+  })
 
-  return [
-    ...annotate(hRes.data, 'hacks', 'Hacks'),
-    ...annotate(dRes.data, 'deals', 'Deals'),
-    ...annotate(sRes.data, 'savings', 'Saving Tips'),
-    ...annotate(feRes.data, 'events', 'Free Events'),
-  ];
+  return results.flatMap((res, i) => {
+    return (res.data || []).map(row => ({
+      ...row,
+      table_id: tables[i]
+    }))
+  })
 }
-

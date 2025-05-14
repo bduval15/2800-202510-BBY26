@@ -7,6 +7,7 @@
 * @author Brady Duval
 * 
 */
+
 'use client';
 
 import React from 'react';
@@ -22,6 +23,10 @@ import {
 export default function EventPopup({ evt }) {
   const router = useRouter();
 
+  const labelMap = { hacks: 'Hacks', deals: 'Deals', events: 'Free Events' };
+  const threadLabel = labelMap[evt.table_id] || 'General';
+  const avatarSrc   = evt.userAvatar || '/images/logo.png';
+
   return (
     <Popup
       className="custom-popup"
@@ -34,14 +39,26 @@ export default function EventPopup({ evt }) {
         {/* — Header — */}
         <div className="flex items-center space-x-2 mb-2">
           <img
-            src={evt.userAvatar}
-            alt={evt.username}
-            className="w-8 h-8 rounded-full border-2 border-[#C27A49]"
+            src={avatarSrc}
+            alt={'/images/logo.png'}
+            className="w-8 h-8 rounded-full"
+            onError={e => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = '/images/logo.png';
+            }}
           />
-          <h4 className="flex-1 text-sm font-semibold text-[#8B4C24] truncate">
-            {evt.title}
-          </h4>
+          <span
+            className="bg-[#639751] text-white text-xs font-semibold
+                       px-2 py-0.5 rounded-full whitespace-nowrap"
+          >
+            {threadLabel}
+          </span>
         </div>
+
+        {/* — Title — */}
+        <h4 className="flex-1 text-sm font-semibold text-[#8B4C24] break-words">
+          {evt.title}
+        </h4>
 
         {/* — Description — */}
         <p className="text-xs text-gray-700 mb-2 line-clamp-3">

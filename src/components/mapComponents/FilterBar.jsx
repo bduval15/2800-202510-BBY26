@@ -17,7 +17,6 @@ import React, { useState } from 'react';
 const THREADS = [
   { id: 'hacks', name: 'Hacks' },
   { id: 'deals', name: 'Deals' },
-  { id: 'savings', name: 'Saving Tips' },
   { id: 'free-events', name: 'Free Events' }
 ];
 
