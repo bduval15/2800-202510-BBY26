@@ -34,7 +34,7 @@ const availableTags = [
 
 export default function EditEventPage({ params }) {
   const resolvedParams = use(params);
-  const eventId = resolvedParams.id;
+  const eventId = resolvedParams.eventId;
   const router = useRouter();
 
   const [title, setTitle] = useState('');

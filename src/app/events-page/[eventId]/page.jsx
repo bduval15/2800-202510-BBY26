@@ -15,7 +15,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
@@ -30,7 +30,8 @@ import { clientDB } from '@/supabaseClient';
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
 
 export default function EventDetailPage({ params }) {
-  const eventId = params.eventId;
+  const resolvedParams = use(params);
+  const eventId = resolvedParams.eventId;
   const [event, setEvent] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
