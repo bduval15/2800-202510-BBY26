@@ -609,46 +609,37 @@ export default function ProfilePage() {
   };
 
   const loadSavedHacks = async (session) => {
-    // Get all saved_items for current user
-    const { data: saved, error: savedError } = await clientDB
-      .from("saved_items")
-      .select("hack_id")
-      .eq("user_id", session.user.id);
+    try {
+      const { data: saved } = await clientDB
+        .from("saved_items")
+        .select("hack_id")
+        .eq("user_id", session.user.id);
 
-    if (savedError) {
-      console.error("Error fetching saved items:", savedError);
-      return;
+      const hackIds = saved.map(item => item.hack_id).filter(Boolean);
+
+      if (hackIds.length === 0) {
+        setSavedHacks([]);
+        return;
+      }
+
+      const { data: hacks } = await clientDB
+        .from("hacks")
+        .select("id, title, description, tags, upvotes, downvotes")
+        .in("id", hackIds);
+
+      setSavedHacks(hacks);
+    } catch (err) {
+      console.error("Error loading saved hacks:", err);
     }
-
-    const hackIds = saved.map(item => item.hack_id).filter(Boolean);
-
-    if (hackIds.length === 0) {
-      setSavedHacks([]);
-      return;
-    }
-
-    // Fetch hacks with those IDs
-    const { data: hacks, error: hacksError } = await clientDB
-      .from("hacks")
-      .select("title")
-      .in("id", hackIds);
-
-    if (hacksError) {
-      console.error("Error fetching hacks:", hacksError);
-      return;
-    }
-
-    setSavedHacks(hacks.map(h => h.title));
   };
-  
+
   useEffect(() => {
 
     const initSession = async () => {
       const { data: { session } } = await clientDB.auth.getSession();
       if (session) {
-        loadProfile(session);
-        loadSavedHacks(session); // <-- Load saved hacks
-      } else {
+        await loadProfile(session);
+        await loadSavedHacks(session);
         setIsLoading(false);
       }
     };

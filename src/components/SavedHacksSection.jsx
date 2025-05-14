@@ -14,21 +14,34 @@
  * @author https://chatgpt.com/*
  */
 
+import HackCard from "@/components/cards/HackCard";
+
 export default function SavedHacksSection({ hacks = [] }) {
     return (
         <section className="max-w-md mx-auto bg-white p-4 rounded-lg mt-6 mb-10">
             <h2 className="font-semibold text-left text-lg text-[#8B4C24] mb-2">Saved Hacks</h2>
-            <ul className="space-y-2">
+            <div className="space-y-4">
                 {hacks.length > 0 ? (
-                    hacks.map((hack, index) => (
-                        <li key={index} className="bg-[#FFE2B6] p-3 rounded-md">
-                            {hack}
-                        </li>
-                    ))
+                    hacks
+                        .filter((hack) => hack?.id && hack?.title)
+                        .map((hack) => (
+                            <HackCard
+                                key={hack.id}
+                                id={hack.id}
+                                href={`/hacks-page/${hack.id}`}
+                                title={hack.title}
+                                upvotes={hack.upvotes}
+                                downvotes={hack.downvotes}
+                                tags={hack.tags}
+                                description={hack.description}
+                            />
+                        ))
                 ) : (
-                    <li className="text-sm text-gray-500">No saved hacks yet.</li>
+                    <p className="text-sm text-[#8B4C24] italic">
+                        You haven’t saved any hacks yet. Start exploring and tap the bookmark icon to save your favorites!
+                    </p>
                 )}
-            </ul>
+            </div>
         </section>
     );
 }
