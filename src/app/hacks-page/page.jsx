@@ -30,7 +30,31 @@ export default function HacksPage() {
   const [interests, setInterests] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const hackTags = ['Campus Life', 'Health & Wellness', 'Study Tips', 'Food', 'Career', 'Finance', 'Technology', 'Social', "Photography", "Gaming"];
+  const tags = [
+    'Animal Care',
+    'Art',
+    'Board Games',
+    'Comedy',
+    'Coding',
+    'Cooking',
+    'Cycling',
+    'Esports',
+    'Entrepreneurship',
+    'Fitness',
+    'Football',
+    'Gaming',
+    'Hiking',
+    'Investing',
+    'Mental Health',
+    'Movies',
+    'Music',
+    'Photography',
+    'Public Speaking',
+    'Reading',
+    'Study Groups',
+    'Sustainability',
+    'Yoga'
+  ];
 
   useEffect(() => {
     const fetchInterests = async () => {
@@ -93,7 +117,7 @@ export default function HacksPage() {
   return (
     <div className="bg-[#F5E3C6] pb-6">
       <FeedLayout
-        tagOptions={hackTags}
+        tagOptions={tags}
         selectedTag={selectedTag}
         onTagChange={setSelectedTag}
       >
@@ -128,4 +152,3 @@ export default function HacksPage() {
     </div>
   )
 }
-
