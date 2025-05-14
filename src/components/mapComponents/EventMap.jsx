@@ -70,6 +70,22 @@ function ClosePopupsOnClick() {
     return null;
 }
 
+function ZoomMarker({ evt }) {
+  const map = useMap();
+  return (
+    <Marker
+      position={[evt.lat, evt.lng]}
+      eventHandlers={{
+        click: () => {
+          map.flyTo([evt.lat, evt.lng], 16, { animate: true });
+        }
+      }}
+    >
+      <EventPopup evt={evt} />
+    </Marker>
+  );
+}
+
 export default function EventMap({
     events = [],
 }) {
@@ -131,9 +147,7 @@ export default function EventMap({
                 <ClosePopupsOnClick />
 
                 {events.map(evt => (
-                    <Marker key={evt.id} position={[evt.lat, evt.lng]}>
-                        <EventPopup evt={evt} />
-                    </Marker>
+                    <ZoomMarker key={evt.id} evt={evt} />
                 ))}
 
                 <LocateControl
