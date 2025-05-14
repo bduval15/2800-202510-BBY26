@@ -72,14 +72,27 @@ function ClosePopupsOnClick() {
 
 function ZoomMarker({ evt }) {
   const map = useMap();
+
+  const handleClick = () => {
+    const targetZoom = 16;
+    const currentZoom = map.getZoom();
+
+    const bounds = map.getBounds();
+    const latSpanNow =
+      bounds.getNorthEast().lat - bounds.getSouthWest().lat;
+
+    const zoomFactor = Math.pow(2, targetZoom - currentZoom);
+    const latSpanAtTarget = latSpanNow / zoomFactor;
+
+    const centerLat = evt.lat + latSpanAtTarget / 6;
+
+    map.flyTo([centerLat, evt.lng], targetZoom, { animate: true });
+  };
+
   return (
     <Marker
       position={[evt.lat, evt.lng]}
-      eventHandlers={{
-        click: () => {
-          map.flyTo([evt.lat, evt.lng], 16, { animate: true });
-        }
-      }}
+      eventHandlers={{ click: handleClick }}
     >
       <EventPopup evt={evt} />
     </Marker>

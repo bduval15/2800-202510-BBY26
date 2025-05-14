@@ -10,12 +10,11 @@
 'use client';
 
 import React from 'react';
-import { Popup, Marker, useMap } from 'react-leaflet';
+import { Popup } from 'react-leaflet';
 import { useRouter } from 'next/navigation';
 
 export default function EventPopup({ evt }) {
   const router = useRouter();
-  const map = useMap();
 
   return (
     <Popup
