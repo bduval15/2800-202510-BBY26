@@ -36,7 +36,7 @@ L.Icon.Default.mergeOptions({
     iconRetinaUrl: greenMarker2x,
     iconUrl: greenMarker,
     shadowUrl: markerShadow,
-    popupAnchor:     [1, -40] 
+    popupAnchor: [1, -40]
 });
 
 function FitBounds({ bounds }) {
@@ -72,32 +72,26 @@ function ClosePopupsOnClick() {
 }
 
 function ZoomMarker({ evt }) {
-  const map = useMap();
+    const map = useMap();
 
-  const handleClick = () => {
-    const targetZoom = 16;
-    const currentZoom = map.getZoom();
+    const handleClick = (e) => {
 
-    const bounds = map.getBounds();
-    const latSpanNow =
-      bounds.getNorthEast().lat - bounds.getSouthWest().lat;
+        e.target.closePopup();
 
-    const zoomFactor = Math.pow(2, targetZoom - currentZoom);
-    const latSpanAtTarget = latSpanNow / zoomFactor;
+        map.flyTo([evt.lat, evt.lng], 16, { animate: true });
 
-    const centerLat = evt.lat + latSpanAtTarget / 6;
-
-    map.flyTo([centerLat, evt.lng], targetZoom, { animate: true });
-  };
-
-  return (
-    <Marker
-      position={[evt.lat, evt.lng]}
-      eventHandlers={{ click: handleClick }}
-    >
-      <EventPopup evt={evt} />
-    </Marker>
-  );
+        map.once('moveend', () => {
+            e.target.openPopup();
+        });
+    };
+    return (
+        <Marker
+            position={[evt.lat, evt.lng]}
+            eventHandlers={{ click: handleClick }}
+        >
+            <EventPopup evt={evt} />
+        </Marker>
+    );
 }
 
 export default function EventMap({
