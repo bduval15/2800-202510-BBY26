@@ -22,15 +22,45 @@ import AIbutton from '@/components/buttons/AIbutton';
  */
 
 export default function DealsPage() {
+  const [selectedTags, setSelectedTags] = useState([]);
   const [allDeals, setAllDeals] = useState([]);
   const [interests, setInterests] = useState([]);
   const [loading, setLoading] = useState(true);
   const supabase = clientDB;
 
+  const tags = [
+    'Animal Care',
+    'Art',
+    'Board Games',
+    'Comedy',
+    'Coding',
+    'Cooking',
+    'Cycling',
+    'Esports',
+    'Entrepreneurship',
+    'Fitness',
+    'Football',
+    'Gaming',
+    'Hiking',
+    'Investing',
+    'Mental Health',
+    'Movies',
+    'Music',
+    'Photography',
+    'Public Speaking',
+    'Reading',
+    'Study Groups',
+    'Sustainability',
+    'Yoga'
+  ];
+
   useEffect(() => {
     const fetchInterests = async () => {
       const { data: { user } } = await clientDB.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        setLoading(false);
+        return;
+      }
   
       const { data, error } = await clientDB
         .from('user_profiles')
@@ -61,21 +91,39 @@ export default function DealsPage() {
 
       if (error) {
         console.error('Error fetching deals:', error);
+        setAllDeals([]);
       } else {
-        setAllDeals(data);
+        setAllDeals(data || []);
       }
     };
 
     fetchDeals();
   }, [supabase]);
 
-  const dealsToDisplay = allDeals;
+  const handleTagToggle = (tag) => {
+    if (tag === "ALL") {
+      setSelectedTags([]);
+    } else {
+      setSelectedTags(prevSelectedTags =>
+        prevSelectedTags.includes(tag)
+          ? prevSelectedTags.filter(t => t !== tag)
+          : [...prevSelectedTags, tag]
+      );
+    }
+  };
 
-
+  const dealsToDisplay = selectedTags.length === 0
+    ? allDeals
+    : allDeals.filter(deal => 
+        deal.tags && selectedTags.some(selTag => deal.tags.includes(selTag))
+      );
 
   return (
     <div className="bg-[#F5E3C6] pb-6">
       <FeedLayout
+        tagOptions={tags}
+        selectedTags={selectedTags}
+        onTagToggle={handleTagToggle}
       >
         <div className="text-left text-2xl font-bold text-[#8B4C24] pl-4 mb-4 mt-4">
           Deals
@@ -108,7 +156,7 @@ export default function DealsPage() {
             );
           })
         ) : (
-          <p className="text-center text-gray-500 px-4">No deals found. Try adding one!</p>
+          <p className="text-center text-gray-500 px-4">No deals found for the selected tags. Try adding one!</p>
         )}
 
         <div className="px-4 py-2 max-w-md mx-auto w-full">

@@ -83,7 +83,7 @@ export default function AddFormPage() {
     if (formData.postType === 'hack') {
       router.push('/hacks-page');
     } else if (formData.postType === 'deal') {
-      router.push('/deals-page'); // Assuming this is the correct route for deals
+      router.push('/deals-page');
     } else {
       // Fallback redirection if postType is somehow unknown at this point
       console.warn('Unknown post type for redirection:', formData.postType);
