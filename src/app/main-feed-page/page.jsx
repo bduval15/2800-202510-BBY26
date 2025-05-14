@@ -18,6 +18,7 @@ import Link from 'next/link';
 import StickyNavbar from '@/components/StickyNavbar';
 import BottomNav from '@/components/BottomNav';
 import Footer from '@/components/Footer';
+import SessionWatcher from '@/components/SessionWatcher';
 import {
     MagnifyingGlassIcon,
     ClipboardIcon,
@@ -86,6 +87,7 @@ export default function MainFeed() {
 
     return (
         <div className="flex flex-col h-screen bg-[#F5E3C6] pt-16">
+            <SessionWatcher />
             <StickyNavbar />
             {/* Filters + Search */}
             <div className="p-4 border-b border-[#D1905A] max-w-md mx-auto w-full">
