@@ -49,7 +49,7 @@ const DealCard = ({ id, title, location, price, tags, expirationDate }) => {
             ) : (
               <div />
             )}
-            <div className="shrink-0">
+            <div className="shrink-0" onClick={(e) => e.preventDefault()}>
               <BookmarkButton dealId={id} />
             </div>
           </div>
