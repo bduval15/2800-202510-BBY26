@@ -69,7 +69,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
       formData = { ...formData, description, location: location.address };
     } else {
       const dealLocationString = JSON.stringify(location);
-      formData = { ...formData, location: dealLocationString, price: parseFloat(price) || 0 };
+      formData = { ...formData, description, location: dealLocationString, price: parseFloat(price) || 0 };
     }
     console.log(formData);
     if (onSubmit) {
@@ -142,50 +142,37 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
         />
       </div>
 
+      {(postType === 'hack' || postType === 'deal') && (
+        <div>
+          <label htmlFor="description" className="block text-sm font-medium text-[#6A401F] mb-1">
+            Description
+          </label>
+          <textarea
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+            rows="4"
+            className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400 text-gray-900"
+            placeholder={postType === 'hack' ? "Share the details of your hack..." : "Share the details of your deal..."}
+          />
+        </div>
+      )}
+
       {postType === 'hack' && (
-        <>
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium text-[#6A401F] mb-1">
-              Description
-            </label>
-            <textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required={postType === 'hack'}
-              rows="4"
-              className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400 text-gray-900"
-              placeholder="Share the details of your hack..."
-            />
-          </div>
-          <div>
-            <LocationAutoComplete
-              placeholder="(Optional)"
-              onSelect={({ address, lat, lng }) => {
-                setLocation({ address, lat, lng });
-                setCoords([lat, lng]);
-              }}
-            />
-          </div>
-        </>
+        <div>
+          <LocationAutoComplete
+            placeholder="(Optional)"
+            onSelect={({ address, lat, lng }) => {
+              setLocation({ address, lat, lng });
+              setCoords([lat, lng]);
+            }}
+          />
+        </div>
       )}
 
       {postType === 'deal' && (
         <>
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium text-[#6A401F] mb-1">
-              Description
-            </label>
-            <textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required={postType === 'deal'}
-              rows="4"
-              className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400 text-gray-900"
-              placeholder="Share the details of your deal..."
-            />
-          </div>
           <div>
             <LocationAutoComplete
               placeholder="e.g., The Pub"
@@ -205,6 +192,8 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               step="0.01"
+              min="0"
+              max="1000000"
               required={postType === 'deal'}
               className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400 text-gray-900"
               placeholder="e.g., 5.99"
