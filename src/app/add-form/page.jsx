@@ -21,7 +21,7 @@ import { clientDB } from '@/supabaseClient';
 
 export default function AddFormPage() {
   const router = useRouter();
-  const hackTags = ['Campus Life', 'Health & Wellness', 'Study Tips', 'Food', 'Career', 'Finance', 'Technology', 'Social'];
+  const tags = ['Animal Care', 'Art', 'Board Games', 'Comedy', 'Coding', 'Cooking', 'Cycling', 'Esports', 'Entrepreneurship', 'Fitness', 'Football', 'Gaming', 'Hiking', 'Investing', 'Mental Health', 'Movies', 'Music', 'Photography', 'Public Speaking', 'Reading', 'Study Groups', 'Sustainability', 'Yoga'];
 
   const handleSubmitHack = async (formData) => {
     const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
@@ -95,7 +95,7 @@ export default function AddFormPage() {
       <StickyNavbar />
       <div className="flex-grow container mx-auto pt-20 px-4 py-8">
         <AddPostForm
-          hackTags={hackTags}
+          tags={tags}
           onSubmit={handleSubmitHack}
           onClose={handleCancel}
         />

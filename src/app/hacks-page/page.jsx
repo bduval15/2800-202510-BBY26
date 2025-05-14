@@ -26,7 +26,7 @@ export default function HacksPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const hackTags = ['Campus Life', 'Health & Wellness', 'Study Tips', 'Food', 'Career', 'Finance', 'Technology', 'Social'];
+  const tags = ['Animal Care', 'Art', 'Board Games', 'Comedy', 'Coding', 'Cooking', 'Cycling', 'Esports', 'Entrepreneurship', 'Fitness', 'Football', 'Gaming', 'Hiking', 'Investing', 'Mental Health', 'Movies', 'Music', 'Photography', 'Public Speaking', 'Reading', 'Study Groups', 'Sustainability', 'Yoga'];
 
   useEffect(() => {
     const fetchHacks = async () => {
@@ -65,7 +65,7 @@ export default function HacksPage() {
   return (
     <div className="bg-[#F5E3C6] pb-6">
       <FeedLayout
-        tagOptions={hackTags}
+        tagOptions={tags}
         selectedTag={selectedTag}
         onTagChange={setSelectedTag}
       >

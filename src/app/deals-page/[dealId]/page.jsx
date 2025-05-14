@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import BottomNav from '@/components/BottomNav';
 import StickyNavbar from '@/components/StickyNavbar';
 import BookmarkButton from '@/components/buttons/Bookmark';
+import Tag from '@/components/Tag';
 
 import { ArrowLeftIcon, MapPinIcon } from '@heroicons/react/24/outline';
 import { clientDB } from '@/supabaseClient.js';
@@ -67,7 +68,7 @@ export default function DealDetailPage() {
         setError(null);
         const { data, error: fetchError } = await supabase
           .from('deals')
-          .select('*, user_profiles(name)') 
+          .select('*, user_profiles(name), tags')
           .eq('id', dealId)
           .single();
 
@@ -158,6 +159,17 @@ export default function DealDetailPage() {
               <BookmarkButton dealId={deal.id} />
             </div>
           </div>
+
+          {/* Tags Display */}
+          {deal.tags && deal.tags.length > 0 && (
+            <div className="mb-6 flex flex-wrap items-center">
+              <div className="flex flex-wrap gap-2">
+                {deal.tags.map((tag, index) => (
+                  <Tag key={index} label={tag} />
+                ))}
+              </div>
+            </div>
+          )}
 
           {displayLocation && (
             <div className="mb-4">
