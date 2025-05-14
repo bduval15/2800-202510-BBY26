@@ -23,12 +23,11 @@ import AIbutton from '@/components/buttons/AIbutton';
  */
 
 export default function HacksPage() {
-  const [selectedTag, setSelectedTag] = useState("All Tags");
+  const [selectedTags, setSelectedTags] = useState([]);
   const [allHacks, setAllHacks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [interests, setInterests] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   const tags = [
     'Animal Care',
@@ -74,12 +73,11 @@ export default function HacksPage() {
           ? data.interests
           : data.interests.split(','));
       }
-  
-      setLoading(false);
     };
   
     fetchInterests();
   }, []);
+
   useEffect(() => {
     const fetchHacks = async () => {
       setIsLoading(true);
@@ -109,17 +107,32 @@ export default function HacksPage() {
   }, []);
 
   console.log("[HacksPage] Current allHacks state:", allHacks);
-  const filteredHacks = selectedTag === "All Tags"
+
+  const handleTagToggle = (tag) => {
+    if (tag === "ALL") {
+      setSelectedTags([]);
+    } else {
+      setSelectedTags(prevSelectedTags =>
+        prevSelectedTags.includes(tag)
+          ? prevSelectedTags.filter(t => t !== tag)
+          : [...prevSelectedTags, tag]
+      );
+    }
+  };
+
+  const filteredHacks = selectedTags.length === 0
     ? allHacks
-    : allHacks.filter(hack => hack.tags && hack.tags.includes(selectedTag));
+    : allHacks.filter(hack => 
+        hack.tags && selectedTags.some(selTag => hack.tags.includes(selTag))
+      );
   console.log("[HacksPage] Current filteredHacks:", filteredHacks);
 
   return (
     <div className="bg-[#F5E3C6] pb-6">
       <FeedLayout
         tagOptions={tags}
-        selectedTag={selectedTag}
-        onTagChange={setSelectedTag}
+        selectedTags={selectedTags}
+        onTagToggle={handleTagToggle}
       >
         <div className="text-left text-2xl font-bold text-[#8B4C24] pl-4 mb-4 mt-4">
           Hacks
@@ -140,7 +153,7 @@ export default function HacksPage() {
             />
           ))
         ) : (
-          !isLoading && !error && <p className="text-center text-gray-500 px-4">No hacks found for the selected tag. Try adding one!</p>
+          !isLoading && !error && <p className="text-center text-gray-500 px-4">No hacks found for the selected tags. Try adding one!</p>
         )}
 
         <div className="px-4 py-2 max-w-md mx-auto w-full">
