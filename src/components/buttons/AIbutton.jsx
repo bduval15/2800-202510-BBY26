@@ -114,13 +114,21 @@ export default function AIbutton({ interests }) {
             {/* Recommendation Bubble */}
             <div className="fixed bottom-8 right-13 z-50 flex flex-col items-end">
                 {isOpen && recommendationCard && recommendationCard?.table !== 'no-interests' && recommendationCard?.table !== 'no-matches' && (
-                    <div className="fixed bottom-23 left-9 max-w-sm w-[100%] bg-[#84B1B5] p- rounded-xl shadow-lg border border-[#D1905A] animate-fade-in z-50 relative">
+                    <div className="fixed bottom-23 left-9 max-w-sm w-[100%] bg-white rounded-xl shadow-lg border border-[#D1905A] animate-fade-in z-50 relative">
                         <button
                             onClick={() => {
                                 setIsOpen(false);
                                 setRecommendationCard(null);
                             }}
-                            className="absolute right-2 text-[#8B4C24] hover:text-[#5f321b] text-xs font-bold"
+                            className="
+                            absolute top-1 right-2
+                            text-[#8B4C24] hover:text-[#5f321b]
+                            text-xs font-bold
+                            border border-[#8B4C24]     
+                            rounded-full                
+                            px-2 py-1                   
+                            bg-white                   
+                            "
                             aria-label="Close response"
                         >
                             X
@@ -130,7 +138,7 @@ export default function AIbutton({ interests }) {
                             className="
                             absolute bottom-0 right-6
                             w-3 h-3
-                            bg-[#84B1B5]
+                            bg-white
                             border-r border-b border-[#D1905A]
                             transform rotate-45 translate-y-1/2
                           "
@@ -164,24 +172,31 @@ export default function AIbutton({ interests }) {
                 <div className="fixed bottom-15 right-5 z-50 flex flex-col items-end gap-5 w-fit">
                     {/* Chat message for no interests */}
                     {isOpen && recommendationCard?.table === 'no-interests' && (
-                        <div className="relative top-3 left-1 bg-[#F5E3C6] border border-[#D1905A] rounded-xl px-4 py-3 shadow text-sm text-[#8B4C24] max-w-[240px]">
+                        <div className="relative top-3 left-1 bg-white border border-[#D1905A] rounded-xl px-4 py-3 shadow text-sm text-[#8B4C24] max-w-[240px]">
                             {/* Close button */}
                             <button
-                                onClick={() => {
-                                    setIsOpen(false);
-                                    setRecommendationCard(null);
-                                }}
-                                className="absolute top-1 right-2 text-[#8B4C24] hover:text-[#5f321b] text-xs font-bold"
-                                aria-label="Close response"
-                            >
-                                X
-                            </button>
+                            onClick={() => {
+                                setIsOpen(false);
+                                setRecommendationCard(null);
+                            }}
+                            className="
+                            absolute top-2 right-2
+                            text-[#8B4C24] hover:text-[#5f321b]
+                            text-xs font-bold
+                            border border-[#8B4C24]     
+                            rounded-full                
+                            px-2 py-1                         
+                            "
+                            aria-label="Close response"
+                        >
+                            X
+                        </button>
                             <p className="pr-5">Set up your interests first to get recommendations.</p>
                             <div
                                 className="
                                 absolute bottom-0 right-6
                                 w-3 h-3
-                                bg-[#F5E3C6]
+                                bg-white
                                 border-r border-b border-[#D1905A]
                                 transform rotate-45 translate-y-1/2
                                 "
@@ -192,25 +207,32 @@ export default function AIbutton({ interests }) {
                     )}
                     {isOpen && recommendationCard?.table === 'no-matches' && (
 
-                        <div className="relative top-3 bg-[#F5E3C6] border border-[#D1905A] rounded-xl px-4 py-3 shadow text-sm text-[#8B4C24] max-w-[240px]">
+                        <div className="relative top-3 bg-white border border-[#D1905A] rounded-xl px-4 py-3 shadow text-sm text-[#8B4C24] max-w-[240px]">
                             {/* Close button */}
                             <button
-                                onClick={() => {
-                                    setIsOpen(false);
-                                    setRecommendationCard(null);
-                                }}
-                                className="absolute top-1 right-2 text-[#8B4C24] hover:text-[#5f321b] text-xs font-bold"
-                                aria-label="Close response"
-                            >
-                                X
-                            </button>
+                            onClick={() => {
+                                setIsOpen(false);
+                                setRecommendationCard(null);
+                            }}
+                            className="
+                            absolute top-2 right-2
+                            text-[#8B4C24] hover:text-[#5f321b]
+                            text-xs font-bold
+                            border border-[#8B4C24]     
+                            rounded-full                
+                            px-2 py-1                         
+                            "
+                            aria-label="Close response"
+                        >
+                            X
+                        </button>
                             <p className="pr-5">No matches found at this moment.</p>
 
                             <div
                                 className="
                             absolute bottom-0 right-5
                             w-3 h-3
-                            bg-[#F5E3C6]
+                            bg-white
                             border-r border-b border-[#D1905A]
                             transform rotate-45 translate-y-1/2
                           "
@@ -219,13 +241,13 @@ export default function AIbutton({ interests }) {
                     )}
 
                     {!isOpen && showTooltip && (
-                        <div className=" relative top-3 bg-[#F5E3C6] text-sm text-gray-800 shadow-md rounded-md px-3 py-2 border border-[#D1905A] transition-opacity duration-500">
+                        <div className=" relative top-3 bg-white text-sm text-[#8B4C24] shadow-md rounded-md px-3 py-2 border border-[#D1905A] transition-opacity duration-500">
                             Get a magic recommendation!
                             <div
                                 className="
                             absolute bottom-0 right-5.5
                             w-3 h-3
-                            bg-[#F5E3C6]
+                            bg-white
                             border-r border-b border-[#D1905A]
                             transform rotate-45 translate-y-1/2
                           "
@@ -238,7 +260,7 @@ export default function AIbutton({ interests }) {
                     <button
                         onClick={handleClick}
                         disabled={loading}
-                        className="bg-[#F5E3C6] text-[#8B4C24] border-2 border-[#D1905A] shadow-xl rounded-full w-14 h-14 flex items-center justify-center hover:bg-[#f3d9ae] transition"
+                        className="bg-white text-[#8B4C24] border-2 border-[#D1905A] shadow-xl rounded-full w-14 h-14 flex items-center justify-center hover:bg-[#f3d9ae] transition"
                     >
                         <Image
                             src="/images/AI/AIwizard.png"
