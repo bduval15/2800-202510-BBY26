@@ -44,16 +44,13 @@ const VoteButtons = ({ hackId, upvotes: initialUpvotes, downvotes: initialDownvo
       if (error) {
         throw error;
       }
-      // Optionally, you might want to re-fetch the post or rely on the optimistic update.
-      // For now, we assume the optimistic update is sufficient.
+
     } catch (error) {
       console.error('Error updating vote:', error);
-      // Revert optimistic updates if DB update fails
-      // This part can be enhanced based on how you want to handle errors
+
       setLocalUpvotes(Number(initialUpvotes) || 0);
       setLocalDownvotes(Number(initialDownvotes) || 0);
-      // Potentially reset userVote based on the actual state before the failed attempt
-      // For simplicity, we'll reset it to null or its initial state if available
+
       setUserVote(null); 
       alert('Failed to update vote. Please try again.');
     } finally {

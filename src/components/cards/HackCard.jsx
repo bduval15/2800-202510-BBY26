@@ -49,7 +49,7 @@ const HackCard = ({ id, href, title, upvotes, downvotes, comments = 0, tags = []
         <CommentDisplay count={comments} />
 
         {/* Bookmark Button */}
-        <BookmarkButton itemId={id} itemType="hack" />
+        <BookmarkButton hackId={id} />
       </div>
     </BaseCard>
   );

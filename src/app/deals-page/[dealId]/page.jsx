@@ -23,8 +23,6 @@ import { clientDB } from '@/supabaseClient.js';
  * @author Nate O
  */
 
-// Placeholder data removed, will fetch from Supabase
-// const placeholderDeal = { ... };
 
 export default function DealDetailPage() {
   const params = useParams();
@@ -157,7 +155,7 @@ export default function DealDetailPage() {
           <div className="flex justify-between items-start mb-6">
             <h1 className="text-3xl font-bold text-[#8B4C24] mr-4">{deal.title}</h1> 
             <div className="shrink-0"> 
-              <BookmarkButton />
+              <BookmarkButton dealId={deal.id} />
             </div>
           </div>
 
@@ -165,10 +163,8 @@ export default function DealDetailPage() {
             <div className="mb-4">
               <div className="flex items-center mb-1">
                 <h2 className="text-lg font-semibold text-[#6A4C3C] mr-2">Location</h2>
-                <Link href="/map-page" passHref legacyBehavior>
-                  <a className="text-sm text-[#B87333] hover:text-[#8B4C24] flex items-center">
-                    <MapPinIcon className="h-4 w-4 mr-1" /> View on Map
-                  </a>
+                <Link href="/map-page" passHref className="text-sm text-[#B87333] hover:text-[#8B4C24] flex items-center">
+                  <MapPinIcon className="h-4 w-4 mr-1" /> View on Map
                 </Link>
               </div>
               <p className="text-[#8B4C24]">{displayLocation}</p>
