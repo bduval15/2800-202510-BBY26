@@ -16,6 +16,7 @@ import { clientDB } from '@/supabaseClient';
  * Modified with assistance from Google Gemini 2.5 Flash
  * 
  * @author: Nathan O
+ * @author: Conner P
  * @author https://gemini.google.com/app
  */
 
@@ -86,6 +87,18 @@ export default function AddFormPage() {
         price: formData.price,
         user_id: userId
       };
+    }
+      else if (formData.postType === 'event') {
+      tableName = 'events';
+      dataToInsert = {
+        title: formData.title,
+        description: formData.description,
+        user_id: userId,
+        tags: formData.tags,
+        upvotes: 0,
+        downvotes: 0,
+        location: formData.location
+      };
     } else {
       console.error('Unknown post type:', formData.postType);
       return;
@@ -105,6 +118,8 @@ export default function AddFormPage() {
       router.push('/hacks-page');
     } else if (formData.postType === 'deal') {
       router.push('/deals-page'); // Assuming this is the correct route for deals
+      } else if (formData.postType === 'event') {
+      router.push('/events-page');
     } else {
       // Fallback redirection if postType is somehow unknown at this point
       console.warn('Unknown post type for redirection:', formData.postType);
