@@ -46,7 +46,7 @@ export default function EventsPage() {
       try {
         const { data, error: fetchError } = await clientDB
           .from('events')   // ← table name changed
-          .select('id, title, description, location, price, created_at, user_id, tags, upvotes, downvotes');
+          .select('id, title, description, location, created_at, user_id, tags, upvotes, downvotes');
 
         if (fetchError) throw fetchError;
 
@@ -88,8 +88,7 @@ export default function EventsPage() {
               id={event.id}
               href={`/events-page/${event.id}`} // ← route adjusted
               title={event.title}
-              location={event.location}
-              price={event.price}
+              location={event.location}              
               upvotes={event.upvotes}
               downvotes={event.downvotes}
               tags={event.tags}
