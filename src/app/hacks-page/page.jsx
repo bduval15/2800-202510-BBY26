@@ -1,7 +1,6 @@
-'use client'
+'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import FeedLayout from '@/components/FeedLayout'
 import HackCard from '@/components/cards/HackCard'
 import Footer from '@/components/Footer'
