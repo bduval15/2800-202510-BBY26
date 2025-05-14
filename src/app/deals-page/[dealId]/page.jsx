@@ -165,10 +165,8 @@ export default function DealDetailPage() {
             <div className="mb-4">
               <div className="flex items-center mb-1">
                 <h2 className="text-lg font-semibold text-[#6A4C3C] mr-2">Location</h2>
-                <Link href="/map-page" passHref legacyBehavior>
-                  <a className="text-sm text-[#B87333] hover:text-[#8B4C24] flex items-center">
-                    <MapPinIcon className="h-4 w-4 mr-1" /> View on Map
-                  </a>
+                <Link href="/map-page" passHref className="text-sm text-[#B87333] hover:text-[#8B4C24] flex items-center">
+                  <MapPinIcon className="h-4 w-4 mr-1" /> View on Map
                 </Link>
               </div>
               <p className="text-[#8B4C24]">{displayLocation}</p>
