@@ -471,7 +471,7 @@ import BottomNav from "@/components/BottomNav";
 import ProfileCard from "@/components/ProfileCard";
 import BioSection from "@/components/BioSection";
 import InterestsSection from "@/components/InterestsSection";
-import SavedHacksSection from "@/components/SavedHacksSection";
+import SavedPostsSection from "@/components/SavedPostsSection";
 import AvatarModal from "@/components/AvatarModal";
 import EditProfileModal from "@/components/EditProfileModal";
 import SkeletonLoaf from "@/components/SkeletonLoaf";
@@ -495,7 +495,7 @@ export default function ProfilePage() {
   const [interests, setInterests] = useState([]);
   const [editInterests, setEditInterests] = useState([]);
 
-  const [savedHacks, setSavedHacks] = useState([]);
+  const [savedPosts, setSavedPosts] = useState([]);
 
   const MAX_SELECTION = 5;
   const PREDEFINED_INTERESTS = [
@@ -608,28 +608,32 @@ export default function ProfilePage() {
     }
   };
 
-  const loadSavedHacks = async (session) => {
+  const loadSavedPosts = async (session) => {
     try {
       const { data: saved } = await clientDB
         .from("saved_items")
-        .select("hack_id")
+        .select("hack_id, deal_id")
         .eq("user_id", session.user.id);
 
-      const hackIds = saved.map(item => item.hack_id).filter(Boolean);
+      const hackIds = (saved || [])
+        .filter(item => item.hack_id)
+        .map(item => item.hack_id);
 
-      if (hackIds.length === 0) {
-        setSavedHacks([]);
-        return;
-      }
+      const dealIds = (saved || [])
+        .filter(item => item.deal_id)
+        .map(item => item.deal_id);
 
-      const { data: hacks } = await clientDB
-        .from("hacks")
-        .select("id, title, description, tags, upvotes, downvotes")
-        .in("id", hackIds);
+      const [hacksResult, dealsResult] = await Promise.all([
+        clientDB.from("hacks").select("id, title, description, tags, upvotes, downvotes").in("id", hackIds),
+        clientDB.from("deals").select("id, title, location, price").in("id", dealIds),
+      ]);
 
-      setSavedHacks(hacks);
+      const hacks = hacksResult.data?.map(h => ({ ...h, type: 'hack' })) || [];
+      const deals = dealsResult.data?.map(d => ({ ...d, type: 'deal' })) || [];
+
+      setSavedPosts([...hacks, ...deals]);
     } catch (err) {
-      console.error("Error loading saved hacks:", err);
+      console.error("Error loading saved posts:", err);
     }
   };
 
@@ -639,7 +643,7 @@ export default function ProfilePage() {
       const { data: { session } } = await clientDB.auth.getSession();
       if (session) {
         await loadProfile(session);
-        await loadSavedHacks(session);
+        await loadSavedPosts(session);
         setIsLoading(false);
       }
     };
@@ -687,7 +691,8 @@ export default function ProfilePage() {
               maxSelection={MAX_SELECTION}
             />
 
-            <SavedHacksSection hacks={savedHacks} />
+            <SavedPostsSection posts={savedPosts} />
+
           </>
         )}
 
