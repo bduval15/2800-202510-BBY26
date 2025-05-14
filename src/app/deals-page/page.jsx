@@ -73,6 +73,7 @@ export default function DealsPage() {
                 title={deal.title}
                 location={displayLocation} // Pass the extracted address
                 price={deal.price}
+                tags={deal.tags}
               />
             );
           })
