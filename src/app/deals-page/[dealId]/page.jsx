@@ -23,8 +23,6 @@ import { clientDB } from '@/supabaseClient.js';
  * @author Nate O
  */
 
-// Placeholder data removed, will fetch from Supabase
-// const placeholderDeal = { ... };
 
 export default function DealDetailPage() {
   const params = useParams();
