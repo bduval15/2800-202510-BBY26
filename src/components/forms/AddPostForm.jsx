@@ -66,9 +66,10 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
 
     let formData = { title, postType, tags: selectedTags };
     if (postType === 'hack') {
-      formData = { ...formData, description, location };
+      formData = { ...formData, description, location: location.address };
     } else {
-      formData = { ...formData, location, coords, price: parseFloat(price) || 0 };
+      const dealLocationString = JSON.stringify(location);
+      formData = { ...formData, location: dealLocationString, price: parseFloat(price) || 0 };
     }
     console.log(formData);
     if (onSubmit) {

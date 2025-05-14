@@ -58,7 +58,8 @@ export default function AddFormPage() {
         title: formData.title,
         location: formData.location,
         price: formData.price,
-        user_id: userId
+        user_id: userId,
+        tags: formData.tags
       };
     } else {
       console.error('Unknown post type:', formData.postType);
