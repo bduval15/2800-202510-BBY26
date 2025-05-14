@@ -26,7 +26,31 @@ export default function HacksPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const tags = ['Animal Care', 'Art', 'Board Games', 'Comedy', 'Coding', 'Cooking', 'Cycling', 'Esports', 'Entrepreneurship', 'Fitness', 'Football', 'Gaming', 'Hiking', 'Investing', 'Mental Health', 'Movies', 'Music', 'Photography', 'Public Speaking', 'Reading', 'Study Groups', 'Sustainability', 'Yoga'];
+  const tags = [
+    'Animal Care',
+    'Art',
+    'Board Games',
+    'Comedy',
+    'Coding',
+    'Cooking',
+    'Cycling',
+    'Esports',
+    'Entrepreneurship',
+    'Fitness',
+    'Football',
+    'Gaming',
+    'Hiking',
+    'Investing',
+    'Mental Health',
+    'Movies',
+    'Music',
+    'Photography',
+    'Public Speaking',
+    'Reading',
+    'Study Groups',
+    'Sustainability',
+    'Yoga'
+  ];
 
   useEffect(() => {
     const fetchHacks = async () => {
@@ -96,4 +120,3 @@ export default function HacksPage() {
     </div>
   )
 }
-
