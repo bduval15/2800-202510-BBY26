@@ -495,6 +495,8 @@ export default function ProfilePage() {
   const [interests, setInterests] = useState([]);
   const [editInterests, setEditInterests] = useState([]);
 
+  const [savedHacks, setSavedHacks] = useState([]);
+
   const MAX_SELECTION = 5;
   const PREDEFINED_INTERESTS = [
     { emoji: "🎮", label: "Gaming" },
@@ -523,54 +525,35 @@ export default function ProfilePage() {
     { emoji: "🕹️", label: "Esports" },
   ];
 
-  useEffect(() => {
-    const loadProfile = async (session) => {
-      setIsLoading(true);
+  const loadProfile = async (session) => {
+    setIsLoading(true);
 
-      const { data, error } = await clientDB
-        .from("user_profiles")
-        .select("*")
-        .eq("id", session.user.id)
-        .single();
+    const { data, error } = await clientDB
+      .from("user_profiles")
+      .select("*")
+      .eq("id", session.user.id)
+      .single();
 
-      if (error) {
-        console.error("Error fetching profile:", error);
-        setIsLoading(false);
-        return;
-      }
-
-      if (data) {
-        setName(data.name || "");
-        setSchool(data.school || "");
-        setBio(data.bio || "");
-        setSelectedAvatar(data.avatar_url || "/images/avatars/avatar1.png");
-        const interestObjs = (data.interests || [])
-          .map(label => PREDEFINED_INTERESTS.find(i => i.label === label))
-          .filter(Boolean);
-        setInterests(interestObjs);
-        setEditInterests(interestObjs);
-      }
-
+    if (error) {
+      console.error("Error fetching profile:", error);
       setIsLoading(false);
-    };
+      return;
+    }
 
-    const initSession = async () => {
-      const { data: { session } } = await clientDB.auth.getSession();
-      if (session) {
-        loadProfile(session);
-      } else {
-        setIsLoading(false);
-      }
-    };
+    if (data) {
+      setName(data.name || "");
+      setSchool(data.school || "");
+      setBio(data.bio || "");
+      setSelectedAvatar(data.avatar_url || "/images/avatars/avatar1.png");
+      const interestObjs = (data.interests || [])
+        .map(label => PREDEFINED_INTERESTS.find(i => i.label === label))
+        .filter(Boolean);
+      setInterests(interestObjs);
+      setEditInterests(interestObjs);
+    }
 
-    initSession();
-
-    const { data: { subscription } } = clientDB.auth.onAuthStateChange((_event, session) => {
-      if (session) loadProfile(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+    setIsLoading(false);
+  };
 
   const isFormValid = editName.trim() && editSchool.trim() && editBio.trim() && editName.length <= 50 && editSchool.length <= 100 && editBio.length <= 200;
 
@@ -625,6 +608,55 @@ export default function ProfilePage() {
     }
   };
 
+  const loadSavedHacks = async (session) => {
+    // Get all saved_items for current user
+    const { data: saved, error: savedError } = await clientDB
+      .from("saved_items")
+      .select("hack_id")
+      .eq("user_id", session.user.id);
+
+    if (savedError) {
+      console.error("Error fetching saved items:", savedError);
+      return;
+    }
+
+    const hackIds = saved.map(item => item.hack_id).filter(Boolean);
+
+    if (hackIds.length === 0) {
+      setSavedHacks([]);
+      return;
+    }
+
+    // Fetch hacks with those IDs
+    const { data: hacks, error: hacksError } = await clientDB
+      .from("hacks")
+      .select("title")
+      .in("id", hackIds);
+
+    if (hacksError) {
+      console.error("Error fetching hacks:", hacksError);
+      return;
+    }
+
+    setSavedHacks(hacks.map(h => h.title));
+  };
+  
+  useEffect(() => {
+
+    const initSession = async () => {
+      const { data: { session } } = await clientDB.auth.getSession();
+      if (session) {
+        loadProfile(session);
+        loadSavedHacks(session); // <-- Load saved hacks
+      } else {
+        setIsLoading(false);
+      }
+    };
+
+    initSession();
+  }, []);
+
+
   return (
     <>
       <StickyNavBar />
@@ -664,7 +696,7 @@ export default function ProfilePage() {
               maxSelection={MAX_SELECTION}
             />
 
-            <SavedHacksSection hacks={["Cheap Eats List", "Student Discounts", "Free Events"]} />
+            <SavedHacksSection hacks={savedHacks} />
           </>
         )}
 
