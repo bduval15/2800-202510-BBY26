@@ -19,16 +19,16 @@ import StickyNavbar from '@/components/StickyNavbar';
  * @author: ChatGPT used to simplify conversion 
  */
 
-const MAX_TAGS = 5; 
+const MAX_TAGS = 5;
 
 const availableTags = [
-  "Campus Life", 
-  "Health & Wellness", 
-  "Study Tips", 
-  "Food", 
-  "Career", 
-  "Finance", 
-  "Technology", 
+  "Campus Life",
+  "Health & Wellness",
+  "Study Tips",
+  "Food",
+  "Career",
+  "Finance",
+  "Technology",
   "Social"
 ];
 
@@ -240,11 +240,10 @@ export default function EditEventPage({ params }) {
                     key={tag}
                     type="button"
                     onClick={() => handleSelectTag(tag)}
-                    className={`px-4 py-2 rounded-full text-xs font-semibold ${
-                      currentTags.includes(tag)
+                    className={`px-4 py-2 rounded-full text-xs font-semibold ${currentTags.includes(tag)
                         ? 'bg-[#8B4C24] text-white'
                         : 'bg-white ring-1 ring-[#D1905A] text-[#8B4C24]'
-                    }`}
+                      }`}
                   >
                     {tag}
                   </button>
