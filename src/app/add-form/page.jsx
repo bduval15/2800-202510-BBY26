@@ -50,7 +50,8 @@ export default function AddFormPage() {
         tags: formData.tags,
         upvotes: 0,
         downvotes: 0,
-        location: formData.location
+        location: formData.location,
+        table_id: 'hacks'
       };
     } else if (formData.postType === 'deal') {
       tableName = 'deals';
@@ -58,8 +59,10 @@ export default function AddFormPage() {
         title: formData.title,
         location: formData.location,
         price: formData.price,
+        // TODO: ADD DESCRIPTION + SUPABASE
         user_id: userId,
-        tags: formData.tags
+        tags: formData.tags,
+        table_id: 'deals'
       };
     } else {
       console.error('Unknown post type:', formData.postType);

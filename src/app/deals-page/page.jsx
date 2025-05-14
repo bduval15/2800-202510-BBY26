@@ -51,7 +51,7 @@ export default function DealsPage() {
         </div>
         {dealsToDisplay.length > 0 ? (
           dealsToDisplay.map(deal => {
-            let displayLocation = deal.location; // Default to the original location
+            let displayLocation = deal.location; 
             if (deal.location && typeof deal.location === 'string') {
               try {
                 const parsedLocation = JSON.parse(deal.location);
@@ -59,8 +59,7 @@ export default function DealsPage() {
                   displayLocation = parsedLocation.address;
                 }
               } catch (e) {
-                console.warn("Failed to parse location JSON:", deal.location, e);
-                // displayLocation remains deal.location if parsing fails or address is not found
+                console.warn("Failed to parse location JSON:", deal.location, e);        
               }
             } else if (deal.location && typeof deal.location === 'object' && deal.location.address) {             
               displayLocation = deal.location.address;
@@ -71,7 +70,7 @@ export default function DealsPage() {
                 key={deal.id}
                 id={deal.id} 
                 title={deal.title}
-                location={displayLocation} // Pass the extracted address
+                location={displayLocation} 
                 price={deal.price}
                 tags={deal.tags}
               />
