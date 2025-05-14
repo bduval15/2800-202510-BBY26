@@ -157,7 +157,7 @@ export default function DealDetailPage() {
           <div className="flex justify-between items-start mb-6">
             <h1 className="text-3xl font-bold text-[#8B4C24] mr-4">{deal.title}</h1> 
             <div className="shrink-0"> 
-              <BookmarkButton />
+              <BookmarkButton dealId={deal.id} />
             </div>
           </div>
 
