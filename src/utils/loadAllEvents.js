@@ -18,10 +18,10 @@ const supabase = createClient(
 
 export async function loadAllEvents() {
   const [hRes, dRes, sRes, feRes] = await Promise.all([
-    supabase.from('hacks')      .select('*'),
-    supabase.from('deals')      .select('*'),
-    supabase.from('savings')    .select('*'),
-    supabase.from('free-events').select('*'),
+    supabase.from('hacks').select('*'),
+    supabase.from('deals').select('*'),
+    supabase.from('savings').select('*'),
+    supabase.from('events').select('*'),
   ]);
 
   if (hRes.error || dRes.error || sRes.error || feRes.error) {
@@ -35,10 +35,10 @@ export async function loadAllEvents() {
     (rows || []).map(r => ({ ...r, threadId: id, threadName: name }));
 
   return [
-    ...annotate(hRes.data, 'hacks',       'Hacks'),
-    ...annotate(dRes.data, 'deals',       'Deals'),
-    ...annotate(sRes.data, 'savings',     'Saving Tips'),
-    ...annotate(feRes.data,'free-events', 'Free Events'),
+    ...annotate(hRes.data, 'hacks', 'Hacks'),
+    ...annotate(dRes.data, 'deals', 'Deals'),
+    ...annotate(sRes.data, 'savings', 'Saving Tips'),
+    ...annotate(feRes.data, 'events', 'Free Events'),
   ];
 }
 

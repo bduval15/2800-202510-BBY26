@@ -1,5 +1,6 @@
 /**
  * Map Page.jsx
+ * 
  * Loaf Life – Map page holding all the components 
  * for full functionality. 
  * 

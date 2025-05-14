@@ -1,5 +1,6 @@
 /**
  * FilterBar.jsx
+ * 
  * Loaf Life – Handles the filtering of map
  * pins based on distance, thread, and price.
  * 

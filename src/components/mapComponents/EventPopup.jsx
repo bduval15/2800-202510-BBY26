@@ -1,5 +1,6 @@
 /**
 * EventPopup.jsx
+
 * Loaf Life – Holds all the functionality 
 * for even popup modal when clicking on a pin.
 * 
