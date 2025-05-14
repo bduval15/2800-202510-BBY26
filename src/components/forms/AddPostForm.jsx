@@ -10,6 +10,7 @@ import LocationAutoComplete from '@/components/mapComponents/LocationAutoComplet
  * This form allows users to add a new hack to the database.
  * 
  * @author: Nathan O
+ * @author: Conner P
  * 
  * Written with assistance from Google Gemini 2.5 Flash
  * @author https://gemini.google.com/app
@@ -65,7 +66,7 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
     }
 
     let formData = { title, postType };
-    if (postType === 'hack') {
+    if (postType === 'hack' || postType === 'event') {
       formData = { ...formData, description,location, tags: selectedTags };
     } else {
       formData = { ...formData, location, coords, price: parseFloat(price) || 0 };
@@ -95,7 +96,7 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
   return (
     <form onSubmit={handleSubmit} className="p-4 bg-[#FDFAF5] shadow-md rounded-lg space-y-6 mb-6 ">
       <h2 className="text-xl font-semibold text-[#8B4C24]">
-        {postType === 'hack' ? 'Add a New Hack' : 'Add a New Deal'}
+        {postType === 'hack' ? 'Add a New Hack' : (postType === 'deal') ? 'Add a New Deal' : 'Add a new Event'}
       </h2>
 
       <div>
@@ -122,6 +123,16 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
               }`}
           >
             Deal
+          </button>
+          <button
+            type="button"
+            onClick={() => setPostType('event')}
+            className={`py-2 px-6 rounded-full text-sm font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${postType === 'event'
+              ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
+              : 'bg-white text-[#8B4C24] hover:bg-gray-100 border border-[#D1905A]'
+              }`}
+          >
+            Event
           </button>
         </div>
       </div>
@@ -222,12 +233,64 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
         </>
       )}
 
+      {postType === 'event' && (
+        <>
+          <div>
+            <label htmlFor="description" className="block text-sm font-medium text-[#6A401F] mb-1">
+              Description
+            </label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required={postType === 'event'}
+              rows="4"
+              className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400 text-gray-900"
+              placeholder="Share the details of your event..."
+            />
+          </div>
+          <div>
+            <LocationAutoComplete
+              required={postType === 'event'}
+              onSelect={({ address, lat, lng }) => {
+                setLocation({ address, lat, lng });
+                setCoords([lat, lng]);
+              }}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-[#6A401F] mb-2">
+              Tags
+            </label>
+            <div className="mt-1 flex flex-wrap gap-2 p-2.5 border border-[#D1905A] rounded-lg shadow-sm bg-white">
+              {hackTags && hackTags.map(tag => (
+                <button
+                  type="button"
+                  key={tag}
+                  onClick={() => handleTagChange(tag)}
+                  className={`py-2 px-4 rounded-full text-xs font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${selectedTags.includes(tag)
+                    ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
+                    : 'bg-white text-[#8B4C24] hover:bg-gray-100 ring-1 ring-inset ring-[#D1905A]'
+                    }`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+            {/* Basic validation message example - can be improved */}
+            {showTagError && (
+              <p className="text-xs text-red-500 mt-1">Please select at least one tag for the event.</p>
+            )}
+          </div>
+        </>
+      )}
+
       <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-2">
         <button
           type="submit"
           className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#77A06B] hover:bg-[#668d5b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#77A06B] transition duration-150 ease-in-out"
         >
-          {postType === 'hack' ? 'Add Hack' : 'Add Deal'}
+          {postType === 'hack' ? 'Add Hack' : (postType === 'deal') ? 'Add Deal' : 'Add Event'}
         </button>
         <button
           type="button"
