@@ -98,7 +98,7 @@ export default function AIbutton({ interests }) {
 
             if (!found) {
                 console.log('No recommendations matched interests.');
-                setRecommendationCard({ table: 'no-matches' }); 
+                setRecommendationCard({ table: 'no-matches' });
             }
 
         } catch (err) {
@@ -113,106 +113,142 @@ export default function AIbutton({ interests }) {
         <>
             {/* Recommendation Bubble */}
             <div className="fixed bottom-8 right-13 z-50 flex flex-col items-end">
-            {isOpen && recommendationCard && recommendationCard?.table !== 'no-interests' && (
-                <div className="fixed bottom-6 right-6 max-w-sm w-[100%] bg-[#F5E3C6] p-4 rounded-xl shadow-lg border border-[#D1905A] animate-fade-in z-50 relative">
+                {isOpen && recommendationCard && recommendationCard?.table !== 'no-interests' && recommendationCard?.table !== 'no-matches' && (
+                    <div className="fixed bottom-23 left-9 max-w-sm w-[100%] bg-[#84B1B5] p- rounded-xl shadow-lg border border-[#D1905A] animate-fade-in z-50 relative">
+                        <button
+                            onClick={() => {
+                                setIsOpen(false);
+                                setRecommendationCard(null);
+                            }}
+                            className="absolute right-2 text-[#8B4C24] hover:text-[#5f321b] text-xs font-bold"
+                            aria-label="Close response"
+                        >
+                            X
+                        </button>
+                        {/*  ARROW POINTER */}
+                        <div
+                            className="
+                            absolute bottom-0 right-6
+                            w-3 h-3
+                            bg-[#84B1B5]
+                            border-r border-b border-[#D1905A]
+                            transform rotate-45 translate-y-1/2
+                          "
+                        />
 
-                    {/* Close button for all types */}
+                        {recommendationCard.table === 'hacks' && (
+                            <HackCard
+                                id={recommendationCard.id}
+                                href={`/hacks-page/${recommendationCard.id}`}
+                                title={recommendationCard.title}
+                                upvotes={recommendationCard.upvotes || 0}
+                                downvotes={recommendationCard.downvotes || 0}
+                                comments={recommendationCard.comments || 0}
+                                tags={recommendationCard.tags || []}
+                            />
+                        )}
+
+                        {recommendationCard.table === 'deals' && (
+                            <DealCard
+                                id={recommendationCard.id}
+                                title={recommendationCard.title}
+                                location={recommendationCard.location}
+                                price={recommendationCard.price}
+                                tags={recommendationCard.tags || []}
+                            />
+                        )}
+                    </div>
+                )}
+
+                {/* Floating Chat Button & Bubble */}
+                <div className="fixed bottom-15 right-5 z-50 flex flex-col items-end gap-5 w-fit">
+                    {/* Chat message for no interests */}
+                    {isOpen && recommendationCard?.table === 'no-interests' && (
+                        <div className="relative top-3 left-1 bg-[#F5E3C6] border border-[#D1905A] rounded-xl px-4 py-3 shadow text-sm text-[#8B4C24] max-w-[240px]">
+                            {/* Close button */}
+                            <button
+                                onClick={() => {
+                                    setIsOpen(false);
+                                    setRecommendationCard(null);
+                                }}
+                                className="absolute top-1 right-2 text-[#8B4C24] hover:text-[#5f321b] text-xs font-bold"
+                                aria-label="Close response"
+                            >
+                                X
+                            </button>
+                            <p className="pr-5">Set up your interests first to get recommendations.</p>
+                            <div
+                                className="
+                                absolute bottom-0 right-6
+                                w-3 h-3
+                                bg-[#F5E3C6]
+                                border-r border-b border-[#D1905A]
+                                transform rotate-45 translate-y-1/2
+                                "
+                            />
+                        </div>
+
+
+                    )}
+                    {isOpen && recommendationCard?.table === 'no-matches' && (
+
+                        <div className="relative top-3 bg-[#F5E3C6] border border-[#D1905A] rounded-xl px-4 py-3 shadow text-sm text-[#8B4C24] max-w-[240px]">
+                            {/* Close button */}
+                            <button
+                                onClick={() => {
+                                    setIsOpen(false);
+                                    setRecommendationCard(null);
+                                }}
+                                className="absolute top-1 right-2 text-[#8B4C24] hover:text-[#5f321b] text-xs font-bold"
+                                aria-label="Close response"
+                            >
+                                X
+                            </button>
+                            <p className="pr-5">No matches found at this moment.</p>
+
+                            <div
+                                className="
+                            absolute bottom-0 right-5
+                            w-3 h-3
+                            bg-[#F5E3C6]
+                            border-r border-b border-[#D1905A]
+                            transform rotate-45 translate-y-1/2
+                          "
+                            />
+                        </div>
+                    )}
+
+                    {!isOpen && showTooltip && (
+                        <div className=" relative top-3 bg-[#F5E3C6] text-sm text-gray-800 shadow-md rounded-md px-3 py-2 border border-[#D1905A] transition-opacity duration-500">
+                            Get a magic recommendation!
+                            <div
+                                className="
+                            absolute bottom-0 right-5.5
+                            w-3 h-3
+                            bg-[#F5E3C6]
+                            border-r border-b border-[#D1905A]
+                            transform rotate-45 translate-y-1/2
+                          "
+                            />
+                        </div>
+
+                    )}
+
+                    {/* Wand button */}
                     <button
-                        onClick={() => {
-                            setIsOpen(false);
-                            setRecommendationCard(null);
-                        }}
-                        className="absolute top-1 right-2 text-[#8B4C24] hover:text-[#5f321b] text-xs font-bold"
-                        aria-label="Close response"
+                        onClick={handleClick}
+                        disabled={loading}
+                        className="bg-[#F5E3C6] text-[#8B4C24] border-2 border-[#D1905A] shadow-xl rounded-full w-14 h-14 flex items-center justify-center hover:bg-[#f3d9ae] transition"
                     >
-                        ×
+                        <Image
+                            src="/images/AI/AIwizard.png"
+                            alt="Magic Wand"
+                            width={100}
+                            height={100}
+                        />
                     </button>
-
-                    {recommendationCard.table === 'hacks' && (
-                        <HackCard
-                            id={recommendationCard.id}
-                            href={`/hacks-page/${recommendationCard.id}`}
-                            title={recommendationCard.title}
-                            upvotes={recommendationCard.upvotes || 0}
-                            downvotes={recommendationCard.downvotes || 0}
-                            comments={recommendationCard.comments || 0}
-                            tags={recommendationCard.tags || []}
-                        />
-                    )}
-
-                    {recommendationCard.table === 'deals' && (
-                        <DealCard
-                            id={recommendationCard.id}
-                            title={recommendationCard.title}
-                            location={recommendationCard.location}
-                            price={recommendationCard.price}
-                            tags={recommendationCard.tags || []}
-
-                        />
-                    )}
-
                 </div>
-            )}
-
-
-            {/* Floating Chat Button & Bubble */}
-            <div className="fixed bottom-15 right-5 z-50 flex flex-col items-end gap-2 w-fit">
-                {/* Chat message for no interests */}
-                {isOpen && recommendationCard?.table === 'no-interests' && (
-                    <div className="relative bg-[#F5E3C6] border border-[#D1905A] rounded-xl px-4 py-3 shadow text-sm text-[#8B4C24] max-w-[240px]">
-                        {/* Close button */}
-                        <button
-                            onClick={() => {
-                                setIsOpen(false);
-                                setRecommendationCard(null);
-                            }}
-                            className="absolute top-1 right-2 text-[#8B4C24] hover:text-[#5f321b] text-xs font-bold"
-                            aria-label="Close response"
-                        >
-                            X
-                        </button>
-                        <p className="pr-5">Set up your interests first to get recommendations.</p>
-                    </div>
-                )}
-                {isOpen && recommendationCard?.table === 'no-matches' && (
-                    <div className="relative bg-[#F5E3C6] border border-[#D1905A] rounded-xl px-4 py-3 shadow text-sm text-[#8B4C24] max-w-[240px]">
-                        {/* Close button */}
-                        <button
-                            onClick={() => {
-                                setIsOpen(false);
-                                setRecommendationCard(null);
-                            }}
-                            className="absolute top-1 right-2 text-[#8B4C24] hover:text-[#5f321b] text-xs font-bold"
-                            aria-label="Close response"
-                        >
-                            X
-                        </button>
-                        <p className="pr-5">No matches found at this moment.</p>
-                    </div>
-                )}
-
-                {!isOpen && showTooltip && (
-                    <div className="bg-[#F5E3C6] text-sm text-gray-800 shadow-md rounded-md px-3 py-2 border border-gray-300 transition-opacity duration-500">
-                        Get a magic recommendation!
-                    </div>
-                )}
-
-                {/* Wand button */}
-                <button
-                    onClick={handleClick}
-                    disabled={loading}
-                    className="bg-[#F5E3C6] text-[#8B4C24] border-2 border-[#D1905A] shadow-xl rounded-full w-14 h-14 flex items-center justify-center hover:bg-[#f3d9ae] transition"
-                >
-                    <Image
-                        src="/images/AI/AIwizard.png"
-                        alt="Magic Wand"
-                        width={100}
-                        height={100}
-                    />
-                </button>
             </div>
-            </div>
-
         </>
     );
 

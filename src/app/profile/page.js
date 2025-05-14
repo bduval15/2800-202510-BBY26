@@ -493,7 +493,7 @@ export default function ProfilePage() {
 
   const [interests, setInterests] = useState([]);
   const [editInterests, setEditInterests] = useState([]);
-  
+
 
   const MAX_SELECTION = 5;
   const PREDEFINED_INTERESTS = [
@@ -614,7 +614,7 @@ export default function ProfilePage() {
               bio: !bio.trim() ? "Bio is required" : ""
             });
           }}
-          onAvatarClick={() => setShowModal(true)} 
+          onAvatarClick={() => setShowModal(true)}
         />
 
         <BioSection bio={bio} />
@@ -655,7 +655,6 @@ export default function ProfilePage() {
             onSave={handleSaveProfile}
           />
         )}
-
         <div className="mt-auto">
           <Footer />
         </div>
