@@ -14,10 +14,9 @@
 
 "use client";
 
-// Import React and useState hook for managing component state
 import React, { useState } from "react";
 
-// Define 8 avatar image paths.
+// Define 9 avatar image paths.
 export const AVATAR_OPTIONS = [
     "/images/avatars/avatar1.png",
     "/images/avatars/avatar2.png",
@@ -38,32 +37,30 @@ export default function AvatarSelector({ onSelect, selectedAvatar }) {
 
     return (
         <div className="grid grid-cols-3 gap-4 p-4">
-            {AVATAR_OPTIONS.map((avatar, index) => (
-                <div
-                    key={index}
-                    onClick={() => onSelect(avatar)}
-                    onMouseEnter={() => setHovered(index)}
-                    onMouseLeave={() => setHovered(null)}
-                    className="cursor-pointer p-1 transition"
-                    style={{
-                        outline:
-                            selectedAvatar === avatar
-                                ? "3px solid #639751"
-                                : hovered === index
-                                    ? "3px solid #C27A49"
-                                    : "none",
-                        borderRadius: "9999px",
-                        outlineOffset: "3px",
-                    }}
-                >
-                    <img
-                        src={avatar}
-                        alt={`Avatar ${index + 1}`}
-                        className="w-20 h-20 object-contain"
-                        draggable={false}
-                    />
-                </div>
-            ))}
+            {AVATAR_OPTIONS.map((avatar, index) => {
+                const isSelected = selectedAvatar === avatar;
+                const isHovered = hovered === index;
+
+                return (
+                    <div
+                        key={index}
+                        onClick={() => onSelect(avatar)}
+                        onMouseEnter={() => setHovered(index)}
+                        onMouseLeave={() => setHovered(null)}
+                        className={`rounded-full w-24 h-24 flex items-center justify-center transition cursor-pointer
+                  ${isSelected ? "ring-4 ring-[#639751]" : ""}
+                  ${!isSelected && isHovered ? "ring-4 ring-[#C27A49]" : ""}
+                `}
+                    >
+                        <img
+                            src={avatar}
+                            alt={`Avatar ${index + 1}`}
+                            className="w-full h-full object-contain rounded-full"
+                            draggable={false}
+                        />
+                    </div>
+                );
+            })}
         </div>
     );
 }

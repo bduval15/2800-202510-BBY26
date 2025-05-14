@@ -520,7 +520,7 @@ export default function ProfilePage() {
     { emoji: "🐶", label: "Animal Care" },
     { emoji: "🧩", label: "Board Games" },
     { emoji: "🎭", label: "Comedy" },
-    { emoji: "🎮", label: "Esports" },
+    { emoji: "🕹️", label: "Esports" },
   ];
 
   useEffect(() => {

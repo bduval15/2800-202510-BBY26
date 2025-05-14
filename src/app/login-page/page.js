@@ -17,7 +17,7 @@ export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLogin, setIsLogin] = useState(true); //Toggle between login/signup
+  const [isLogin, setIsLogin] = useState(true); 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
 
@@ -49,16 +49,12 @@ export default function LoginPage() {
             skipEmailConfirmation: true,
             data: {
               username: username,
-            }
-          }
+            },
+          },
         });
         if (signUpError) throw signUpError;
 
-        const { error: signInError } = await clientDB.auth.signInWithPassword({
-          email,
-          password
-        });
-
+        const { error: signInError } = await clientDB.auth.signInWithPassword({ email, password });
         if (signInError) throw signInError;
 
         const {
@@ -67,12 +63,14 @@ export default function LoginPage() {
         } = await clientDB.auth.getUser();
         if (userError) throw userError;
 
-        const { error: profileInsertError } = await clientDB
+        await clientDB
           .from('user_profiles')
-          .insert([{ id: user.id, name: username }]);
-        if (profileInsertError) throw profileInsertError;
+          .upsert([
+            { id: user.id, name: username, school: '', bio: '', avatar_url: '', interests: [] }
+          ])
+          .select();
 
-        window.location.href = '/main-feed-page';
+        window.location.href = '/onboarding';
       }
     } catch (error) {
       setMessage({ text: error.message, type: 'error' });
