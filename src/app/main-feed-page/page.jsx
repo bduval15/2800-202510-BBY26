@@ -46,23 +46,13 @@ const threads = [
     },
     {
         id: 3,
-        title: 'Saving Tips',
-        description: 'How to save money on textbooks, food, and more',
-        postCount: 30,
-        createdAt: '2025-05-03T09:00:00Z',
-        isMine: false,
-        imageUrl: '/images/threads/savingsThread.png',
-        link: '/hacks-page'
-    },
-    {
-        id: 4,
-        title: 'Free Events',
-        description: 'Up-to-date listings of no-cost get togethers',
+        title: 'Events',
+        description: 'Up-to-date listings of fun or helpful events',
         postCount: 8,
         createdAt: '2025-05-05T08:45:00Z',
         isMine: true,
         imageUrl: '/images/threads/eventsThread.png',
-        link: '/hacks-page'
+        link: '/events-page'
     },
 ];
 
