@@ -214,11 +214,6 @@ import PropTypes from 'prop-types';
 BookmarkButton.propTypes = {
   hackId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   dealId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  // It's implied that one of these should be provided by the calling component.
-  // A runtime check could be added inside the component if strict enforcement is needed:
-  // if (!hackId && !dealId && process.env.NODE_ENV === 'development') {
-  //   console.warn('BookmarkButton: hackId or dealId prop is required.');
-  // }
 };
 
 export default BookmarkButton;
