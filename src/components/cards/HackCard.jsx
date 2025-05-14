@@ -20,6 +20,8 @@ import Tag from '../Tag';
  */
 
 const HackCard = ({ id, href, title, upvotes, downvotes, comments = 0, tags = [], className = '' }) => {
+  const titleCase = (str) =>
+    str.charAt(0).toUpperCase() + str.slice(1);
   return (
     <BaseCard className={`flex-col items-start bg-[#F5E3C6] border border-[#D1905A] ${className}`}>
       {/* Title wrapped in Link */}
@@ -33,7 +35,7 @@ const HackCard = ({ id, href, title, upvotes, downvotes, comments = 0, tags = []
       {tags && tags.length > 0 && (
         <div className="w-full mb-2 flex flex-wrap">
           {tags.slice(0, 3).map((tag, index) => (
-            <Tag key={index} label={tag} />
+            <Tag key={index} label={titleCase(tag)} />
           ))}
         </div>
       )}
@@ -55,11 +57,11 @@ const HackCard = ({ id, href, title, upvotes, downvotes, comments = 0, tags = []
 
 HackCard.propTypes = {
   id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  href: PropTypes.string.isRequired, 
+  href: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   upvotes: PropTypes.number.isRequired,
   downvotes: PropTypes.number.isRequired,
-  comments: PropTypes.number, 
+  comments: PropTypes.number,
   tags: PropTypes.arrayOf(PropTypes.string),
   className: PropTypes.string,
 };

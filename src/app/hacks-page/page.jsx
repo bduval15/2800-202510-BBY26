@@ -6,6 +6,8 @@ import HackCard from '@/components/cards/HackCard'
 import Footer from '@/components/Footer'
 import BottomNav from '@/components/BottomNav'
 import { clientDB } from '@/supabaseClient';
+import AIbutton from '@/components/buttons/AIbutton';
+
 
 /**
  * HacksPage.jsx
@@ -25,14 +27,40 @@ export default function HacksPage() {
   const [allHacks, setAllHacks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [interests, setInterests] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const hackTags = ['Campus Life', 'Health & Wellness', 'Study Tips', 'Food', 'Career', 'Finance', 'Technology', 'Social', "Photography", "Gaming"];
 
   useEffect(() => {
+    const fetchInterests = async () => {
+      const { data: { user } } = await clientDB.auth.getUser();
+      if (!user) return;
+  
+      const { data, error } = await clientDB
+        .from('user_profiles')
+        .select('interests')
+        .eq('id', user.id)
+        .single();
+  
+      if (error) {
+        console.error('Failed to fetch interests:', error.message);
+      } else if (data?.interests) {
+        setInterests(Array.isArray(data.interests)
+          ? data.interests
+          : data.interests.split(','));
+      }
+  
+      setLoading(false);
+    };
+  
+    fetchInterests();
+  }, []);
+  useEffect(() => {
     const fetchHacks = async () => {
       setIsLoading(true);
       setError(null);
-      try {        
+      try {
         const { data, error: fetchError } = await clientDB
           .from('hacks')
           .select('id, title, description, created_at, user_id, tags, upvotes, downvotes');
@@ -57,8 +85,8 @@ export default function HacksPage() {
   }, []);
 
   console.log("[HacksPage] Current allHacks state:", allHacks);
-  const filteredHacks = selectedTag === "All Tags" 
-    ? allHacks 
+  const filteredHacks = selectedTag === "All Tags"
+    ? allHacks
     : allHacks.filter(hack => hack.tags && hack.tags.includes(selectedTag));
   console.log("[HacksPage] Current filteredHacks:", filteredHacks);
 
@@ -90,6 +118,10 @@ export default function HacksPage() {
         ) : (
           !isLoading && !error && <p className="text-center text-gray-500 px-4">No hacks found for the selected tag. Try adding one!</p>
         )}
+
+        <div className="px-4 py-2 max-w-md mx-auto w-full">
+          <AIbutton interests={interests} />
+        </div>
         <Footer />
       </FeedLayout>
       <BottomNav />

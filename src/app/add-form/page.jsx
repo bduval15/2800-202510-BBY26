@@ -68,11 +68,12 @@ export default function AddFormPage() {
 
     if (formData.postType === 'hack') {
       tableName = 'hacks';
+      const lowerTags = formData.tags.map(t => t.toLowerCase());
       dataToInsert = {
         title: formData.title,
         description: formData.description,
         user_id: userId,
-        tags: formData.tags,
+        tags: lowerTags,
         upvotes: 0,
         downvotes: 0,
         location: formData.location

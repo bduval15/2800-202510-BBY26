@@ -475,6 +475,7 @@ import SavedHacksSection from "@/components/SavedHacksSection";
 import AvatarModal from "@/components/AvatarModal";
 import EditProfileModal from "@/components/EditProfileModal";
 
+
 export default function ProfilePage() {
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -492,6 +493,7 @@ export default function ProfilePage() {
 
   const [interests, setInterests] = useState([]);
   const [editInterests, setEditInterests] = useState([]);
+  
 
   const MAX_SELECTION = 5;
   const PREDEFINED_INTERESTS = [

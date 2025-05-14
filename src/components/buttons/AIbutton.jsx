@@ -98,7 +98,7 @@ export default function AIbutton({ interests }) {
 
             if (!found) {
                 console.log('No recommendations matched interests.');
-                setRecommendationCard({ table: 'no-matches' }); // Optional: add UI for this
+                setRecommendationCard({ table: 'no-matches' }); 
             }
 
         } catch (err) {
@@ -171,8 +171,23 @@ export default function AIbutton({ interests }) {
                         >
                             X
                         </button>
-
                         <p className="pr-5">Set up your interests first to get recommendations.</p>
+                    </div>
+                )}
+                {isOpen && recommendationCard?.table === 'no-matches' && (
+                    <div className="relative bg-[#F5E3C6] border border-[#D1905A] rounded-xl px-4 py-3 shadow text-sm text-[#8B4C24] max-w-[240px]">
+                        {/* Close button */}
+                        <button
+                            onClick={() => {
+                                setIsOpen(false);
+                                setRecommendationCard(null);
+                            }}
+                            className="absolute top-1 right-2 text-[#8B4C24] hover:text-[#5f321b] text-xs font-bold"
+                            aria-label="Close response"
+                        >
+                            X
+                        </button>
+                        <p className="pr-5">No matches found at this moment.</p>
                     </div>
                 )}
 

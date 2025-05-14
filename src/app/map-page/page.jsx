@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic'
 import StickyNavbar from '@/components/StickyNavbar';
 import Footer from '@/components/Footer';
@@ -8,6 +8,8 @@ import BottomNav from '@/components/BottomNav';
 import FilterBar from '@/components/mapComponents/FilterBar';
 import EventList from '@/components/mapComponents/EventList';
 import styles from '@/components/mapComponents/EventMap.module.css';
+import AIbutton from '@/components/buttons/AIbutton';
+import { clientDB } from '@/supabaseClient';
 
 const EventMap = dynamic(
   () => import('@/components/mapComponents/EventMap'),
@@ -18,6 +20,9 @@ const EventMap = dynamic(
 )
 
 export default function MapPage() {
+
+  const [interests, setInterests] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const dummyEvents = [
     {
@@ -46,6 +51,31 @@ export default function MapPage() {
     console.log('would apply filters:', filters);
   };
 
+  useEffect(() => {
+    const fetchInterests = async () => {
+      const { data: { user } } = await clientDB.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await clientDB
+        .from('user_profiles')
+        .select('interests')
+        .eq('id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Failed to fetch interests:', error.message);
+      } else if (data?.interests) {
+        setInterests(Array.isArray(data.interests)
+          ? data.interests
+          : data.interests.split(','));
+      }
+
+      setLoading(false);
+    };
+
+    fetchInterests();
+  }, []);
+  
   return (
     <>
       <StickyNavbar />
@@ -65,6 +95,10 @@ export default function MapPage() {
             </div>
             <div className="mt-4">
               <EventList events={dummyEvents} />
+            </div>
+
+            <div className="px-4 py-2 max-w-md mx-auto w-full">
+              <AIbutton interests={interests} />
             </div>
           </div>
           <Footer />

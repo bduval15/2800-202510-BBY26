@@ -221,7 +221,6 @@ export default function MainFeed() {
                 ))}
 
                 <div className="px-4 py-2 max-w-md mx-auto w-full">
-                    
                         <AIbutton interests={interests} />
                 </div>
                 <Footer />
