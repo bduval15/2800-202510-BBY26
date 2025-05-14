@@ -35,7 +35,8 @@ delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: greenMarker2x,
     iconUrl: greenMarker,
-    shadowUrl: markerShadow
+    shadowUrl: markerShadow,
+    popupAnchor:     [1, -40] 
 });
 
 function FitBounds({ bounds }) {

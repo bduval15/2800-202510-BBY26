@@ -48,6 +48,9 @@ export default function LocateControl({
 
         // 4) Wire up the locate click
         container.onclick = () => {
+
+          map.closePopup();
+
           map.locate({
             ...locateOptions,
             setView: true,
