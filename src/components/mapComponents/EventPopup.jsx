@@ -12,21 +12,33 @@
 
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import L from 'leaflet';
 import { Popup } from 'react-leaflet';
 import { useRouter } from 'next/navigation';
 import {
-  CalendarIcon,
-  ClockIcon,
   MapPinIcon,
-  CurrencyDollarIcon
 } from '@heroicons/react/24/outline';
 
-export default function EventPopup({ evt }) {
+export default function EventPopup({ evt, userPosition }) {
   const router = useRouter();
   const labelMap = { hacks: 'Hacks', deals: 'Deals', events: 'Free Events' };
   const threadLabel = labelMap[evt.table_id] || 'General';
   const avatarSrc = evt.userAvatar || '/images/logo.png';
+  const [distanceKm, setDistanceKm] = useState(null);
+
+  useEffect(() => {
+    if (
+      userPosition &&
+      typeof evt.lat === 'number' &&
+      typeof evt.lng === 'number'
+    ) {
+      const from = L.latLng(userPosition.lat, userPosition.lng);
+      const to = L.latLng(evt.lat, evt.lng);
+      const meters = from.distanceTo(to);
+      setDistanceKm(meters / 1000);
+    }
+  }, [userPosition, evt.lat, evt.lng]);
 
   return (
     <Popup
@@ -51,27 +63,24 @@ export default function EventPopup({ evt }) {
             {evt.title}
           </h4>
         </div>
-        {/* — Thread Pill underneath — */}
-        <div className="flex justify-start mb-2">
-          <span className="bg-[#639751] text-white text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap">
-            {threadLabel}
-          </span>
-        </div>
-        {/* — Details Grid — */}
-        <div className="grid grid-cols-2 gap-1 text-gray-600 text-xs mb-3">
+        {/* — Location on left, Thread Pill on right — */}
+        <div className="flex justify-between items-center text-gray-600 text-xs mb-3">
           <div className="flex items-center space-x-1">
             <MapPinIcon className="h-4 w-4" />
-            <span>{evt.distance}</span>
+            <span>
+              {distanceKm != null
+                ? `${distanceKm.toFixed(1)} km away`
+                : '…'}
+            </span>
           </div>
-          <div className="flex items-center space-x-1">
-            <CurrencyDollarIcon className="h-4 w-4 text-[#639751]" />
-            <span className="text-[#639751]">{evt.price}</span>
-          </div>
+          <span className="bg-[#D1905A] text-white text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap">
+            {threadLabel}
+          </span>
         </div>
         {/* — Call to action — */}
         <button
           onClick={() => router.push(`/posts/${evt.id}`)}
-          className="block w-full bg-[#639751] hover:bg-[#4f7a43] text-white text-sm font-medium py-1 rounded"
+          className="block w-full bg-[#639751] hover:bg-[#4f7a43] text-white text-sm font-medium py-2 rounded-lg"
         >
           Go to Post
         </button>

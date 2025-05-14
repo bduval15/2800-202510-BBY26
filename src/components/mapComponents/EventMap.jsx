@@ -22,16 +22,17 @@ import { useEffect, useState, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+
 import greenMarker2x from 'leaflet-color-markers/img/marker-icon-2x-green.png';
 import greenMarker from 'leaflet-color-markers/img/marker-icon-green.png';
 import markerShadow from 'leaflet-color-markers/img/marker-shadow.png';
+
 import LocateControl from '@/components/mapComponents/LocateControl';
 import styles from '@/components/mapComponents/EventMap.module.css';
 import EventPopup from '@/components/mapComponents/EventPopup';
 import { clientDB } from '@/supabaseClient';
 
 delete L.Icon.Default.prototype._getIconUrl;
-
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: greenMarker2x,
     iconUrl: greenMarker,
@@ -71,7 +72,7 @@ function ClosePopupsOnClick() {
     return null;
 }
 
-function ZoomMarker({ evt }) {
+function ZoomMarker({ evt, userPos }) {
     const map = useMap();
 
     const handleClick = (e) => {
@@ -89,7 +90,7 @@ function ZoomMarker({ evt }) {
             position={[evt.lat, evt.lng]}
             eventHandlers={{ click: handleClick }}
         >
-            <EventPopup evt={evt} />
+            <EventPopup evt={evt} userPosition={userPos} />
         </Marker>
     );
 }
@@ -155,7 +156,9 @@ export default function EventMap({
                 <ClosePopupsOnClick />
 
                 {events.map(evt => (
-                    <ZoomMarker key={evt.id} evt={evt} />
+                    <ZoomMarker key={evt.id} 
+                                evt={evt}
+                                userPos={userPos} />
                 ))}
 
                 <LocateControl
@@ -163,8 +166,8 @@ export default function EventMap({
                     drawCircle={false}
                     follow={true}
                     zoomTo={14}
-                    onLocated={(coords) => {
-                        setUserPos(coords);
+                    onLocated={([lat, lng]) => {
+                        setUserPos({ lat, lng });
                     }}
                     locateOptions={{
                         enableHighAccuracy: true,
@@ -172,7 +175,7 @@ export default function EventMap({
                     }}
                 />
                 {userPos && (
-                    <Marker position={userPos} icon={logoIcon}>
+                    <Marker position={[userPos.lat, userPos.lng]} icon={logoIcon}>
                         <Popup
                             className="you-are-here"
                             closeButton={false}
