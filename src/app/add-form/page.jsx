@@ -5,9 +5,8 @@ import AddPostForm from '@/components/forms/AddPostForm';
 import Footer from '@/components/Footer';
 import BottomNav from '@/components/BottomNav';
 import StickyNavbar from '@/components/StickyNavbar';
-import { clientDB } from '../../../supabaseClient';
-
 import { clientDB } from '@/supabaseClient';
+
 /**
  * AddFormPage.jsx
  * Loaf Life - Add Form Page
@@ -50,7 +49,8 @@ export default function AddFormPage() {
         user_id: userId,
         tags: formData.tags,
         upvotes: 0,
-        downvotes: 0
+        downvotes: 0,
+        location: formData.location
       };
     } else if (formData.postType === 'deal') {
       tableName = 'deals';
@@ -74,8 +74,16 @@ export default function AddFormPage() {
       return;
     }
 
-    // For now, always redirect to hacks-page. This can be changed later.
-    router.push('/hacks-page');
+    // Redirect based on post type
+    if (formData.postType === 'hack') {
+      router.push('/hacks-page');
+    } else if (formData.postType === 'deal') {
+      router.push('/deals-page'); // Assuming this is the correct route for deals
+    } else {
+      // Fallback redirection if postType is somehow unknown at this point
+      console.warn('Unknown post type for redirection:', formData.postType);
+      router.push('/'); // Or a more appropriate default page
+    }
   };
 
   const handleCancel = () => {

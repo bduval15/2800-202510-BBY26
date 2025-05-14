@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react';
+import LocationAutoComplete from '@/components/mapComponents/LocationAutoComplete';
 
 /**
  * AddHackForm.jsx
@@ -18,10 +19,15 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
-  const [postType, setPostType] = useState('hack'); 
-  const [location, setLocation] = useState('');
+  const [postType, setPostType] = useState('hack');
   const [price, setPrice] = useState('');
   const [showTagError, setShowTagError] = useState(false);
+  const [coords, setCoords] = useState(null);
+  const [location, setLocation] = useState({
+    address: '',
+    lat: null,
+    lng: null
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,11 +39,36 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
     }
     setShowTagError(false);
 
+    if (postType === 'deal' && (location.lat == null || location.lng == null)) {
+      try {
+        const params = new URLSearchParams({
+          q: location.address,
+          format: 'json',
+          limit: '1',
+          viewbox: '-123.5,49.5,-122.4,49.0',
+          bounded: '1'
+        });
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?${params}`,
+          { headers: { 'Accept-Language': 'en' } }
+        );
+        const data = await res.json();
+        if (data[0]) {
+          const lat = parseFloat(data[0].lat);
+          const lng = parseFloat(data[0].lon);
+          setLocation(loc => ({ ...loc, lat, lng }));
+          setCoords([lat, lng]);
+        }
+      } catch (err) {
+        console.error('fallback geocode failed', err);
+      }
+    }
+
     let formData = { title, postType };
     if (postType === 'hack') {
-      formData = { ...formData, description, tags: selectedTags };
-    } else { 
-      formData = { ...formData, location, price: parseFloat(price) || 0 };
+      formData = { ...formData, description,location, tags: selectedTags };
+    } else {
+      formData = { ...formData, location, coords, price: parseFloat(price) || 0 };
     }
     console.log(formData);
     if (onSubmit) {
@@ -56,7 +87,7 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
       if (prevSelectedTags.includes(tagValue)) {
         return prevSelectedTags.filter(t => t !== tagValue);
       } else {
-        return [...prevSelectedTags, tagValue]; 
+        return [...prevSelectedTags, tagValue];
       }
     });
   };
@@ -66,7 +97,7 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
       <h2 className="text-xl font-semibold text-[#8B4C24]">
         {postType === 'hack' ? 'Add a New Hack' : 'Add a New Deal'}
       </h2>
-      
+
       <div>
         <label className="block text-sm font-medium text-[#6A401F] mb-2">
           Post Type
@@ -75,22 +106,20 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
           <button
             type="button"
             onClick={() => setPostType('hack')}
-            className={`py-2 px-6 rounded-full text-sm font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${ 
-              postType === 'hack'
-                ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
-                : 'bg-white text-[#8B4C24] hover:bg-gray-100 border border-[#D1905A]'
-            }`}
+            className={`py-2 px-6 rounded-full text-sm font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${postType === 'hack'
+              ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
+              : 'bg-white text-[#8B4C24] hover:bg-gray-100 border border-[#D1905A]'
+              }`}
           >
             Hack
           </button>
           <button
             type="button"
             onClick={() => setPostType('deal')}
-            className={`py-2 px-6 rounded-full text-sm font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${ 
-              postType === 'deal'
-                ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
-                : 'bg-white text-[#8B4C24] hover:bg-gray-100 border border-[#D1905A]'
-            }`}
+            className={`py-2 px-6 rounded-full text-sm font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${postType === 'deal'
+              ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
+              : 'bg-white text-[#8B4C24] hover:bg-gray-100 border border-[#D1905A]'
+              }`}
           >
             Deal
           </button>
@@ -111,7 +140,7 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
           placeholder={postType === 'hack' ? "e.g., Free BCIT Gym Access" : "e.g., Half-price Pizza at Campus Pub"}
         />
       </div>
-      
+
       {postType === 'hack' && (
         <>
           <div>
@@ -128,7 +157,15 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
               placeholder="Share the details of your hack..."
             />
           </div>
-          
+          <div>
+            <LocationAutoComplete
+              placeholder="(Optional)"
+              onSelect={({ address, lat, lng }) => {
+                setLocation({ address, lat, lng });
+                setCoords([lat, lng]);
+              }}
+            />
+          </div>
           <div>
             <label className="block text-sm font-medium text-[#6A401F] mb-2">
               Tags
@@ -139,11 +176,10 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
                   type="button"
                   key={tag}
                   onClick={() => handleTagChange(tag)}
-                  className={`py-2 px-4 rounded-full text-xs font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${
-                    selectedTags.includes(tag)
-                      ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
-                      : 'bg-white text-[#8B4C24] hover:bg-gray-100 ring-1 ring-inset ring-[#D1905A]'
-                  }`}
+                  className={`py-2 px-4 rounded-full text-xs font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${selectedTags.includes(tag)
+                    ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
+                    : 'bg-white text-[#8B4C24] hover:bg-gray-100 ring-1 ring-inset ring-[#D1905A]'
+                    }`}
                 >
                   {tag}
                 </button>
@@ -160,17 +196,12 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
       {postType === 'deal' && (
         <>
           <div>
-            <label htmlFor="location" className="block text-sm font-medium text-[#6A401F] mb-1">
-              Location
-            </label>
-            <input
-              type="text"
-              id="location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              required={postType === 'deal'}
-              className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400 text-gray-900"
-              placeholder="e.g., SE12 Cafeteria"
+            <LocationAutoComplete
+              placeholder="e.g., Canada Place"
+              onSelect={({ address, lat, lng }) => {
+                setLocation({ address, lat, lng });
+                setCoords([lat, lng]);
+              }}
             />
           </div>
           <div>

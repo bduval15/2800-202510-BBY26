@@ -22,14 +22,18 @@ import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import greenMarker2x from 'leaflet-color-markers/img/marker-icon-2x-green.png';
+import greenMarker   from 'leaflet-color-markers/img/marker-icon-green.png';
+import markerShadow  from 'leaflet-color-markers/img/marker-shadow.png';
 import LocateControl from '@/components/mapComponents/LocateControl';
 import styles from '@/components/mapComponents/EventMap.module.css';
 
 delete L.Icon.Default.prototype._getIconUrl;
+
 L.Icon.Default.mergeOptions({
-    iconRetinaUrl: '/leaflet/marker-icon-2x.png',
-    iconUrl: '/leaflet/marker-icon.png',
-    shadowUrl: '/leaflet/marker-shadow.png',
+  iconRetinaUrl: greenMarker2x,
+  iconUrl:     greenMarker,
+  shadowUrl:   markerShadow
 });
 
 function FitBounds({ bounds }) {

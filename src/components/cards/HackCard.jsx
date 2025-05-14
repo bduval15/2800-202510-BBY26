@@ -11,7 +11,7 @@ import Tag from '../Tag';
  * HackCard.jsx
  * Loaf Life - Hack Card
  * 
- * This component displays a hack card.
+ * This component displays a hack card. 
  * 
  * @author: Nathan O
  * 
@@ -19,15 +19,12 @@ import Tag from '../Tag';
  * @author https://gemini.google.com/app
  */
 
-const HackCard = ({ id, title, upvotes, downvotes, comments, tags = [], className = '' }) => {
-  // Construct the detail page URL
-  const detailPageUrl = `/hacks-page/${id}`; 
-
+const HackCard = ({ id, href, title, upvotes, downvotes, comments = 0, tags = [], className = '' }) => {
   return (
     <BaseCard className={`flex-col items-start bg-[#F5E3C6] border border-[#D1905A] ${className}`}>
       {/* Title wrapped in Link */}
       <div className="w-full mb-2">
-        <Link href={detailPageUrl} passHref>
+        <Link href={href || `/hacks-page/${id}`} passHref>
           <h3 className="text-lg font-semibold text-[#8B4C24] hover:underline cursor-pointer">{title}</h3>
         </Link>
       </div>
@@ -44,13 +41,13 @@ const HackCard = ({ id, title, upvotes, downvotes, comments, tags = [], classNam
       {/* Interactions */}
       <div className="flex items-center space-x-2 text-xs w-full justify-start mt-2">
         {/* Upvotes / Downvotes Group */}
-        <VoteButtons upvotes={upvotes} downvotes={downvotes} />
+        <VoteButtons hackId={id} upvotes={upvotes} downvotes={downvotes} />
 
-        {/* Comments Group */}
+        {/* Comments Group - uses default 0 if comments not provided */}
         <CommentDisplay count={comments} />
 
         {/* Bookmark Button */}
-        <BookmarkButton />
+        <BookmarkButton hackId={id} />
       </div>
     </BaseCard>
   );
@@ -58,10 +55,11 @@ const HackCard = ({ id, title, upvotes, downvotes, comments, tags = [], classNam
 
 HackCard.propTypes = {
   id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  href: PropTypes.string.isRequired, 
   title: PropTypes.string.isRequired,
   upvotes: PropTypes.number.isRequired,
   downvotes: PropTypes.number.isRequired,
-  comments: PropTypes.number.isRequired,
+  comments: PropTypes.number, 
   tags: PropTypes.arrayOf(PropTypes.string),
   className: PropTypes.string,
 };
