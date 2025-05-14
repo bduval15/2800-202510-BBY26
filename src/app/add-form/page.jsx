@@ -59,7 +59,7 @@ export default function AddFormPage() {
         title: formData.title,
         location: formData.location,
         price: formData.price,
-        // TODO: ADD DESCRIPTION + SUPABASE
+        description: formData.description,
         user_id: userId,
         tags: formData.tags,
         table_id: 'deals'
