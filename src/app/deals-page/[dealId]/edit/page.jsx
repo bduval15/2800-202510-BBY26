@@ -188,8 +188,8 @@ export default function EditDealPage({ params }) {
       return;
     }
     const parsedPrice = parseFloat(price);
-    if (isNaN(parsedPrice) || parsedPrice < 0) {
-      setSubmitError("Please enter a valid price (must be a non-negative number).");
+    if (isNaN(parsedPrice) || parsedPrice < 0 || parsedPrice > 1000000) {
+      setSubmitError("Price must be a valid number between 0 and 1,000,000.");
       setIsLoading(false);
       return;
     }
@@ -319,11 +319,12 @@ export default function EditDealPage({ params }) {
                 id="price"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
-                required
+                placeholder="e.g., 10.99"
                 step="0.01"
                 min="0"
-                placeholder="e.g., 4.99"
+                max="1000000"
                 className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400 text-gray-900"
+                required
               />
             </div>
 

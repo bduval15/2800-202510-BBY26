@@ -102,7 +102,7 @@ export default function DealDetailPage() {
         setError(null);
         const { data, error: fetchError } = await supabase
           .from('deals')
-          .select('*, user_profiles(name), tags')
+          .select('*, user_profiles(name), tags, description')
           .eq('id', dealId)
           .single();
 
@@ -264,6 +264,13 @@ export default function DealDetailPage() {
             </div>
           )}
 
+          {deal.description && (
+            <div className="mb-4">
+              <h2 className="text-lg font-semibold mb-1 text-[#6A4C3C]">Description</h2>
+              <p className="text-[#8B4C24] whitespace-pre-wrap">{deal.description}</p>
+            </div>
+          )}
+
           {displayLocation && (
             <div className="mb-4">
               <div className="flex items-center mb-1">
@@ -280,7 +287,7 @@ export default function DealDetailPage() {
               <h2 className="text-lg font-semibold mb-1 text-[#6A4C3C]">Price</h2>
               <p className="text-[#8B4C24]">${typeof deal.price === 'number' ? deal.price.toFixed(2) : deal.price}</p>
             </div>
-          )}
+          )}    
 
           <p className="text-sm text-[#8B4C24]/80 mb-8">
             Posted by {deal.user_profiles && deal.user_profiles.name ? deal.user_profiles.name : (deal.user_id ? `User ${deal.user_id.substring(0,8)}...` : 'Unknown')} - {formatTimeAgo(deal.created_at)}
