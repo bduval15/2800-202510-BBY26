@@ -25,7 +25,6 @@ import { clientDB } from '@/supabaseClient.js';
  * @author Nate O
  */
 
-
 export default function DealDetailPage() {
   const params = useParams();
   const dealId = params.dealId;
