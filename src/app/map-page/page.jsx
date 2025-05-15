@@ -11,7 +11,7 @@
  */
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import StickyNavbar from '@/components/StickyNavbar';
 import Footer from '@/components/Footer';
@@ -68,34 +68,30 @@ export default function MapPage() {
               const loc = JSON.parse(e.location);
               lat = loc.lat;
               lng = loc.lng;
-            } catch {}
+            } catch { }
           }
 
           // 4b) format date/time
           const date = e.date
             ? new Date(e.date).toLocaleDateString(undefined, {
-                month: 'short', day: 'numeric', year: 'numeric'
-              })
+              month: 'short', day: 'numeric', year: 'numeric'
+            })
             : '';
           const time = e.start_time && e.end_time
             ? `${e.start_time} – ${e.end_time}`
             : '';
 
           return {
-            id:          e.id,
-            title:       e.title,
+            id: e.id,
+            title: e.title,
             description: e.description || 'No description provided',
             date,
             time,
-            price:       e.price != null ? `$${e.price}` : '$0',
+            price: e.price != null ? `$${e.price}` : '$0',
             lat,
             lng,
-
-            // key for your popup label
-            table_id:    e.table_id,
-
-            // avatar
-            userAvatar:  profileMap[e.user_id] || '/images/logo.png'
+            table_id: e.table_id,
+            userAvatar: profileMap[e.user_id] || '/images/logo.png'
           };
         })
         .filter(e => e.lat != null && e.lng != null);
@@ -103,17 +99,23 @@ export default function MapPage() {
       setEvents(formatted);
     })();
   }, []);
+  const threads = useMemo(() => ([
+    { id: 'hacks',  name: 'Hacks'       },
+    { id: 'deals',  name: 'Deals'       },
+    { id: 'events', name: 'Free Events' }
+  ]), []);
 
-  const threads = [
-    { id: 'hacks', name: 'Hacks' },
-    { id: 'deals', name: 'Deals' },
-    { id: 'savings', name: 'Saving Tips' },
-    { id: 'free-events', name: 'Free Events' }
-  ];
+  const [selectedThreads, setSelectedThreads] = useState(
+    () => threads.map(t => t.id) 
+      );
 
-  const handleApply = filters => {
-    console.log('apply filters', filters);
-  };
+  const filteredEvents = useMemo(() => {
+    return events.filter(evt => selectedThreads.includes(evt.table_id));
+  }, [events, selectedThreads]);
+
+  const handleFilterChange = useCallback(ids => {
+    setSelectedThreads(ids);
+  }, []);
 
   return (
     <>
@@ -122,12 +124,12 @@ export default function MapPage() {
         <div className="flex-1 overflow-auto pb-20">
           <FilterBar
             threads={threads}
-            initialFilters={{}}
-            onApplyFilters={handleApply}
+           initialSelected={selectedThreads}
+           onFilterChange={handleFilterChange}
           />
           <div className="p-4">
             <div className={styles.mapWrapper}>
-              <EventMap events={events} />
+              <EventMap events={filteredEvents}/>
             </div>
           </div>
           <Footer />
