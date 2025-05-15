@@ -8,7 +8,6 @@ import BottomNav from '@/components/BottomNav'
 import { clientDB } from '@/supabaseClient';
 import AIbutton from '@/components/buttons/AIbutton';
 
-
 /**
  * HacksPage.jsx
  * Loaf Life - Hacks Page
