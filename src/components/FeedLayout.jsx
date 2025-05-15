@@ -10,7 +10,7 @@
 
 'use client'
 
-import { useState, useRef, useEffect } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import SortDropdown from "./SortDropdown"
 import StickyNavbar from './StickyNavbar'
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/24/outline"
@@ -27,8 +27,9 @@ export default function FeedLayout({
   const [dateSort, setDateSort] = useState("Newest")
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false)
   const tagDropdownRef = useRef(null)
+  const [sortedAndFilteredChildren, setSortedAndFilteredChildren] = useState([])
 
-  const bestOptions = ["Best", "Top", "Hot", "New", "Rising"]
+  const bestOptions = ["Best", "Controversial"]
   const dateOptions = ["Newest", "Oldest"]
   
   const baseTagButtonClass = "py-1 px-3 rounded-full text-xs font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap";
@@ -46,6 +47,58 @@ export default function FeedLayout({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [tagDropdownRef]);
+
+  useEffect(() => {
+    const childrenArray = React.Children.toArray(children);
+
+    const processedChildren = [...childrenArray].sort((childA, childB) => {
+      // Directly access props from the child, not child.props.post
+      const propsA = childA?.props;
+      const propsB = childB?.props;
+
+      const isValidPostForSorting = (itemProps, currentSelectedTags) => {
+        if (!itemProps || typeof itemProps.upvotes !== 'number' || typeof itemProps.downvotes !== 'number' || !itemProps.createdAt) {
+          return false;
+        }
+    
+        return true;
+      };
+
+      const isSortableA = isValidPostForSorting(propsA, selectedTags);
+      const isSortableB = isValidPostForSorting(propsB, selectedTags);
+
+      if (isSortableA && !isSortableB) return -1; 
+      if (!isSortableA && isSortableB) return 1;  
+      if (!isSortableA && !isSortableB) return 0; 
+
+      // Both are sortable, proceed with actual sorting logic
+      const scoreA = propsA.upvotes - propsA.downvotes;
+      const scoreB = propsB.upvotes - propsB.downvotes;
+      
+      const timeA = new Date(propsA.createdAt).getTime();
+      const timeB = new Date(propsB.createdAt).getTime();
+      const dateA = !isNaN(timeA) ? timeA : 0;
+      const dateB = !isNaN(timeB) ? timeB : 0;
+
+      // Primary sort: bestSort
+      if (bestSort === "Best") {
+        if (scoreB !== scoreA) return scoreB - scoreA; // Descending score
+      } else if (bestSort === "Controversial") { // "worst" means lowest score first
+        if (scoreA !== scoreB) return scoreA - scoreB; // Ascending score
+      }
+
+      // Secondary sort: dateSort
+      if (dateSort === "Newest") {
+        return dateB - dateA; // Descending date
+      } else if (dateSort === "Oldest") {
+        return dateA - dateB; // Ascending date
+      }
+      
+      return 0;
+    });
+
+    setSortedAndFilteredChildren(processedChildren);
+  }, [children, bestSort, dateSort, selectedTags]);
 
   const getTagButtonLabel = () => {
     if (selectedTags.length === 0) {
@@ -135,7 +188,7 @@ export default function FeedLayout({
       <main className="max-w-md mx-auto px-4 py-6 space-y-6">
         <h1 className="text-2xl font-bold text-[#8B4C24]">{title}</h1>
         {/* pass bestSort, dateSort, and selectedTags down to your feed-rendering logic */}
-        {children}
+        {sortedAndFilteredChildren}
       </main>
     </>
   )
