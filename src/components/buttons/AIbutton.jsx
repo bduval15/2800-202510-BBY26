@@ -1,3 +1,14 @@
+/**
+ * Takes an array of user interests, constructs a short prompt, sends it to the
+ * Hugging Face inference API, and returns a concise, casual recommendation
+ * (a deal, a hack, or an event).
+ *
+ * Modified with assistance from ChatGPT o4-mini-high.
+ * 
+ * @author Natalia Arseniuk
+ * @author https://chatgpt.com/
+ */
+
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -6,35 +17,40 @@ import { clientDB } from '@/supabaseClient'
 
 import HackCard from '@/components/cards/HackCard'
 import DealCard from '@/components/cards/DealCard'
-import EventCard from '@/components/cards/EventCard'  
+import EventCard from '@/components/cards/EventCard'
 
 export default function AIbutton({ interests }) {
+    // State Hooks
     const [recommendationCard, setRecommendationCard] = useState(null)
     const [lastCardId, setLastCardId] = useState(null)
     const [isOpen, setIsOpen] = useState(false)
     const [loading, setLoading] = useState(false)
     const [showTooltip, setShowTooltip] = useState(true)
 
+    // Tooltip Timeout
     useEffect(() => {
         const timer = setTimeout(() => setShowTooltip(false), 5000)
         return () => clearTimeout(timer)
     }, [])
 
+    // Recommendation Fetcher
     const handleClick = async () => {
         setLoading(true)
         setIsOpen(true)
         setRecommendationCard(null)
 
-        const tables = ['deals', 'hacks', 'events']         
+        // Define and shuffle the tables
+        const tables = ['deals', 'hacks', 'events']
         const shuffledTables = tables.sort(() => Math.random() - 0.5)
 
+        // If no interests, short-circuit
         if (!interests || interests.length === 0) {
             setRecommendationCard({ table: 'no-interests' })
             setLoading(false)
             return
         }
 
-        // normalize interests
+        // Normalize interests into a lowercase array
         const normalizedInterests = Array.isArray(interests)
             ? interests.map((t) => t.toLowerCase())
             : typeof interests === 'string'
@@ -44,23 +60,27 @@ export default function AIbutton({ interests }) {
         try {
             let found = false
 
+            // Search each table for at least one matching tag
             for (let table of shuffledTables) {
                 let query = clientDB.from(table).select(
                     table === 'hacks'
                         ? 'id, title, upvotes, downvotes, tags'
                         : table === 'deals'
                             ? 'id, title, location, price, tags'
-                            : /* events */ 'id, title, location, upvotes, downvotes, tags'
+                            : 'id, title, location, upvotes, downvotes, tags' /* events */
                 )
 
+                // Filter by overlapping tags
                 if (normalizedInterests.length) {
                     query = query.overlaps('tags', normalizedInterests)
                 }
 
+                // Exclude the last-shown card
                 if (lastCardId) {
                     query = query.neq('id', lastCardId)
                 }
 
+                // Fetch up to 10 and pick one at random
                 const { data, error } = await query.limit(10)
                 if (error || !data?.length) continue
 
@@ -71,6 +91,7 @@ export default function AIbutton({ interests }) {
                 break
             }
 
+            // If nothing matched
             if (!found) {
                 setRecommendationCard({ table: 'no-matches' })
             }
@@ -81,9 +102,10 @@ export default function AIbutton({ interests }) {
         setLoading(false)
     }
 
+    // Render 
     return (
         <>
-            {/* Recommendation Bubble */}
+            {/* Container aligns bubble + button to bottom-right */}
             <div className="fixed bottom-8 right-13 z-50 flex flex-col items-end">
                 {isOpen &&
                     recommendationCard &&
@@ -106,6 +128,7 @@ export default function AIbutton({ interests }) {
                             >
                                 X
                             </button>
+
                             {/* arrow */}
                             <div
                                 className="
