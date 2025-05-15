@@ -1,16 +1,18 @@
 /**
  * SavedPostsSection.jsx
- * Displays a list of saved posts (hacks and deals) from the user's profile.
+ * Loaf Life – displays a list of saved posts (hacks and deals) from the user's profile.
  * 
  * Props:
- * - posts (array of objects) — includes saved hacks and deals, each with a `type` field ("hack" or "deal")
+ * - posts (array): list of saved items, each containing a `type` field ("hack" or "deal")
  * 
- * This reusable component is part of the Loaf Life user profile system.
- * It dynamically renders HackCard or DealCard components based on the post type.
+ * This reusable component dynamically renders HackCard or DealCard components depending on post type.
+ * Includes fallback UI when no saved posts exist.
  * 
- * Portions of styling and layout were assisted by ChatGPT for educational purposes (e.g., Tailwind class structuring, semantic HTML structure).
- * Originally based on the SavedHacksSection. Renamed and refactored to support multiple post types.
+ * Originally based on SavedHacksSection; renamed and refactored for broader use.
+ * Portions of layout and styling were assisted by ChatGPT for educational purposes.
+ *
  * Modified with assistance from ChatGPT o4-mini-high.
+ * @author Aleen Dawood
  * @author https://chatgpt.com/*
  */
 
@@ -27,6 +29,7 @@ export default function SavedPostsSection({ posts = [] }) {
     return (
         <section className="max-w-md mx-auto bg-white p-4 rounded-lg mt-6 mb-10">
             <h2 className="font-semibold text-left text-lg text-[#8B4C24] mb-2">Saved Posts</h2>
+
             <div className="space-y-4">
                 {posts.length > 0 ? (
                     posts.map((post) =>
@@ -52,6 +55,7 @@ export default function SavedPostsSection({ posts = [] }) {
                         )
                     )
                 ) : (
+                    // Empty state when no saved posts
                     <div className="flex flex-col items-center text-center bg-[#F5E3C6] border border-[#D1905A] rounded-2xl p-6 shadow-md">
                         <Image
                             src="/images/loafs/sad-loaf.png"

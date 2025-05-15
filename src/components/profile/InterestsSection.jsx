@@ -7,20 +7,21 @@
  * Portions of styling and layout were assisted by ChatGPT for educational purposes.
  *
  * Modified with assistance from ChatGPT o4-mini-high.
+ * @author Aleen Dawood
  * @author https://chatgpt.com/*
  */
 
 import React from "react";
 
 export default function InterestsSection({
-    interests = [],
-    editInterests = [],
-    setEditInterests = () => { },
-    showEditInterests = false,
+    interests = [],                 // Current interests (display-only)
+    editInterests = [],             // Temporary list for editing
+    setEditInterests = () => { },   // Setter for edited interests
+    showEditInterests = false,      // Modal visibility toggle
     setShowEditInterests = () => { },
-    onSaveInterests = () => { },
-    predefinedInterests = [],
-    maxSelection = 5,
+    onSaveInterests = () => { },    // Save handler callback
+    predefinedInterests = [],       // List of predefined options
+    maxSelection = 5,               // Limit on number of interests
 }) {
     return (
         <section className="max-w-md mx-auto bg-white p-4 rounded-lg mt-6">
@@ -28,7 +29,7 @@ export default function InterestsSection({
                 My Interests
             </h2>
 
-            {/* Interest tags */}
+            {/* Display selected interests as emoji-label tags */}
             <div className="flex flex-wrap gap-2 text-sm mb-4">
                 {interests.map((interest, index) => (
                     <span
@@ -41,7 +42,7 @@ export default function InterestsSection({
                 ))}
             </div>
 
-            {/* Edit Interests button */}
+            {/* Edit button triggers interest selection modal */}
             <div className="flex justify-end">
                 <button
                     onClick={() => setShowEditInterests(true)}
@@ -59,11 +60,13 @@ export default function InterestsSection({
                             Choose up to {maxSelection} Interests
                         </h2>
 
+                        {/* Grid of selectable interest buttons */}
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6 justify-items-center">
                             {predefinedInterests.map((interest) => {
                                 const isSelected = editInterests.some(
                                     (i) => i.label === interest.label
                                 );
+
                                 return (
                                     <button
                                         key={interest.label}
@@ -88,6 +91,7 @@ export default function InterestsSection({
                             })}
                         </div>
 
+                        {/* Modal action buttons */}
                         <div className="flex justify-between mt-4">
                             <button
                                 onClick={() => setShowEditInterests(false)}

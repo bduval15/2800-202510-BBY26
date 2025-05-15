@@ -5,7 +5,14 @@
  *
  * Usage:
  * <Toast message="Profile saved!" type="success" />
+ *
+ * Modified with assistance from ChatGPT o4-mini-high.
+ * Portions of styling and animation assisted by ChatGPT for educational purposes.
+ *
+ * @author Aleen Dawood
+ * @author https://chatgpt.com/*
  */
+
 'use client';
 
 import { useEffect } from 'react';
@@ -13,6 +20,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 
 export default function Toast({ message, type = 'success', visible, onClose }) {
+    // Automatically hide toast after 3 seconds
     useEffect(() => {
         if (visible) {
             const timer = setTimeout(() => {
@@ -22,6 +30,7 @@ export default function Toast({ message, type = 'success', visible, onClose }) {
         }
     }, [visible, onClose]);
 
+    // Background colors and icons based on toast type
     const backgroundColors = {
         success: 'bg-[#639751]',
         error: 'bg-red-500',
@@ -44,7 +53,7 @@ export default function Toast({ message, type = 'success', visible, onClose }) {
                     transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                     className={`flex items-center gap-2 fixed top-6 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-xl shadow-lg text-white text-sm z-[1000] ${backgroundColors[type]}`}
                 >
-                    {/* Optional loaf image */}
+                    {/* Toast emoji icon */}
                     <Image
                         src={emojiIcons[type]}
                         alt="toast icon"
@@ -52,6 +61,7 @@ export default function Toast({ message, type = 'success', visible, onClose }) {
                         height={24}
                         className="object-contain"
                     />
+                    {/* Toast message */}
                     {message}
                 </motion.div>
             )}

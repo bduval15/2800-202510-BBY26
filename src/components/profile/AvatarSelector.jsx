@@ -9,6 +9,8 @@
  * were refined with the assistance of ChatGPT o4-mini-high for educational purposes.
  *
  * Modified with assistance from ChatGPT o4-mini-high.
+ * 
+ * @author Aleen Dawood
  * @author https://chatgpt.com/*
  */
 
@@ -16,7 +18,7 @@
 
 import React, { useState } from "react";
 
-// Define 9 avatar image paths.
+// List of avatar image paths available for user selection
 export const AVATAR_OPTIONS = [
     "/images/avatars/avatar1.png",
     "/images/avatars/avatar2.png",
@@ -29,11 +31,15 @@ export const AVATAR_OPTIONS = [
     "/images/avatars/avatar9.png",
 ];
 
-// Functional component takes 2 parts:
-// onSelect - a callback when the user clicks on an avatar 
-// selectedAvatar - the currently selected avatar's path
+/**
+ * AvatarSelector component
+ * 
+ * Props:
+ * - onSelect (function): callback when an avatar is clicked
+ * - selectedAvatar (string): the currently selected avatar path
+ */
 export default function AvatarSelector({ onSelect, selectedAvatar }) {
-    const [hovered, setHovered] = useState(null);
+    const [hovered, setHovered] = useState(null); // Tracks which avatar is currently hovered
 
     return (
         <div className="grid grid-cols-3 gap-4 p-4">
@@ -44,12 +50,12 @@ export default function AvatarSelector({ onSelect, selectedAvatar }) {
                 return (
                     <div
                         key={index}
-                        onClick={() => onSelect(avatar)}
+                        onClick={() => onSelect(avatar)} // Set selected avatar
                         onMouseEnter={() => setHovered(index)}
                         onMouseLeave={() => setHovered(null)}
                         className={`rounded-full w-24 h-24 flex items-center justify-center transition cursor-pointer
-                  ${isSelected ? "ring-4 ring-[#639751]" : ""}
-                  ${!isSelected && isHovered ? "ring-4 ring-[#C27A49]" : ""}
+                            ${isSelected ? "ring-4 ring-[#639751]" : ""}
+                            ${!isSelected && isHovered ? "ring-4 ring-[#C27A49]" : ""}
                 `}
                     >
                         <img
