@@ -81,20 +81,23 @@ export default function AddFormPage() {
       };
     } else if (formData.postType === 'deal') {
       tableName = 'deals';
+      const lowerTags = formData.tags.map(t => t.toLowerCase());
       dataToInsert = {
         title: formData.title,
         location: formData.location,
+        tags: lowerTags,
         price: formData.price,
         user_id: userId
       };
     }
       else if (formData.postType === 'event') {
       tableName = 'events';
+      const lowerTags = formData.tags.map(t => t.toLowerCase());
       dataToInsert = {
         title: formData.title,
         description: formData.description,
         user_id: userId,
-        tags: formData.tags,
+        tags: lowerTags,
         upvotes: 0,
         downvotes: 0,
         location: formData.location

@@ -6,6 +6,7 @@ import EventCard from '@/components/cards/EventCard';
 import Footer from '@/components/Footer';
 import BottomNav from '@/components/BottomNav';
 import { clientDB } from '@/supabaseClient';
+import AIbutton from '@/components/buttons/AIbutton';
 
 /**
  * EventPage.jsx
@@ -26,6 +27,8 @@ export default function EventsPage() {
   const [allEvents, setAllEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [interests, setInterests] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const eventTags = [
     'Campus Life',
@@ -37,6 +40,31 @@ export default function EventsPage() {
     'Technology',
     'Social'
   ];
+
+  useEffect(() => {
+    const fetchInterests = async () => {
+      const { data: { user } } = await clientDB.auth.getUser();
+      if (!user) return;
+  
+      const { data, error } = await clientDB
+        .from('user_profiles')
+        .select('interests')
+        .eq('id', user.id)
+        .single();
+  
+      if (error) {
+        console.error('Failed to fetch interests:', error.message);
+      } else if (data?.interests) {
+        setInterests(Array.isArray(data.interests)
+          ? data.interests
+          : data.interests.split(','));
+      }
+  
+      setLoading(false);
+    };
+  
+    fetchInterests();
+  }, []);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -88,7 +116,7 @@ export default function EventsPage() {
               id={event.id}
               href={`/events-page/${event.id}`} // ← route adjusted
               title={event.title}
-              location={event.location}              
+              location={event.location}
               upvotes={event.upvotes}
               downvotes={event.downvotes}
               tags={event.tags}
@@ -102,6 +130,10 @@ export default function EventsPage() {
             </p>
           )
         )}
+
+        <div className="px-4 py-2 max-w-md mx-auto w-full">
+          <AIbutton interests={interests} />
+        </div>
 
         <Footer />
       </FeedLayout>
