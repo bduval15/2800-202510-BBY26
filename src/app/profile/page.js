@@ -475,6 +475,8 @@ import SavedPostsSection from "@/components/SavedPostsSection";
 import AvatarModal from "@/components/AvatarModal";
 import EditProfileModal from "@/components/EditProfileModal";
 import SkeletonLoaf from "@/components/SkeletonLoaf";
+import Toast from "@/components/Toast";
+import { motion } from 'framer-motion';
 
 export default function ProfilePage() {
   const [showModal, setShowModal] = useState(false);
@@ -496,6 +498,7 @@ export default function ProfilePage() {
   const [editInterests, setEditInterests] = useState([]);
 
   const [savedPosts, setSavedPosts] = useState([]);
+  const [toastVisible, setToastVisible] = useState(false);
 
   const MAX_SELECTION = 5;
   const PREDEFINED_INTERESTS = [
@@ -589,25 +592,6 @@ export default function ProfilePage() {
     setShowEditInterests(false);
   };
 
-  const handleSaveAvatar = async (avatarUrl) => {
-    setSelectedAvatar(avatarUrl);
-
-    const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
-    if (sessionError || !session?.user) {
-      console.error("No session, cannot save avatar.");
-      return;
-    }
-
-    const { error: updateError } = await clientDB
-      .from("user_profiles")
-      .update({ avatar_url: avatarUrl })
-      .eq("id", session.user.id);
-
-    if (updateError) {
-      console.error("Error saving avatar:", updateError.message);
-    }
-  };
-
   const loadSavedPosts = async (session) => {
     try {
       const { data: saved } = await clientDB
@@ -637,6 +621,25 @@ export default function ProfilePage() {
     }
   };
 
+  const handleSaveAvatar = async (avatarUrl) => {
+    setSelectedAvatar(avatarUrl);
+
+    const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
+    if (sessionError || !session?.user) return console.error("No session, cannot save avatar.");
+
+    const { error: updateError } = await clientDB
+      .from("user_profiles")
+      .update({ avatar_url: avatarUrl })
+      .eq("id", session.user.id);
+
+    if (updateError) {
+      console.error("Error saving avatar:", updateError.message);
+    } else {
+      setToastVisible(true);
+      setTimeout(() => setToastVisible(false), 3000);
+    }
+  };
+
   useEffect(() => {
 
     const initSession = async () => {
@@ -655,6 +658,20 @@ export default function ProfilePage() {
   return (
     <>
       <StickyNavBar />
+      {toastVisible && (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-[1000] flex flex-col items-center">
+          <img src="/images/toaster.png" alt="Toaster" className="w-20 h-auto z-10" />
+          <motion.img
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: -60, opacity: 1 }}
+            exit={{ y: 20, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 300 }}
+            src="/images/loafs/toast-happy.png"
+            alt="Toast"
+            className="w-10 h-auto -mt-6 z-20"
+          />
+        </div>
+      )}
       <main className="min-h-screen bg-[#F5E3C6] text-[#8B4C24] px-6 py-10 font-sans">
         {isLoading ? (
           <SkeletonLoaf />
@@ -692,7 +709,6 @@ export default function ProfilePage() {
             />
 
             <SavedPostsSection posts={savedPosts} />
-
           </>
         )}
 
