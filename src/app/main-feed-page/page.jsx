@@ -63,7 +63,7 @@ export default function MainFeed() {
     const [activeFilter, setActiveFilter] = useState(null);
     const [interests, setInterests] = useState([]);
     const [loading, setLoading] = useState(true);
-    const filterOptions = ['Popular', 'Recent', 'My Threads'];
+    const filterOptions = ['Popular', 'Recent'];
 
     useEffect(() => {
         const fetchInterests = async () => {
