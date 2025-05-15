@@ -40,6 +40,10 @@ export default function EventPopup({ evt, userPosition }) {
     }
   }, [userPosition, evt.lat, evt.lng]);
 
+  const goToPost = () => {
+    router.push(`/${evt.table_id}-page/${evt.id}`)
+  }
+
   return (
     <Popup
       className="custom-popup"
@@ -79,7 +83,7 @@ export default function EventPopup({ evt, userPosition }) {
         </div>
         {/* — Call to action — */}
         <button
-          onClick={() => router.push(`/posts/${evt.id}`)}
+          onClick={goToPost}
           className="block w-full bg-[#639751] hover:bg-[#4f7a43] text-white text-sm font-medium py-2 rounded-lg"
         >
           Go to Post
