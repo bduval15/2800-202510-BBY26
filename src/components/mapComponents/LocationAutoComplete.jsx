@@ -30,14 +30,20 @@ function useDebounce(value, delay = 100) {
 
 export default function LocationAutocomplete({
   placeholder = 'Enter a location…',
-  onSelect    // (place: { address, lat, lng }) => void
+  onSelect,   
+  initialValue = '' 
 }) {
-  const [query, setQuery]       = useState('');
+  const [query, setQuery]       = useState(initialValue); // Initialize with prop
   const debouncedQuery          = useDebounce(query, 300);
   const [results, setResults]   = useState([]);
   const [open, setOpen]         = useState(false);
   const wrapperRef              = useRef(null);
   const cacheRef                = useRef({});
+
+  // Update query if initialValue prop changes after initial mount
+  useEffect(() => {
+    setQuery(initialValue);
+  }, [initialValue]);
 
   // close dropdown on outside click
   useEffect(() => {
@@ -125,7 +131,7 @@ export default function LocationAutocomplete({
   return (
     <div ref={wrapperRef} className="relative w-full">
       <label htmlFor="loc-geo" className="block text-sm font-medium text-[#6A401F] mb-1">
-        Location
+        Location (Optional)
       </label>
       <input
         id="loc-geo"
