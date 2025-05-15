@@ -40,12 +40,32 @@ L.Icon.Default.mergeOptions({
     popupAnchor: [1, -40]
 });
 
-const customPinIcon = L.icon({
-    iconUrl: '/images/mapPin.png',
+const dealsIcon = L.icon({
+    iconUrl: '/images/mapPinBlue.png',
     iconSize: [48, 48],
     iconAnchor: [16, 32],
-    popupAnchor: [8, -32]
+    popupAnchor: [8, -32],
 });
+
+const hacksIcon = L.icon({
+    iconUrl: '/images/mapPinPurple.png',
+    iconSize: [48, 48],
+    iconAnchor: [16, 32],
+    popupAnchor: [8, -32],
+});
+
+const eventsIcon = L.icon({
+    iconUrl: '/images/mapPinRed.png',
+    iconSize: [48, 48],
+    iconAnchor: [16, 32],
+    popupAnchor: [8, -32],
+});
+
+const threadIconMap = {
+    deals: dealsIcon,
+    hacks: hacksIcon,
+    events: eventsIcon,
+};
 
 function FitBounds({ bounds }) {
     const map = useMap();
@@ -80,51 +100,53 @@ function ClosePopupsOnClick() {
 }
 
 function ZoomMarker({ evt, userPos }) {
-  const map = useMap();
+    const map = useMap();
 
-  const handleClick = (e) => {
-    e.target.closePopup();
+    const handleClick = (e) => {
+        e.target.closePopup();
 
-    map.flyTo([evt.lat, evt.lng], 16, { animate: true });
+        map.flyTo([evt.lat, evt.lng], 16, { animate: true });
 
-    map.once('moveend', () => {
-      const size    = map.getSize();
-      const targetY = size.y * (2/3);
-      const targetX = size.x / 2;
+        map.once('moveend', () => {
+            const size = map.getSize();
+            const targetY = size.y * (2 / 3);
+            const targetX = size.x / 2;
 
-      const markerPt = map.latLngToContainerPoint([evt.lat, evt.lng]);
-      const centerPt = map.latLngToContainerPoint(map.getCenter());
+            const markerPt = map.latLngToContainerPoint([evt.lat, evt.lng]);
+            const centerPt = map.latLngToContainerPoint(map.getCenter());
 
-      const dy = markerPt.y - targetY;
-      const dx = markerPt.x - targetX;
+            const dy = markerPt.y - targetY;
+            const dx = markerPt.x - targetX;
 
-      const fudgeX = 8; 
-      const finalDx = dx + fudgeX;
+            const fudgeX = 8;
+            const finalDx = dx + fudgeX;
 
-      const newCenterPt = L.point(
-        centerPt.x + finalDx,
-        centerPt.y + dy
-      );
+            const newCenterPt = L.point(
+                centerPt.x + finalDx,
+                centerPt.y + dy
+            );
 
-      const newCenterLatLng = map.containerPointToLatLng(newCenterPt);
-      map.flyTo(newCenterLatLng, map.getZoom(), { animate: true });
+            const newCenterLatLng = map.containerPointToLatLng(newCenterPt);
+            map.flyTo(newCenterLatLng, map.getZoom(), { animate: true });
 
-      map.once('moveend', () => e.target.openPopup());
-    });
-  };
+            map.once('moveend', () => e.target.openPopup());
+        });
+    };
 
-  return (
-    <Marker
-      position={[evt.lat, evt.lng]}
-      icon={customPinIcon}
-      eventHandlers={{ click: handleClick }}
-    >
-      <EventPopup evt={evt} userPosition={userPos} />
-    </Marker>
-  );
+    const iconForThread =
+        threadIconMap[evt.table_id] ??
+        new L.Icon.Default();
+
+    return (
+        <Marker
+            position={[evt.lat, evt.lng]}
+            icon={iconForThread}
+            eventHandlers={{ click: handleClick }}
+        >
+            <EventPopup evt={evt} userPosition={userPos} />
+        </Marker>
+    );
 }
-
-
 
 export default function EventMap({
     events = [],
