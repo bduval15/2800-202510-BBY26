@@ -6,6 +6,7 @@ import { clientDB } from '@/supabaseClient';
 import Footer from '@/components/Footer';
 import BottomNav from '@/components/BottomNav';
 import StickyNavbar from '@/components/StickyNavbar';
+import LocationAutocomplete from '@/components/mapComponents/LocationAutoComplete';
 
 /**
  * EditHackPage.jsx
@@ -41,6 +42,7 @@ export default function EditHackPage({ params }) {
   const [description, setDescription] = useState('');
   const [currentTags, setCurrentTags] = useState([]);
   const [locationAddress, setLocationAddress] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [submitError, setSubmitError] = useState(null);
@@ -111,12 +113,19 @@ export default function EditHackPage({ params }) {
           try {
             const parsedLocation = JSON.parse(hackData.location);
             setLocationAddress(parsedLocation.address || '');
+            if (parsedLocation.address && parsedLocation.lat && parsedLocation.lng) {
+              setSelectedLocation(parsedLocation);
+            } else {
+              setSelectedLocation({ address: parsedLocation.address || '', lat: null, lng: null });
+            }
           } catch (e) {
             console.error("Error parsing location JSON from DB:", e);
             setLocationAddress('');
+            setSelectedLocation(null);
           }
         } else {
           setLocationAddress('');
+          setSelectedLocation(null);
         }
 
       } catch (err) {
@@ -146,6 +155,17 @@ export default function EditHackPage({ params }) {
     });
   };
   
+  const handleSelectLocation = (locationData) => {
+    setSubmitError(null);
+    if (locationData) {
+      setSelectedLocation(locationData); // { address, lat, lng }
+      setLocationAddress(locationData.address || ''); // Update display address
+    } else { // For clearing the location
+      setSelectedLocation(null);
+      setLocationAddress('');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitError(null);
@@ -174,21 +194,21 @@ export default function EditHackPage({ params }) {
     }
 
     let updatedLocationJson = null;
-    if (locationAddress.trim()) {
-      const newAddress = locationAddress.trim();
-      let lat = null;
-      let lng = null;
-      if (originalHackLocationRef.current) {
-        try {
-          const originalLocationParsed = JSON.parse(originalHackLocationRef.current);
-          lat = originalLocationParsed.lat;
-          lng = originalLocationParsed.lng;
-        } catch (e) {
-          console.warn("Could not parse original location to preserve lat/lng:", e);
-        }
-      }
-      updatedLocationJson = JSON.stringify({ address: newAddress, lat, lng });
-    }
+    if (selectedLocation && selectedLocation.address && selectedLocation.lat !== null && selectedLocation.lng !== null) {
+      // If a location was selected from autocomplete and has all parts
+      updatedLocationJson = JSON.stringify({
+        address: selectedLocation.address,
+        lat: selectedLocation.lat,
+        lng: selectedLocation.lng
+      });
+    } else if (selectedLocation && selectedLocation.address && (!selectedLocation.lat || !selectedLocation.lng)) {
+
+      updatedLocationJson = JSON.stringify({ address: selectedLocation.address, lat: null, lng: null });
+    } else if (!selectedLocation && locationAddress.trim()) {
+        // If no location selected from autocomplete, but user typed something manually
+        // Save it as an address-only entry. This maintains previous behavior for manual entries.
+        updatedLocationJson = JSON.stringify({ address: locationAddress.trim(), lat: null, lng: null });
+    } // If selectedLocation is null and locationAddress is also empty, updatedLocationJson remains null
 
     try {
       const { data, error: updateError } = await clientDB
@@ -285,20 +305,23 @@ export default function EditHackPage({ params }) {
                 ))}
               </div>
             </div>
-            
+          
             <div>
-              <label htmlFor="locationAddress" className="block text-sm font-medium text-[#6A401F] mb-1">
-                Location (Optional)
-              </label>
-              <input
-                type="text"
-                name="locationAddress"
-                id="locationAddress"
-                value={locationAddress}
-                onChange={(e) => setLocationAddress(e.target.value)}
-                className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400 text-gray-900"
+            
+              <LocationAutocomplete 
+                initialValue={locationAddress} 
+                onSelect={handleSelectLocation} 
                 placeholder="e.g., 123 Main St, Anytown, USA"
               />
+              {selectedLocation && selectedLocation.address && (
+                <button 
+                  type="button"
+                  onClick={() => handleSelectLocation(null)} // Clear the location
+                  className="mt-2 text-xs text-red-500 hover:text-red-700"
+                >
+                  Clear Location
+                </button>
+              )}
             </div>
 
             {submitError && <p className="text-sm text-red-600 mt-2">{submitError}</p>}
