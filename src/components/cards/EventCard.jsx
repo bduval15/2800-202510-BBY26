@@ -20,7 +20,8 @@ import Tag from '../Tag';
  * Written with assistance from Google Gemini 2.5 Flash
  * @author https://gemini.google.com/app
  */
-
+const titleCase = (str) =>
+str.charAt(0).toUpperCase() + str.slice(1);
 const EventCard = ({
   id,
   href,
@@ -61,14 +62,15 @@ const EventCard = ({
         )}
       </div>
 
-      {/* Tags */}
-      {tags.length > 0 && (
-        <div className="w-full mb-2 flex flex-wrap gap-1">
-          {tags.slice(0, 3).map((tag, idx) => (
-            <Tag key={idx} label={tag} />
+       {/* Tags */}
+       {tags && tags.length > 0 && (
+        <div className="w-full mb-2 flex flex-wrap">
+          {tags.slice(0, 3).map((tag, index) => (
+            <Tag key={index} label={titleCase(tag)} />
           ))}
         </div>
       )}
+      
 
       {/* Interactions */}
       <div className="flex items-center space-x-2 text-xs w-full mt-2">
