@@ -152,6 +152,8 @@ export default function DealsPage() {
                 location={displayLocation} 
                 price={deal.price}
                 tags={deal.tags}
+                upvotes={deal.upvotes}
+                downvotes={deal.downvotes}
               />
             );
           })
