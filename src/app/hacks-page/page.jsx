@@ -84,7 +84,8 @@ export default function HacksPage() {
       try {
         const { data, error: fetchError } = await clientDB
           .from('hacks')
-          .select('id, title, description, created_at, user_id, tags, upvotes, downvotes');
+          .select('id, title, description, created_at, user_id, tags, upvotes, downvotes')
+          .order('created_at', { ascending: false });
 
         console.log("[HacksPage] Fetched data:", data);
         console.log("[HacksPage] Fetch error:", fetchError);
@@ -129,13 +130,11 @@ export default function HacksPage() {
   return (
     <div className="bg-[#F5E3C6] pb-6">
       <FeedLayout
+        title="Hacks"
         tagOptions={tags}
         selectedTags={selectedTags}
         onTagToggle={handleTagToggle}
       >
-        <div className="text-left text-2xl font-bold text-[#8B4C24] pl-4 mb-4 mt-4">
-          Hacks
-        </div>
         {isLoading && <p className="text-center text-gray-500 px-4">Loading hacks...</p>}
         {error && <p className="text-center text-red-500 px-4">Error: {error}</p>}
         {!isLoading && !error && filteredHacks.length > 0 ? (

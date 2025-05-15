@@ -18,7 +18,7 @@ import { CheckIcon, ChevronDownIcon } from "@heroicons/react/24/outline"
 
 export default function FeedLayout({
   children,
-  title = 'Student Hacks',
+  title,
   tagOptions = [],
   selectedTags = [],
   onTagToggle = (tag) => {},
@@ -29,7 +29,7 @@ export default function FeedLayout({
   const tagDropdownRef = useRef(null)
   const [sortedAndFilteredChildren, setSortedAndFilteredChildren] = useState([])
 
-  const bestOptions = ["Best", "Controversial"]
+  const bestOptions = ["Best", "Worst"]
   const dateOptions = ["Newest", "Oldest"]
   
   const baseTagButtonClass = "py-1 px-3 rounded-full text-xs font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap";
@@ -102,7 +102,7 @@ export default function FeedLayout({
 
   const getTagButtonLabel = () => {
     if (selectedTags.length === 0) {
-      return "Filter by Tags";
+      return "Tags";
     }
     if (selectedTags.length === 1) {
       return `1 Tag Selected`;
@@ -186,7 +186,7 @@ export default function FeedLayout({
       </div>
 
       <main className="max-w-md mx-auto px-4 py-6 space-y-6">
-        <h1 className="text-2xl font-bold text-[#8B4C24]">{title}</h1>
+        <h1 className="text-2xl font-bold text-[#8B4C24] pl-4 pt-14">{title}</h1>
         {/* pass bestSort, dateSort, and selectedTags down to your feed-rendering logic */}
         {sortedAndFilteredChildren}
       </main>

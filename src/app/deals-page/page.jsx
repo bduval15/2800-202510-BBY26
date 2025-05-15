@@ -87,7 +87,8 @@ export default function DealsPage() {
     const fetchDeals = async () => {
       const { data, error } = await supabase
         .from('deals')
-        .select('*'); // Fetches all columns
+        .select('*') // Fetches all columns
+        .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error fetching deals:', error);
@@ -121,13 +122,11 @@ export default function DealsPage() {
   return (
     <div className="bg-[#F5E3C6] pb-6">
       <FeedLayout
+        title="Deals"
         tagOptions={tags}
         selectedTags={selectedTags}
         onTagToggle={handleTagToggle}
       >
-        <div className="text-left text-2xl font-bold text-[#8B4C24] pl-4 mb-4 mt-4">
-          Deals
-        </div>
         {dealsToDisplay.length > 0 ? (
           dealsToDisplay.map(deal => {
             let displayLocation = deal.location; 
