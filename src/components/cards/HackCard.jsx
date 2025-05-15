@@ -21,45 +21,45 @@ import Tag from '../Tag';
 
 const HackCard = ({ id, href, title, upvotes, downvotes, comments = 0, tags = [], className = '' }) => {
   return (
-    <BaseCard className={`flex-col items-start bg-[#F5E3C6] border border-[#D1905A] ${className}`}>
-      {/* Title wrapped in Link */}
-      <div className="w-full mb-2">
-        <Link href={href || `/hacks-page/${id}`} passHref>
-          <h3 className="text-lg font-semibold text-[#8B4C24] hover:underline cursor-pointer">{title}</h3>
-        </Link>
-      </div>
-
-      {/* Tags */}
-      {tags && tags.length > 0 && (
-        <div className="w-full mb-2 flex flex-wrap">
-          {tags.slice(0, 3).map((tag, index) => (
-            <Tag key={index} label={tag} />
-          ))}
+    <Link href={href || `/hacks-page/${id}`} passHref>
+      <BaseCard className={`flex-col items-start bg-[#F5E3C6] border border-[#D1905A] ${className} cursor-pointer`}>
+        {/* Title */}
+        <div className="w-full mb-2">
+          <h3 className="text-lg font-semibold text-[#8B4C24] hover:underline">{title}</h3>
         </div>
-      )}
 
-      {/* Interactions */}
-      <div className="flex items-center space-x-2 text-xs w-full justify-start mt-2">
-        {/* Upvotes / Downvotes Group */}
-        <VoteButtons hackId={id} upvotes={upvotes} downvotes={downvotes} />
+        {/* Tags */}
+        {tags && tags.length > 0 && (
+          <div className="w-full mb-2 flex flex-wrap">
+            {tags.slice(0, 3).map((tag, index) => (
+              <Tag key={index} label={tag} />
+            ))}
+          </div>
+        )}
 
-        {/* Comments Group - uses default 0 if comments not provided */}
-        <CommentDisplay count={comments} />
+        {/* Interactions */}
+        <div className="flex items-center space-x-2 text-xs w-full justify-start mt-2">
+          {/* Upvotes / Downvotes Group */}
+          <VoteButtons hackId={id} upvotes={upvotes} downvotes={downvotes} />
 
-        {/* Bookmark Button */}
-        <BookmarkButton />
-      </div>
-    </BaseCard>
+          {/* Comments Group - uses default 0 if comments not provided */}
+          <CommentDisplay count={comments} />
+
+          {/* Bookmark Button */}
+          <BookmarkButton />
+        </div>
+      </BaseCard>
+    </Link>
   );
 };
 
 HackCard.propTypes = {
   id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  href: PropTypes.string.isRequired, 
+  href: PropTypes.string,
   title: PropTypes.string.isRequired,
   upvotes: PropTypes.number.isRequired,
   downvotes: PropTypes.number.isRequired,
-  comments: PropTypes.number, 
+  comments: PropTypes.number,
   tags: PropTypes.arrayOf(PropTypes.string),
   className: PropTypes.string,
 };
