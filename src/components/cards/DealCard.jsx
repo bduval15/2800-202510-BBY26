@@ -7,6 +7,7 @@ import Tag from '../Tag';
 import BookmarkButton from '../buttons/Bookmark';
 import VoteButtons from '../buttons/VoteButtons';
 import PropTypes from 'prop-types';
+import { formatTimeAgo } from '../../utils/formatTimeAgo';
 
 /**
  * DealCard.jsx
@@ -18,7 +19,7 @@ import PropTypes from 'prop-types';
  * @author https://gemini.google.com/app
  * @author Nate O
  */
-const DealCard = ({ id, title, location, price, tags, expirationDate, upvotes = 0, downvotes = 0 }) => {
+const DealCard = ({ id, title, location, price, tags, expirationDate, upvotes = 0, downvotes = 0, createdAt }) => {
   const titleCase = (str) =>
     str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 
@@ -26,8 +27,11 @@ const DealCard = ({ id, title, location, price, tags, expirationDate, upvotes = 
     <Link href={`/deals-page/${id}`} passHref>
       <BaseCard className="flex-col items-start bg-[#F5E3C6] border border-[#D1905A] mb-4">
         {/* Title */}
-        <div className="w-full mb-2">
-          <h3 className="text-lg font-semibold text-[#8B4C24] hover:underline cursor-pointer">{title}</h3>
+        <div className="w-full mb-2 flex justify-between items-center">
+          <h3 className="text-lg font-semibold text-[#8B4C24] hover:underline cursor-pointer mr-2">{title}</h3>
+          {createdAt && (
+            <span className="text-xs text-gray-500 whitespace-nowrap">{formatTimeAgo(createdAt)}</span>
+          )}
         </div>
 
         {/* Location */}
@@ -79,6 +83,7 @@ DealCard.propTypes = {
   expirationDate: PropTypes.string,
   upvotes: PropTypes.number,
   downvotes: PropTypes.number,
+  createdAt: PropTypes.string,
 };
 
 export default DealCard; 
