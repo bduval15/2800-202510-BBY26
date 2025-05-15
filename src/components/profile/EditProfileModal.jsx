@@ -3,18 +3,19 @@
  * Loaf Life – modal form for editing the user's name, school, and bio.
  * 
  * Props:
- * - editName, setEditName
- * - editSchool, setEditSchool
- * - editBio, setEditBio
- * - errors (validation object)
- * - isFormValid (boolean for Save button state)
- * - onCancel (closes modal)
- * - onSave (saves form data)
+ * - editName, setEditName (string, function)
+ * - editSchool, setEditSchool (string, function)
+ * - editBio, setEditBio (string, function)
+ * - errors (object): holds validation messages for each input
+ * - isFormValid (boolean): determines if the form is ready to submit
+ * - onCancel (function): closes the modal without saving
+ * - onSave (function): triggers save logic when form is valid
  * 
  * Portions of form layout, validation handling, and modal logic were assisted by ChatGPT for educational purposes.
  * Refactored from ProfilePage into reusable component.
  * 
  * Modified with assistance from ChatGPT o4-mini-high.
+ * @author Aleen Dawood
  * @author https://chatgpt.com/*
  */
 
@@ -101,7 +102,7 @@ export default function EditProfileModal({
                     </div>
                 </div>
 
-                {/* Buttons */}
+                {/* Action buttons */}
                 <div className="flex justify-between mt-6">
                     <button
                         onClick={onCancel}
@@ -113,8 +114,8 @@ export default function EditProfileModal({
                         disabled={!isFormValid}
                         onClick={onSave}
                         className={`font-medium px-4 py-1.5 rounded transition ${!isFormValid
-                                ? "bg-gray-400 text-white cursor-not-allowed"
-                                : "bg-[#639751] text-white hover:bg-[#6bb053]"
+                            ? "bg-gray-400 text-white cursor-not-allowed"
+                            : "bg-[#639751] text-white hover:bg-[#6bb053]"
                             }`}
                     >
                         Save

@@ -13,6 +13,7 @@
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/supabase-js": "^2.49.4",
     "dotenv": "^16.5.0",
+    "framer-motion": "^12.11.3",
     "leaflet": "^1.9.4",
     "leaflet-color-markers": "^0.1.0",
     "leaflet-control-geocoder": "^3.1.0",
