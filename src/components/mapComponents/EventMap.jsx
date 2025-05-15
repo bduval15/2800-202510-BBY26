@@ -100,12 +100,42 @@ export default function EventMap({
 }) {
 
     const [userPos, setUserPos] = useState(null);
+    const [trackedPos, setTrackedPos] = useState(null);
     const [avatarUrl, setAvatarUrl] = useState('/images/logo.png');
 
     const vancouverBounds = [
         [49.0, -123.5],
         [49.5, -122.4],
     ];
+
+    useEffect(() => {
+    if (!navigator.geolocation) {
+      console.warn('Browser does not support geolocation');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      pos =>
+        setTrackedPos({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude
+        }),
+      err => console.warn('getCurrentPosition error', err),
+      { enableHighAccuracy: true, maximumAge: 0 }
+    );
+
+    const watcherId = navigator.geolocation.watchPosition(
+      pos =>
+        setTrackedPos({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude
+        }),
+      err => console.warn('watchPosition error', err),
+      { enableHighAccuracy: true, maximumAge: 0 }
+    );
+
+    return () => navigator.geolocation.clearWatch(watcherId);
+  }, []);
 
     useEffect(() => {
         async function fetchAvatar() {
@@ -158,7 +188,7 @@ export default function EventMap({
                 {events.map(evt => (
                     <ZoomMarker key={evt.id} 
                                 evt={evt}
-                                userPos={userPos} />
+                                userPos={trackedPos} />
                 ))}
 
                 <LocateControl
