@@ -17,7 +17,8 @@ import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid';
 const BookmarkButton = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
 
-  const handleBookmarkClick = () => {
+  const handleBookmarkClick = (e) => {
+    e.stopPropagation();
     setIsBookmarked(!isBookmarked);
   };
 
