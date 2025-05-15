@@ -109,33 +109,33 @@ export default function EventMap({
     ];
 
     useEffect(() => {
-    if (!navigator.geolocation) {
-      console.warn('Browser does not support geolocation');
-      return;
-    }
+        if (!navigator.geolocation) {
+            console.warn('Browser does not support geolocation');
+            return;
+        }
 
-    navigator.geolocation.getCurrentPosition(
-      pos =>
-        setTrackedPos({
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude
-        }),
-      err => console.warn('getCurrentPosition error', err),
-      { enableHighAccuracy: true, maximumAge: 0 }
-    );
+        navigator.geolocation.getCurrentPosition(
+            pos =>
+                setTrackedPos({
+                    lat: pos.coords.latitude,
+                    lng: pos.coords.longitude
+                }),
+            err => console.warn('getCurrentPosition error', err),
+            { enableHighAccuracy: true, maximumAge: 0 }
+        );
 
-    const watcherId = navigator.geolocation.watchPosition(
-      pos =>
-        setTrackedPos({
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude
-        }),
-      err => console.warn('watchPosition error', err),
-      { enableHighAccuracy: true, maximumAge: 0 }
-    );
+        const watcherId = navigator.geolocation.watchPosition(
+            pos =>
+                setTrackedPos({
+                    lat: pos.coords.latitude,
+                    lng: pos.coords.longitude
+                }),
+            err => console.warn('watchPosition error', err),
+            { enableHighAccuracy: true, maximumAge: 0 }
+        );
 
-    return () => navigator.geolocation.clearWatch(watcherId);
-  }, []);
+        return () => navigator.geolocation.clearWatch(watcherId);
+    }, []);
 
     useEffect(() => {
         async function fetchAvatar() {
@@ -186,9 +186,9 @@ export default function EventMap({
                 <ClosePopupsOnClick />
 
                 {events.map(evt => (
-                    <ZoomMarker key={evt.id} 
-                                evt={evt}
-                                userPos={trackedPos} />
+                    <ZoomMarker key={evt.id}
+                        evt={evt}
+                        userPos={trackedPos} />
                 ))}
 
                 <LocateControl
@@ -196,6 +196,7 @@ export default function EventMap({
                     drawCircle={false}
                     follow={true}
                     zoomTo={14}
+                    trackedPos={trackedPos}
                     onLocated={([lat, lng]) => {
                         setUserPos({ lat, lng });
                     }}
