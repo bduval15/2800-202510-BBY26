@@ -40,6 +40,13 @@ L.Icon.Default.mergeOptions({
     popupAnchor: [1, -40]
 });
 
+const customPinIcon = L.icon({
+    iconUrl: '/images/mapPin.png',
+    iconSize: [48, 48],
+    iconAnchor: [16, 32],
+    popupAnchor: [8, -32]
+});
+
 function FitBounds({ bounds }) {
     const map = useMap();
     useEffect(() => {
@@ -73,27 +80,51 @@ function ClosePopupsOnClick() {
 }
 
 function ZoomMarker({ evt, userPos }) {
-    const map = useMap();
+  const map = useMap();
 
-    const handleClick = (e) => {
+  const handleClick = (e) => {
+    e.target.closePopup();
 
-        e.target.closePopup();
+    map.flyTo([evt.lat, evt.lng], 16, { animate: true });
 
-        map.flyTo([evt.lat, evt.lng], 16, { animate: true });
+    map.once('moveend', () => {
+      const size    = map.getSize();
+      const targetY = size.y * (2/3);
+      const targetX = size.x / 2;
 
-        map.once('moveend', () => {
-            e.target.openPopup();
-        });
-    };
-    return (
-        <Marker
-            position={[evt.lat, evt.lng]}
-            eventHandlers={{ click: handleClick }}
-        >
-            <EventPopup evt={evt} userPosition={userPos} />
-        </Marker>
-    );
+      const markerPt = map.latLngToContainerPoint([evt.lat, evt.lng]);
+      const centerPt = map.latLngToContainerPoint(map.getCenter());
+
+      const dy = markerPt.y - targetY;
+      const dx = markerPt.x - targetX;
+
+      const fudgeX = 8; 
+      const finalDx = dx + fudgeX;
+
+      const newCenterPt = L.point(
+        centerPt.x + finalDx,
+        centerPt.y + dy
+      );
+
+      const newCenterLatLng = map.containerPointToLatLng(newCenterPt);
+      map.flyTo(newCenterLatLng, map.getZoom(), { animate: true });
+
+      map.once('moveend', () => e.target.openPopup());
+    });
+  };
+
+  return (
+    <Marker
+      position={[evt.lat, evt.lng]}
+      icon={customPinIcon}
+      eventHandlers={{ click: handleClick }}
+    >
+      <EventPopup evt={evt} userPosition={userPos} />
+    </Marker>
+  );
 }
+
+
 
 export default function EventMap({
     events = [],

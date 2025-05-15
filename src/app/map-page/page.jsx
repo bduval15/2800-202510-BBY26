@@ -99,10 +99,11 @@ export default function MapPage() {
       setEvents(formatted);
     })();
   }, []);
+  
   const threads = useMemo(() => ([
     { id: 'hacks',  name: 'Hacks'       },
     { id: 'deals',  name: 'Deals'       },
-    { id: 'events', name: 'Free Events' }
+    { id: 'events', name: 'Events' }
   ]), []);
 
   const [selectedThreads, setSelectedThreads] = useState(
@@ -127,7 +128,7 @@ export default function MapPage() {
            initialSelected={selectedThreads}
            onFilterChange={handleFilterChange}
           />
-          <div className="p-4">
+          <div className="px-4">
             <div className={styles.mapWrapper}>
               <EventMap events={filteredEvents}/>
             </div>
