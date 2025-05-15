@@ -154,6 +154,7 @@ export default function DealsPage() {
                 tags={deal.tags}
                 upvotes={deal.upvotes}
                 downvotes={deal.downvotes}
+                createdAt={deal.created_at}
               />
             );
           })
@@ -169,4 +170,4 @@ export default function DealsPage() {
       <BottomNav />
     </div>
   )
-} 
+}

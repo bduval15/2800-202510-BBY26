@@ -149,6 +149,7 @@ export default function HacksPage() {
               downvotes={hack.downvotes}
               tags={hack.tags}
               description={hack.description}
+              createdAt={hack.created_at}
             />
           ))
         ) : (
