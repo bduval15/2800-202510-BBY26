@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect, use, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { clientDB } from '@/supabaseClient';
 import Footer from '@/components/Footer';
@@ -40,11 +40,13 @@ export default function EditHackPage({ params }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [currentTags, setCurrentTags] = useState([]);
+  const [locationAddress, setLocationAddress] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [submitError, setSubmitError] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [hackAuthorId, setHackAuthorId] = useState(null);
+  const originalHackLocationRef = useRef(null);
 
   useEffect(() => {
     const fetchCurrentUserAndHack = async () => {
@@ -74,7 +76,7 @@ export default function EditHackPage({ params }) {
       try {
         const { data: hackData, error: fetchError } = await clientDB
           .from('hacks')
-          .select('title, description, tags, user_id')
+          .select('title, description, tags, user_id, location')
           .eq('id', hackId)
           .single();
 
@@ -104,6 +106,18 @@ export default function EditHackPage({ params }) {
         setTitle(hackData.title || '');
         setDescription(hackData.description || '');
         setCurrentTags(hackData.tags || []);
+        originalHackLocationRef.current = hackData.location;
+        if (hackData.location) {
+          try {
+            const parsedLocation = JSON.parse(hackData.location);
+            setLocationAddress(parsedLocation.address || '');
+          } catch (e) {
+            console.error("Error parsing location JSON from DB:", e);
+            setLocationAddress('');
+          }
+        } else {
+          setLocationAddress('');
+        }
 
       } catch (err) {
         console.error(`Error fetching hack ${hackId} for edit:`, err);
@@ -159,6 +173,23 @@ export default function EditHackPage({ params }) {
         return;
     }
 
+    let updatedLocationJson = null;
+    if (locationAddress.trim()) {
+      const newAddress = locationAddress.trim();
+      let lat = null;
+      let lng = null;
+      if (originalHackLocationRef.current) {
+        try {
+          const originalLocationParsed = JSON.parse(originalHackLocationRef.current);
+          lat = originalLocationParsed.lat;
+          lng = originalLocationParsed.lng;
+        } catch (e) {
+          console.warn("Could not parse original location to preserve lat/lng:", e);
+        }
+      }
+      updatedLocationJson = JSON.stringify({ address: newAddress, lat, lng });
+    }
+
     try {
       const { data, error: updateError } = await clientDB
         .from('hacks')
@@ -166,6 +197,7 @@ export default function EditHackPage({ params }) {
             title, 
             description,
             tags: currentTags,
+            location: updatedLocationJson,
         })
         .eq('id', hackId)
         .eq('user_id', currentUserId);
@@ -254,6 +286,21 @@ export default function EditHackPage({ params }) {
               </div>
             </div>
             
+            <div>
+              <label htmlFor="locationAddress" className="block text-sm font-medium text-[#6A401F] mb-1">
+                Location (Optional)
+              </label>
+              <input
+                type="text"
+                name="locationAddress"
+                id="locationAddress"
+                value={locationAddress}
+                onChange={(e) => setLocationAddress(e.target.value)}
+                className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400 text-gray-900"
+                placeholder="e.g., 123 Main St, Anytown, USA"
+              />
+            </div>
+
             {submitError && <p className="text-sm text-red-600 mt-2">{submitError}</p>}
 
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-4">
