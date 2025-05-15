@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import BottomNav from '@/components/BottomNav';
 import StickyNavbar from '@/components/StickyNavbar';
 import BookmarkButton from '@/components/buttons/Bookmark';
+import VoteButtons from '@/components/buttons/VoteButtons';
 import Tag from '@/components/Tag';
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
 
@@ -245,14 +246,8 @@ export default function DealDetailPage() {
             )}
           </div>
 
-          <div className="flex justify-between items-start mb-6">
-            <h1 className="text-3xl font-bold text-[#8B4C24] mr-4">{deal.title}</h1> 
-            <div className="shrink-0"> 
-              <BookmarkButton dealId={deal.id} />
-            </div>
-          </div>
+          <h1 className="text-3xl font-bold mb-6 text-[#8B4C24]">{deal.title}</h1> 
 
-          {/* Tags Display */}
           {deal.tags && deal.tags.length > 0 && (
             <div className="mb-6 flex flex-wrap items-center">
               <div className="flex flex-wrap gap-2">
@@ -264,9 +259,8 @@ export default function DealDetailPage() {
           )}
 
           {deal.description && (
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold mb-1 text-[#6A4C3C]">Description</h2>
-              <p className="text-[#8B4C24] whitespace-pre-wrap">{deal.description}</p>
+            <div className="mb-6">
+              <p className="text-[#8B4C24] whitespace-pre-wrap">{deal.description || "No description provided"}</p>
             </div>
           )}
 
@@ -274,7 +268,7 @@ export default function DealDetailPage() {
             <div className="mb-4">
               <div className="flex items-center mb-1">
                 <h2 className="text-lg font-semibold text-[#6A4C3C] mr-2">Location</h2>
-                <Link href="/map-page" passHref className="text-sm text-[#B87333] hover:text-[#8B4C24] flex items-center">
+                <Link href={`/map-page?lat=${deal.location?.lat}&lng=${deal.location?.lng}&label=${encodeURIComponent(displayLocation)}`} passHref className="text-sm text-[#B87333] hover:text-[#8B4C24] flex items-center">
                   <MapPinIcon className="h-4 w-4 mr-1" /> View on Map
                 </Link>
               </div>
@@ -282,7 +276,7 @@ export default function DealDetailPage() {
             </div>
           )}
           {deal.price !== null && deal.price !== undefined && (
-            <div className="mb-4">
+            <div className="mb-6">
               <h2 className="text-lg font-semibold mb-1 text-[#6A4C3C]">Price</h2>
               <p className="text-[#8B4C24]">${typeof deal.price === 'number' ? deal.price.toFixed(2) : deal.price}</p>
             </div>
@@ -291,6 +285,15 @@ export default function DealDetailPage() {
           <p className="text-sm text-[#8B4C24]/80 mb-8">
             Posted by {deal.user_profiles && deal.user_profiles.name ? deal.user_profiles.name : (deal.user_id ? `User ${deal.user_id.substring(0,8)}...` : 'Unknown')} - {formatTimeAgo(deal.created_at)}
           </p>        
+
+          <div className="flex items-center mb-6">
+            <div className="flex items-center">
+              <div className="mr-2">
+                <VoteButtons itemId={deal.id} itemType="deals" upvotes={deal.upvotes || 0} downvotes={deal.downvotes || 0} />
+              </div>
+              <BookmarkButton dealId={deal.id} />
+            </div>
+          </div>
         </div>
 
         <Footer />
