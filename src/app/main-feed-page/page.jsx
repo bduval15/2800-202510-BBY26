@@ -31,9 +31,7 @@ const threads = [
         id: 1,
         title: 'Deals Thread',
         description: 'Best discounts and coupon codes around Vancouver',
-        postCount: 24,
-        createdAt: '2025-05-04T10:15:00Z',
-        isMine: true,
+        postCount: 0,
         imageUrl: '/images/threads/dealsThread.png',
         link: '/deals-page'
     },
@@ -41,9 +39,7 @@ const threads = [
         id: 2,
         title: 'Hacks Thread',
         description: 'Life-hacks, study tips, and productivity tricks',
-        postCount: 16,
-        createdAt: '2025-05-05T14:30:00Z',
-        isMine: false,
+        postCount: 0,
         imageUrl: '/images/threads/hacksThread.png',
         link: '/hacks-page'
     },
@@ -51,58 +47,126 @@ const threads = [
         id: 3,
         title: 'Events',
         description: 'Up-to-date listings of fun or helpful events',
-        postCount: 8,
-        createdAt: '2025-05-05T08:45:00Z',
-        isMine: true,
+        postCount: 0,
         imageUrl: '/images/threads/eventsThread.png',
         link: '/events-page'
     },
 ];
 
+const tableMap = {
+    1: 'deals',
+    2: 'hacks',
+    3: 'events',
+}
+
 export default function MainFeed() {
     const [activeFilter, setActiveFilter] = useState(null);
     const [interests, setInterests] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [postCounts, setPostCounts] = useState({});
     const filterOptions = ['Popular', 'Recent'];
+    const [latestDates, setLatestDates] = useState({});
 
     useEffect(() => {
         const fetchInterests = async () => {
-          const { data: { user } } = await clientDB.auth.getUser();
-          if (!user) return;
-      
-          const { data, error } = await clientDB
-            .from('user_profiles')
-            .select('interests')
-            .eq('id', user.id)
-            .single();
-      
-          if (error) {
-            console.error('Failed to fetch interests:', error.message);
-          } else if (data?.interests) {
-            setInterests(Array.isArray(data.interests)
-              ? data.interests
-              : data.interests.split(','));
-          }
-      
-          setLoading(false);
+            const { data: { user } } = await clientDB.auth.getUser();
+            if (!user) return;
+
+            const { data, error } = await clientDB
+                .from('user_profiles')
+                .select('interests')
+                .eq('id', user.id)
+                .single();
+
+            if (error) {
+                console.error('Failed to fetch interests:', error.message);
+            } else if (data?.interests) {
+                setInterests(Array.isArray(data.interests)
+                    ? data.interests
+                    : data.interests.split(','));
+            }
+
+            setLoading(false);
         };
-      
+
         fetchInterests();
-      }, []);
+    }, []);
+
+    useEffect(() => {
+        const fetchPostCounts = async () => {
+            const countsMap = {}
+
+            await Promise.all(
+                threads.map(async (t) => {
+                    const table = tableMap[t.id]
+                    if (!table) return
+                    const { count, error } = await clientDB
+                        .from(table)
+                        .select('id', { count: 'exact', head: true })
+
+                    if (error) {
+                        console.error(`Error counting ${table}:`, error)
+                        countsMap[t.id] = 0
+                    } else {
+                        countsMap[t.id] = count ?? 0
+                    }
+                })
+            )
+
+            setPostCounts(countsMap)
+        }
+        fetchPostCounts()
+    }, [])
+
+    useEffect(() => {
+        const fetchLatestDates = async () => {
+            const map = {};
+
+            await Promise.all(
+                threads.map(async (t) => {
+                    const table = tableMap[t.id];
+                    if (!table) return;
+
+                    const { data, error } = await clientDB
+                        .from(table)
+                        .select('created_at', { head: false })
+                        .order('created_at', { ascending: false })
+                        .limit(1)
+                        .single();
+
+                    if (error) {
+                        console.error(`Error fetching latest date for ${table}:`, error);
+                    } else if (data?.created_at) {
+                        map[t.id] = data.created_at;
+                    }
+                })
+            );
+
+            setLatestDates(map);
+        };
+
+        fetchLatestDates();
+    }, []);
 
     const visibleThreads = useMemo(() => {
-        let arr = [...threads];
+        const enriched = threads.map((t) => ({
+            ...t,
+            postCount: postCounts[t.id] ?? t.postCount,
+            latest: latestDates[t.id] ?? null,
+        }));
+
         if (activeFilter === 'Popular') {
-            arr.sort((a, b) => b.postCount - a.postCount);
+            return [...enriched].sort((a, b) => b.postCount - a.postCount);
         } else if (activeFilter === 'Recent') {
-            arr.sort(
-                (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+            return [...enriched].sort(
+                (a, b) =>
+                    new Date(b.latest).getTime() -
+                    new Date(a.latest).getTime()
             );
-        } else if (activeFilter === 'My Threads') {
-            arr = arr.filter((t) => t.isMine);
         }
-        return arr;
-    }, [activeFilter]);
+
+        return enriched;
+    }, [activeFilter, postCounts, latestDates]);
 
     return (
         <div className="flex flex-col h-screen bg-[#F5E3C6] pt-16">
@@ -211,7 +275,7 @@ export default function MainFeed() {
                 ))}
 
                 <div className="px-4 py-2 max-w-md mx-auto w-full">
-                        <AIbutton interests={interests} />
+                    <AIbutton interests={interests} />
                 </div>
                 <Footer />
             </div>

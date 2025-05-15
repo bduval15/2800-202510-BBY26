@@ -7,9 +7,9 @@ import { clientDB } from '@/supabaseClient';
  * page.js
  * Loaf Life – login page where users can enter credentials.
  * 
- *
  * Modified with assistance from ChatGPT o4-mini-high.
  * Further assistance in sign up logic
+ * 
  * @author https://chatgpt.com/*
  */
 
