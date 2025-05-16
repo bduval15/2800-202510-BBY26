@@ -69,7 +69,7 @@ export default function AddFormPage() {
         table_id: 'deals'
       };
     }
-      else if (formData.postType === 'event') {
+    else if (formData.postType === 'event') {
       tableName = 'events';
       const lowerTags = formData.tags.map(t => t.toLowerCase());
       dataToInsert = {
@@ -100,7 +100,7 @@ export default function AddFormPage() {
       router.push('/hacks-page');
     } else if (formData.postType === 'deal') {
       router.push('/deals-page'); // Assuming this is the correct route for deals
-      } else if (formData.postType === 'event') {
+    } else if (formData.postType === 'event') {
       router.push('/events-page');
     } else {
       // Fallback redirection if postType is somehow unknown at this point
