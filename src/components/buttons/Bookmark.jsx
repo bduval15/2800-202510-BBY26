@@ -100,7 +100,9 @@ const BookmarkButton = ({ hackId, dealId }) => {
     checkIfBookmarked();
   }, [userId, itemId, itemType]);
 
-  const handleBookmarkClick = async () => {
+  const handleBookmarkClick = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (!userId) {
       setError("You must be logged in to bookmark items.");
       return;

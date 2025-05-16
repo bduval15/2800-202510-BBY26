@@ -8,28 +8,30 @@
  * @author Brady Duval
  * @author https://chatgpt.com/
  */
-import { createClient } from '@supabase/supabase-js';
+
+// utils/loadAllEvents.js
+import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
+)
 
 export async function loadAllEvents() {
+  const tables = ['hacks', 'deals', 'events']
 
-  const [{ data: hacks }, { data: deals }, { data: savings }, { data: free_events }] =
-    await Promise.all([
-      supabase.from('hacks').select('*'),
-      supabase.from('deals').select('*'),
-      supabase.from('savings').select('*'),
-      supabase.from('free_events').select('*'),
-    ]);
+  const results = await Promise.all(
+    tables.map(table => supabase.from(table).select('*'))
+  )
 
-  const annotate = (rows, id, name) => rows.map(r => ({ ...r, threadId: id, threadName: name }));
-  return [
-    ...annotate(hacks      || [], 'hacks',       'Hacks'),
-    ...annotate(deals      || [], 'deals',       'Deals'),
-    ...annotate(savings    || [], 'savings',     'Saving Tips'),
-    ...annotate(free_events|| [], 'free-events', 'Free Events'),
-  ];
+  results.forEach((res, i) => {
+    if (res.error) console.error(`Error loading ${tables[i]}:`, res.error)
+  })
+
+  return results.flatMap((res, i) => {
+    return (res.data || []).map(row => ({
+      ...row,
+      table_id: tables[i]
+    }))
+  })
 }

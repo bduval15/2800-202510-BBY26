@@ -16,7 +16,7 @@ import LocationAutoComplete from '@/components/mapComponents/LocationAutoComplet
  * @author https://gemini.google.com/app
  */
 
-export default function AddPostForm({ hackTags, onSubmit, onClose }) {
+export default function AddPostForm({ tags, onSubmit, onClose }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
@@ -33,8 +33,8 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Tag validation for hacks
-    if (postType === 'hack' && selectedTags.length === 0) {
+    // Tag validation for both hacks and deals
+    if (selectedTags.length === 0) {
       setShowTagError(true);
       return; // Prevent submission
     }
@@ -69,7 +69,8 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
     if (postType === 'hack' || postType === 'event') {
       formData = { ...formData, description,location, tags: selectedTags };
     } else {
-      formData = { ...formData, location, coords, price: parseFloat(price) || 0 };
+      const dealLocationString = JSON.stringify(location);
+      formData = { ...formData, description, location: dealLocationString, price: parseFloat(price) || 0, tags: selectedTags };
     }
     console.log(formData);
     if (onSubmit) {
@@ -152,69 +153,46 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
         />
       </div>
 
+      {(postType === 'hack' || postType === 'deal') && (
+        <div>
+          <label htmlFor="description" className="block text-sm font-medium text-[#6A401F] mb-1">
+            Description
+          </label>
+          <textarea
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+            rows="4"
+            className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400 text-gray-900"
+            placeholder={postType === 'hack' ? "Share the details of your hack..." : "Share the details of your deal..."}
+          />
+        </div>
+      )}
+
       {postType === 'hack' && (
-        <>
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium text-[#6A401F] mb-1">
-              Description
-            </label>
-            <textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required={postType === 'hack'}
-              rows="4"
-              className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400 text-gray-900"
-              placeholder="Share the details of your hack..."
-            />
-          </div>
-          <div>
-            <LocationAutoComplete
-              placeholder="(Optional)"
-              onSelect={({ address, lat, lng }) => {
-                setLocation({ address, lat, lng });
-                setCoords([lat, lng]);
-              }}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-[#6A401F] mb-2">
-              Tags
-            </label>
-            <div className="mt-1 flex flex-wrap gap-2 p-2.5 border border-[#D1905A] rounded-lg shadow-sm bg-white">
-              {hackTags && hackTags.map(tag => (
-                <button
-                  type="button"
-                  key={tag}
-                  onClick={() => handleTagChange(tag)}
-                  className={`py-2 px-4 rounded-full text-xs font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${selectedTags.includes(tag)
-                    ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
-                    : 'bg-white text-[#8B4C24] hover:bg-gray-100 ring-1 ring-inset ring-[#D1905A]'
-                    }`}
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
-            {/* Basic validation message example - can be improved */}
-            {showTagError && (
-              <p className="text-xs text-red-500 mt-1">Please select at least one tag for a hack.</p>
-            )}
-          </div>
-        </>
+        <div>
+          <LocationAutoComplete
+            placeholder="(Optional)"
+            onSelect={({ address, lat, lng }) => {
+              setLocation({ address, lat, lng });
+              setCoords([lat, lng]);
+            }}
+          />
+        </div>
       )}
 
       {postType === 'deal' && (
         <>
           <div>
             <LocationAutoComplete
-              placeholder="e.g., Canada Place"
+              placeholder="e.g., The Pub"
               onSelect={({ address, lat, lng }) => {
                 setLocation({ address, lat, lng });
                 setCoords([lat, lng]);
               }}
             />
-          </div>
+          </div>          
           <div>
             <label htmlFor="price" className="block text-sm font-medium text-[#6A401F] mb-1">
               Price (CAD)
@@ -225,6 +203,8 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               step="0.01"
+              min="0"
+              max="1000000"
               required={postType === 'deal'}
               className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400 text-gray-900"
               placeholder="e.g., 5.99"
@@ -257,33 +237,34 @@ export default function AddPostForm({ hackTags, onSubmit, onClose }) {
                 setCoords([lat, lng]);
               }}
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-[#6A401F] mb-2">
-              Tags
-            </label>
-            <div className="mt-1 flex flex-wrap gap-2 p-2.5 border border-[#D1905A] rounded-lg shadow-sm bg-white">
-              {hackTags && hackTags.map(tag => (
-                <button
-                  type="button"
-                  key={tag}
-                  onClick={() => handleTagChange(tag)}
-                  className={`py-2 px-4 rounded-full text-xs font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${selectedTags.includes(tag)
-                    ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
-                    : 'bg-white text-[#8B4C24] hover:bg-gray-100 ring-1 ring-inset ring-[#D1905A]'
-                    }`}
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
-            {/* Basic validation message example - can be improved */}
-            {showTagError && (
-              <p className="text-xs text-red-500 mt-1">Please select at least one tag for the event.</p>
-            )}
-          </div>
+          </div>        
         </>
       )}
+
+       {/* Tag Selection */}
+      <div>
+        <label className="block text-sm font-medium text-[#6A401F] mb-2">
+          Tags
+        </label>
+        <div className="mt-1 flex flex-wrap gap-2 p-2.5 border border-[#D1905A] rounded-lg shadow-sm bg-white">
+          {tags && tags.map(tag => (
+            <button
+              type="button"
+              key={tag}
+              onClick={() => handleTagChange(tag)}
+              className={`py-2 px-4 rounded-full text-xs font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${selectedTags.includes(tag)
+                ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
+                : 'bg-white text-[#8B4C24] hover:bg-gray-100 ring-1 ring-inset ring-[#D1905A]'
+                }`}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+        {showTagError && (
+          <p className="text-xs text-red-500 mt-1">Please select at least one tag.</p>
+        )}
+      </div>
 
       <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-2">
         <button

@@ -1,14 +1,17 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Footer from '@/components/Footer';
 import BottomNav from '@/components/BottomNav';
 import StickyNavbar from '@/components/StickyNavbar';
 import BookmarkButton from '@/components/buttons/Bookmark';
+import VoteButtons from '@/components/buttons/VoteButtons';
+import Tag from '@/components/Tag';
+import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
 
-import { ArrowLeftIcon, MapPinIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, MapPinIcon, PencilIcon, TrashIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { clientDB } from '@/supabaseClient.js';
 
 /**
@@ -23,16 +26,48 @@ import { clientDB } from '@/supabaseClient.js';
  * @author Nate O
  */
 
-
 export default function DealDetailPage() {
   const params = useParams();
   const dealId = params.dealId;
   const supabase = clientDB;
+  const router = useRouter();
+  const optionsMenuRef = useRef(null);
 
   const [deal, setDeal] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [displayLocation, setDisplayLocation] = useState('');
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const [isOptionsMenuOpen, setIsOptionsMenuOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) {
+        console.error('Error fetching session:', sessionError);
+        return;
+      }
+      if (session && session.user) {
+        setCurrentUserId(session.user.id);
+      }
+    };
+    fetchCurrentUser();
+  }, [supabase]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (optionsMenuRef.current && !optionsMenuRef.current.contains(event.target)) {
+        setIsOptionsMenuOpen(false);
+      }
+    };
+    if (isOptionsMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOptionsMenuOpen]);
 
   // Helper function to format time ago
   const formatTimeAgo = (timestamp) => {
@@ -67,7 +102,7 @@ export default function DealDetailPage() {
         setError(null);
         const { data, error: fetchError } = await supabase
           .from('deals')
-          .select('*, user_profiles(name)') 
+          .select('*, user_profiles(name), tags, description')
           .eq('id', dealId)
           .single();
 
@@ -104,6 +139,35 @@ export default function DealDetailPage() {
       fetchDealDetails();
     }
   }, [dealId, supabase]);
+
+  const handleDelete = async () => {
+    setIsOptionsMenuOpen(false);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDeleteDeal = async () => {
+    setIsDeleteModalOpen(false);
+    if (!deal || !deal.id) {
+        alert('Deal information is missing, cannot delete.');
+        return;
+    }
+    try {
+      const { error: deleteError } = await supabase
+        .from('deals')
+        .delete()
+        .eq('id', deal.id);
+
+      if (deleteError) {
+        throw deleteError;
+      }
+
+      alert('Deal deleted successfully!');
+      router.push('/deals-page'); // Redirect to deals listing page
+    } catch (err) {
+      console.error('Error deleting deal:', err);
+      alert(`Error deleting deal: ${err.message}`);
+    }
+  };
 
   if (loading) {
     return (
@@ -146,24 +210,65 @@ export default function DealDetailPage() {
       <div className="max-w-md mx-auto px-4 py-6 space-y-6 pt-20"> 
         
         <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30"> 
-          <Link href="/deals-page" className="mb-4 inline-block">
-            <button className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] px-3 py-1.5 rounded-lg shadow-md flex items-center">
-              <ArrowLeftIcon className="h-5 w-5" />
-            </button>
-          </Link>
+          <div className="flex justify-between items-center mb-4">
+            <Link href="/deals-page" className="inline-block">
+              <button className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] px-3 py-1.5 rounded-lg shadow-md flex items-center">
+                <ArrowLeftIcon className="h-5 w-5" />
+              </button>
+            </Link>
 
-          <div className="flex justify-between items-start mb-6">
-            <h1 className="text-3xl font-bold text-[#8B4C24] mr-4">{deal.title}</h1> 
-            <div className="shrink-0"> 
-              <BookmarkButton dealId={deal.id} />
-            </div>
+            {deal && currentUserId && deal.user_id === currentUserId && (
+              <div className="relative" ref={optionsMenuRef}>
+                <button 
+                  onClick={() => setIsOptionsMenuOpen(!isOptionsMenuOpen)}
+                  className="bg-[#F5EFE6] hover:bg-[#EADDCA] text-[#A0522D] border-2 border-[#A0522D] p-2 rounded-lg shadow-md"
+                  aria-label="Options"
+                >
+                  <EllipsisVerticalIcon className="h-5 w-5" />
+                </button>
+                {isOptionsMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+                    <button 
+                      onClick={() => { router.push(`/deals-page/${dealId}/edit`); setIsOptionsMenuOpen(false); }}
+                      className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                    >
+                      <PencilIcon className="h-5 w-5 mr-2" /> Edit
+                    </button>
+                    <button 
+                      onClick={handleDelete}
+                      className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700"
+                    >
+                      <TrashIcon className="h-5 w-5 mr-2" /> Delete
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
+
+          <h1 className="text-3xl font-bold mb-6 text-[#8B4C24]">{deal.title}</h1> 
+
+          {deal.tags && deal.tags.length > 0 && (
+            <div className="mb-6 flex flex-wrap items-center">
+              <div className="flex flex-wrap gap-2">
+                {deal.tags.map((tag, index) => (
+                  <Tag key={index} label={tag} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {deal.description && (
+            <div className="mb-6">
+              <p className="text-[#8B4C24] whitespace-pre-wrap">{deal.description || "No description provided"}</p>
+            </div>
+          )}
 
           {displayLocation && (
             <div className="mb-4">
               <div className="flex items-center mb-1">
                 <h2 className="text-lg font-semibold text-[#6A4C3C] mr-2">Location</h2>
-                <Link href="/map-page" passHref className="text-sm text-[#B87333] hover:text-[#8B4C24] flex items-center">
+                <Link href={`/map-page?lat=${deal.location?.lat}&lng=${deal.location?.lng}&label=${encodeURIComponent(displayLocation)}`} passHref className="text-sm text-[#B87333] hover:text-[#8B4C24] flex items-center">
                   <MapPinIcon className="h-4 w-4 mr-1" /> View on Map
                 </Link>
               </div>
@@ -171,20 +276,35 @@ export default function DealDetailPage() {
             </div>
           )}
           {deal.price !== null && deal.price !== undefined && (
-            <div className="mb-4">
+            <div className="mb-6">
               <h2 className="text-lg font-semibold mb-1 text-[#6A4C3C]">Price</h2>
               <p className="text-[#8B4C24]">${typeof deal.price === 'number' ? deal.price.toFixed(2) : deal.price}</p>
             </div>
-          )}
+          )}    
 
           <p className="text-sm text-[#8B4C24]/80 mb-8">
             Posted by {deal.user_profiles && deal.user_profiles.name ? deal.user_profiles.name : (deal.user_id ? `User ${deal.user_id.substring(0,8)}...` : 'Unknown')} - {formatTimeAgo(deal.created_at)}
           </p>        
+
+          <div className="flex items-center mb-6">
+            <div className="flex items-center">
+              <div className="mr-2">
+                <VoteButtons itemId={deal.id} itemType="deals" upvotes={deal.upvotes || 0} downvotes={deal.downvotes || 0} />
+              </div>
+              <BookmarkButton dealId={deal.id} />
+            </div>
+          </div>
         </div>
 
         <Footer />
       </div>
       <BottomNav />
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDeleteDeal}
+        itemName="deal"
+      />
     </div>
   );
 } 

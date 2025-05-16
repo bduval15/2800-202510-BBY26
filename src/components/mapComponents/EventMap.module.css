@@ -34,16 +34,27 @@
   color: #c17f4f;
 }
 
-/* —— Popup “card” styling —— */
-.container :global(.leaflet-popup-content-wrapper) {
-  background: #FFF9F0;
-  border: 1px solid #D1905A;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
+:global(.custom-popup .leaflet-popup-content-wrapper) {
+  background: #FFF9F0 !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5) !important;
+  padding: 0.15rem !important;
 }
-.container :global(.leaflet-popup-tip) {
-  background: #FFF9F0;
+
+:global(.custom-popup .leaflet-popup-tip) {
+  border-radius: .3rem !important;
+  background: #FFF9F0 !important;
+}
+
+:global(.custom-popup .leaflet-popup-close-button) {
+  display: block !important;
+  top: 0.5rem !important;
+  right: 0.5rem !important;
+  font-size: 0.75rem;
+  color: #8B4C24;
+  text-shadow: none;
+  background: transparent;
+  border: none;
 }
 
 /* —— Marker drop-shadow —— */
@@ -76,8 +87,9 @@
 .mapWrapper {
   position: relative;
   z-index: 0;      
-  height: 65vh;      
+  height: 70vh;      
   width: 100%;
+  margin-bottom: 2rem;
   border: 3px solid #D1905A;
   border-radius: 0.5rem;
   overflow: hidden;  
@@ -88,4 +100,22 @@
   height: 100%;
   width: 100%;
   z-index: 0; 
+}
+
+:global(.you-are-here .leaflet-popup-content-wrapper) {
+  background: #FFF9F0 !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+  padding: 0.25rem 0.5rem !important;
+  font-size: 0.75rem;
+  color: #8B4C24;
+}
+
+:global(.you-are-here .leaflet-popup-tip) {
+  background: #FFF9F0 !important;
+}
+
+:global(.you-are-here .leaflet-popup-content) {
+  margin: 2 !important;
+  padding: 2 !important;
 }

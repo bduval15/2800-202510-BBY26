@@ -68,7 +68,7 @@ export default function HackDetailPage({ params }) {
       try {
         const { data: hackData, error: fetchError } = await clientDB
           .from('hacks')
-          .select('id, title, description, created_at, user_id, tags, upvotes, downvotes, user_profiles(name)')
+          .select('id, title, description, created_at, user_id, tags, upvotes, downvotes, location, user_profiles(name)')
           .eq('id', hackId)
           .single(); 
 
@@ -234,6 +234,14 @@ export default function HackDetailPage({ params }) {
             <p className="text-[#8B4C24]">{hack.description}</p>
           </div>         
 
+          {/* Location Display */}
+          {hack.location && (
+            <div className="mb-6">
+              <p className="text-sm font-semibold text-[#8B4C24]">Location:</p>
+              <p className="text-[#8B4C24]">{JSON.parse(hack.location).address}</p>
+            </div>
+          )}
+
           {/* Author/Timestamp */}
           <p className="text-sm text-[#8B4C24]/80 mb-8">
              By {hack.user_profiles && hack.user_profiles.name ? hack.user_profiles.name : 'Unknown'} - {formatTimeAgo(hack.created_at)}
@@ -243,7 +251,7 @@ export default function HackDetailPage({ params }) {
           <div className="flex items-center mb-6">
             <div className="flex items-center">
               <div className="mr-2">
-                <VoteButtons hackId={hack.id} upvotes={hack.upvotes || 0} downvotes={hack.downvotes || 0} />
+                <VoteButtons itemId={hack.id} itemType="hacks" upvotes={hack.upvotes || 0} downvotes={hack.downvotes || 0} />
               </div>
               <BookmarkButton hackId={hack.id} />
             </div>

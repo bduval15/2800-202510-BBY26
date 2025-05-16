@@ -17,7 +17,7 @@ import { clientDB } from '@/supabaseClient';
  * @author https://gemini.google.com/app
  */
 
-const VoteButtons = ({ hackId, upvotes: initialUpvotes, downvotes: initialDownvotes }) => {
+const VoteButtons = ({ itemId, itemType, upvotes: initialUpvotes, downvotes: initialDownvotes }) => {
   const [localUpvotes, setLocalUpvotes] = useState(Number(initialUpvotes) || 0);
   const [localDownvotes, setLocalDownvotes] = useState(Number(initialDownvotes) || 0);
   const [userVote, setUserVote] = useState(null); // null, 'upvoted', 'downvoted'
@@ -30,16 +30,20 @@ const VoteButtons = ({ hackId, upvotes: initialUpvotes, downvotes: initialDownvo
   }, [initialUpvotes, initialDownvotes]);
 
   const updateVoteInDB = async (newUpvotes, newDownvotes) => {
-    if (!hackId) {
-      console.error("Hack ID is missing, cannot update vote in DB.");
+    if (!itemId) {
+      console.error("Item ID is missing, cannot update vote in DB.");
+      return;
+    }
+    if (!itemType) {
+      console.error("Item type is missing, cannot update vote in DB.");
       return;
     }
     setIsLoading(true);
     try {
       const { error } = await clientDB
-        .from('hacks')
+        .from(itemType)
         .update({ upvotes: newUpvotes, downvotes: newDownvotes })
-        .eq('id', hackId);
+        .eq('id', itemId);
 
       if (error) {
         throw error;
@@ -58,7 +62,9 @@ const VoteButtons = ({ hackId, upvotes: initialUpvotes, downvotes: initialDownvo
     }
   };
 
-  const handleUpvote = () => {
+  const handleUpvote = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (isLoading) return;
     let newUpvotes = localUpvotes;
     let newDownvotes = localDownvotes;
@@ -82,7 +88,9 @@ const VoteButtons = ({ hackId, upvotes: initialUpvotes, downvotes: initialDownvo
     updateVoteInDB(newUpvotes, newDownvotes);
   };
 
-  const handleDownvote = () => {
+  const handleDownvote = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (isLoading) return;
     let newUpvotes = localUpvotes;
     let newDownvotes = localDownvotes;
@@ -138,7 +146,8 @@ const VoteButtons = ({ hackId, upvotes: initialUpvotes, downvotes: initialDownvo
 VoteButtons.propTypes = {
   upvotes: PropTypes.number.isRequired,
   downvotes: PropTypes.number.isRequired,
-  hackId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  itemId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  itemType: PropTypes.oneOf(['hacks', 'deals', 'events']).isRequired,
 };
 
-export default VoteButtons; 
+export default VoteButtons;
