@@ -15,14 +15,10 @@ import {
   createServerActionClient,
 } from '@supabase/auth-helpers-nextjs';
 
-
 //Use inside server components or layouts
 export const getServerDB = () =>
   createServerComponentClient({ cookies });
 
-
-
 //Use inside server actions (e.g. form POSTs)
-
 export const getServerActionDB = () =>
   createServerActionClient({ cookies });

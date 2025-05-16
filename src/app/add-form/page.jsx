@@ -5,7 +5,7 @@ import AddPostForm from '@/components/forms/AddPostForm';
 import Footer from '@/components/Footer';
 import BottomNav from '@/components/BottomNav';
 import StickyNavbar from '@/components/StickyNavbar';
-import { clientDB } from '../../../supabaseClient';
+import { clientDB } from '@/supabaseClient';
 
 /**
  * AddFormPage.jsx
@@ -16,12 +16,13 @@ import { clientDB } from '../../../supabaseClient';
  * Modified with assistance from Google Gemini 2.5 Flash
  * 
  * @author: Nathan O
+ * @author: Conner P
  * @author https://gemini.google.com/app
  */
 
 export default function AddFormPage() {
   const router = useRouter();
-  const hackTags = ['Campus Life', 'Health & Wellness', 'Study Tips', 'Food', 'Career', 'Finance', 'Technology', 'Social'];
+  const tags = ['Animal Care', 'Art', 'Board Games', 'Comedy', 'Coding', 'Cooking', 'Cycling', 'Esports', 'Entrepreneurship', 'Fitness', 'Football', 'Gaming', 'Hiking', 'Investing', 'Mental Health', 'Movies', 'Music', 'Photography', 'Public Speaking', 'Reading', 'Study Groups', 'Sustainability', 'Yoga'];
 
   const handleSubmitHack = async (formData) => {
     const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
@@ -43,21 +44,42 @@ export default function AddFormPage() {
 
     if (formData.postType === 'hack') {
       tableName = 'hacks';
+      const lowerTags = formData.tags.map(t => t.toLowerCase());
       dataToInsert = {
         title: formData.title,
         description: formData.description,
         user_id: userId,
-        tags: formData.tags,
+        tags: lowerTags,
         upvotes: 0,
-        downvotes: 0
+        downvotes: 0,
+        location: formData.location,
+        table_id: 'hacks'
       };
     } else if (formData.postType === 'deal') {
       tableName = 'deals';
+      const lowerTags = formData.tags.map(t => t.toLowerCase());
       dataToInsert = {
         title: formData.title,
         location: formData.location,
+        tags: lowerTags,
         price: formData.price,
-        user_id: userId
+        description: formData.description,
+        user_id: userId,
+        tags: formData.tags,
+        table_id: 'deals'
+      };
+    }
+    else if (formData.postType === 'event') {
+      tableName = 'events';
+      const lowerTags = formData.tags.map(t => t.toLowerCase());
+      dataToInsert = {
+        title: formData.title,
+        description: formData.description,
+        user_id: userId,
+        tags: lowerTags,
+        upvotes: 0,
+        downvotes: 0,
+        location: formData.location
       };
     } else {
       console.error('Unknown post type:', formData.postType);
@@ -73,8 +95,18 @@ export default function AddFormPage() {
       return;
     }
 
-    // For now, always redirect to hacks-page. This can be changed later.
-    router.push('/hacks-page');
+    // Redirect based on post type
+    if (formData.postType === 'hack') {
+      router.push('/hacks-page');
+    } else if (formData.postType === 'deal') {
+      router.push('/deals-page'); // Assuming this is the correct route for deals
+    } else if (formData.postType === 'event') {
+      router.push('/events-page');
+    } else {
+      // Fallback redirection if postType is somehow unknown at this point
+      console.warn('Unknown post type for redirection:', formData.postType);
+      router.push('/'); // Or a more appropriate default page
+    }
   };
 
   const handleCancel = () => {
@@ -86,7 +118,7 @@ export default function AddFormPage() {
       <StickyNavbar />
       <div className="flex-grow container mx-auto pt-20 px-4 py-8">
         <AddPostForm
-          hackTags={hackTags}
+          tags={tags}
           onSubmit={handleSubmitHack}
           onClose={handleCancel}
         />

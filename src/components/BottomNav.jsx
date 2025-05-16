@@ -25,7 +25,7 @@ export default function BottomNav() {
     { href: '/map-page', icon: <MapIcon className="h-8 w-8" /> },
     { href: '/profile', icon: <UserIcon className="h-8 w-8" /> },
   ]
-
+  
   return (
     <nav className=" fixed bottom-0 left-0 w-full border-t-3 border-[#D1905A] bg-[#F5E3C6] text-[#8B4C24]">
       <div className="bg-[#F5E3C6] max-w-md mx-auto flex justify-around">

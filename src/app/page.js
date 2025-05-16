@@ -9,7 +9,6 @@
  * 
  * @author https://chatgpt.com/*
  */
-import Image from "next/image";
 import Link from 'next/link';
 import Footer from "@/components/Footer";
 

@@ -1,23 +1,25 @@
 'use client';
 
-import React, { useState } from 'react';
-// import FeedLayout from '@/components/FeedLayout';
+import React, { useState, useEffect, use, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
 import BookmarkButton from '@/components/buttons/Bookmark';
 import VoteButtons from '@/components/buttons/VoteButtons';
-import CommentDisplay from '@/components/buttons/CommentCount';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, PencilIcon, TrashIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import Tag from '@/components/Tag';
 import BottomNav from '@/components/BottomNav';
 import CommentSection from '@/components/sections/CommentSection';
 import StickyNavbar from '@/components/StickyNavbar';
+import { clientDB } from '@/supabaseClient';
+import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
 
 /**
  * HackDetails.jsx
  * Loaf Life - Hack Details Page
  *
  * This page displays the details of a specific hack.
+ * Fetches data from Supabase based on hack ID.
  * It includes the hack title, description, hack details, author, and timestamp.
  * It also includes a button to save the hack.
  *
@@ -27,84 +29,246 @@ import StickyNavbar from '@/components/StickyNavbar';
  * @author https://gemini.google.com/app
  */
 
-// Placeholder data currently being used, need to update implementation to use database later - Nate
-
-// Placeholder data directly here
-const placeholderHack = {
-  id: 'placeholder',
-  title: 'Free BCIT Gym Access',
-  descriptionTitle: 'BCIT Recreation (Burnaby Campus)',
-  description: `All full-time and part-time BCIT students get a complimentary Recreation membership from the first day of classes until the last. With just your BCIT student ID, you'll have free access to
-  a full weight room, gymnasium, change rooms, showers, and more.`,
-  hackTitle: 'A few perks (paid upgrade)',
-  hackDetails: `If you want squash/racquetball or intramurals, those are available at nominal additional rates—still well below commercial alternatives. Lockers, towels, and laundry service can also be added for a small fee (e.g. court bookings run under $10/hr)`,
-  author: 'Student',
-  timestamp: 'Two days ago',
-  upvotes: 150,
-  downvotes: 10,
-  comments: 25,
-  tags: ['Campus Life', 'Health & Wellness'],
-};
-
 export default function HackDetailPage({ params }) {
-  const hackId = params.hackId;
-  // Initialize state directly with placeholder data
-  const [hack, setHack] = useState(placeholderHack);
+  const resolvedParams = use(params);
+  const hackId = resolvedParams.id;
+  const [hack, setHack] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const [isOptionsMenuOpen, setIsOptionsMenuOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const router = useRouter();
+  const optionsMenuRef = useRef(null);
 
-  // Render the component with placeholder data
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
+      if (sessionError) {
+        console.error('Error fetching session:', sessionError);
+        return;
+      }
+      if (session && session.user) {
+        setCurrentUserId(session.user.id);
+      }
+    };
+    fetchCurrentUser();
+  }, []);
+
+  useEffect(() => {
+    if (!hackId) {
+      setIsLoading(false);
+      setError("Hack ID is missing.");
+      return;
+    }
+
+    const fetchHackDetails = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const { data: hackData, error: fetchError } = await clientDB
+          .from('hacks')
+          .select('id, title, description, created_at, user_id, tags, upvotes, downvotes, location, user_profiles(name)')
+          .eq('id', hackId)
+          .single(); 
+
+        if (fetchError) {
+          if (fetchError.code === 'PGRST116') {
+            setError("Hack not found."); 
+            setHack(null);
+          } else {
+            throw fetchError;
+          }
+        } else if (!hackData) {
+          setError("Hack not found.");
+        } else {
+          setHack(hackData);
+        }
+      } catch (err) {
+        setError(err.message);
+        console.error(`Error fetching hack ${hackId}:`, err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchHackDetails();
+  }, [hackId]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (optionsMenuRef.current && !optionsMenuRef.current.contains(event.target)) {
+        setIsOptionsMenuOpen(false);
+      }
+    };
+    if (isOptionsMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOptionsMenuOpen]);
+
+  if (isLoading) {
+    return <div className="max-w-md mx-auto px-4 py-6 space-y-6 text-center">Loading hack details...</div>;
+  }
+
+  if (error) {
+    return <div className="max-w-md mx-auto px-4 py-6 space-y-6 text-center text-red-500">Error: {error}</div>;
+  }
+
+  if (!hack) {
+    return <div className="max-w-md mx-auto px-4 py-6 space-y-6 text-center">Hack not found.</div>;
+  }
+
+  // Helper function to format time ago
+  const formatTimeAgo = (timestamp) => {
+    if (!timestamp) return 'N/A';
+    const now = new Date();
+    const past = new Date(timestamp);
+    const diffInSeconds = Math.floor((now - past) / 1000);
+
+    if (diffInSeconds < 60) {
+      return `${diffInSeconds} seconds ago`;
+    }
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) {
+      return `${diffInMinutes} minutes ago`;
+    }
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) {
+      return `${diffInHours} hours ago`;
+    }
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) {
+      return `${diffInDays} days ago`;
+    }
+    const diffInWeeks = Math.floor(diffInDays / 7);
+    return `${diffInWeeks} weeks ago`;
+  };
+
+  const handleDelete = async () => {
+    setIsOptionsMenuOpen(false);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDeleteHack = async () => {
+    setIsDeleteModalOpen(false);
+    try {
+      const { error: deleteError } = await clientDB
+        .from('hacks')
+        .delete()
+        .eq('id', hackId);
+
+      if (deleteError) {
+        throw deleteError;
+      }
+
+      alert('Hack deleted successfully!');
+      router.push('/hacks-page');
+    } catch (err) {
+      console.error('Error deleting hack:', err);
+      alert(`Error deleting hack: ${err.message}`);
+    }
+  };
+
   return (
     <div className="pb-6">
       <div className="max-w-md mx-auto px-4 py-6 space-y-6">
         <StickyNavbar />
         <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30 pt-16">
-          {/* Back Button */}
-          <Link href="/hacks-page" className="mb-4 inline-block">
-            <button className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] px-3 py-1.5 rounded-lg shadow-md">
-              <ArrowLeftIcon className="h-5 w-5" />
-            </button>
-          </Link>
+          {/* Header: Back Button and Options Menu Button */}
+          <div className="flex justify-between items-center mb-4">
+            <Link href="/hacks-page" className="inline-block">
+              <button className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] px-3 py-1.5 rounded-lg shadow-md">
+                <ArrowLeftIcon className="h-5 w-5" />
+              </button>
+            </Link>
+
+            {/* Options Menu Button and Dropdown - visible only to the author */}
+            {hack && currentUserId && hack.user_id === currentUserId && (
+              <div className="relative" ref={optionsMenuRef}>
+                <button 
+                  onClick={() => setIsOptionsMenuOpen(!isOptionsMenuOpen)}
+                  className="bg-[#F5EFE6] hover:bg-[#EADDCA] text-[#A0522D] border-2 border-[#A0522D] p-2 rounded-lg shadow-md"
+                  aria-label="Options"
+                >
+                  <EllipsisVerticalIcon className="h-5 w-5" />
+                </button>
+                {isOptionsMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+                    <button 
+                      onClick={() => { router.push(`/hacks-page/${hackId}/edit`); setIsOptionsMenuOpen(false); }}
+                      className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                    >
+                      <PencilIcon className="h-5 w-5 mr-2" /> Edit
+                    </button>
+                    <button 
+                      onClick={handleDelete}
+                      className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700"
+                    >
+                      <TrashIcon className="h-5 w-5 mr-2" /> Delete
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Hack Title */}
           <h1 className="text-3xl font-bold mb-6 text-[#8B4C24]">{hack.title}</h1>
 
           {/* Tags Display */}
-          {hack.tags && hack.tags.length > 0 && (
-            <div className="mb-6 flex flex-wrap">
-              {hack.tags.slice(0, 3).map((tag, index) => (
-                <Tag key={index} label={tag} />
-              ))}
-            </div>
-          )}
+          <div className="mb-6 flex flex-wrap items-center">
+            {hack.tags && hack.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {hack.tags.slice(0, 3).map((tag, index) => (
+                  <Tag key={index} label={tag} />
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Description Section */}
           <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2 text-[#8B4C24]">{hack.descriptionTitle}</h2>
             <p className="text-[#8B4C24]">{hack.description}</p>
-          </div>
+          </div>         
 
-          {/* Hack Details Section */}
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2 text-[#8B4C24]">{hack.hackTitle}</h2>
-            <p className="text-[#8B4C24]">{hack.hackDetails}</p>
-          </div>
+          {/* Location Display */}
+          {hack.location && (
+            <div className="mb-6">
+              <p className="text-sm font-semibold text-[#8B4C24]">Location:</p>
+              <p className="text-[#8B4C24]">{JSON.parse(hack.location).address}</p>
+            </div>
+          )}
 
           {/* Author/Timestamp */}
-          <p className="text-sm text-[#8B4C24]/80 mb-8">By {hack.author} - {hack.timestamp}</p>
+          <p className="text-sm text-[#8B4C24]/80 mb-8">
+             By {hack.user_profiles && hack.user_profiles.name ? hack.user_profiles.name : 'Unknown'} - {formatTimeAgo(hack.created_at)}
+          </p>
 
-          {/* Interactive Buttons Row */}
-          <div className="flex justify-between items-center mb-6">
-            <div className="mr-2">
-              <VoteButtons upvotes={hack.upvotes} downvotes={hack.downvotes} />
+          {/* Vote and Bookmark Buttons Row */}
+          <div className="flex items-center mb-6">
+            <div className="flex items-center">
+              <div className="mr-2">
+                <VoteButtons itemId={hack.id} itemType="hacks" upvotes={hack.upvotes || 0} downvotes={hack.downvotes || 0} />
+              </div>
+              <BookmarkButton hackId={hack.id} />
             </div>
-            <BookmarkButton />
           </div>
         </div>
 
-        <CommentSection />
+        <CommentSection hackId={hack.id} /> 
         <Footer />
       
       </div>
       <BottomNav />
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDeleteHack}
+        itemName="hack"
+      />
     </div>
   );
 }

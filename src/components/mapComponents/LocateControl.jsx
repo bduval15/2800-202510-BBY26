@@ -19,16 +19,17 @@
 
 import React, { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
-import { createRoot }      from 'react-dom/client'; 
-import { MapPinIcon } from '@heroicons/react/24/solid'; 
+import { createRoot } from 'react-dom/client';
+import { MapPinIcon } from '@heroicons/react/24/solid';
 import L from 'leaflet';
 
 export default function LocateControl({
-  position      = 'topright',
-  tooltip       = 'Find my location',
+  position = 'topright',
+  tooltip = 'Find my location',
   locateOptions = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
-  onLocated     = () => {},
-  zoomTo        = 15
+  onLocated = () => { },
+  trackedPos,
+  zoomTo = 15
 }) {
   const map = useMap();
 
@@ -36,7 +37,7 @@ export default function LocateControl({
     // 1) Define a custom Control
     const Control = L.Control.extend({
       onAdd() {
-        const container = L.DomUtil.create('div','leaflet-bar leaflet-control locate-btn');
+        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control locate-btn');
         container.title = tooltip;
         L.DomEvent.disableClickPropagation(container);
 
@@ -48,13 +49,15 @@ export default function LocateControl({
 
         // 4) Wire up the locate click
         container.onclick = () => {
-          map.locate({
-            ...locateOptions,
-            setView: true,
-            maxZoom: zoomTo
-          });
-        };
+          map.closePopup();
 
+          if (trackedPos) {
+            map.flyTo([trackedPos.lat, trackedPos.lng], zoomTo);
+            onLocated([trackedPos.lat, trackedPos.lng]);
+          } else {
+            map.locate({ setView: true, maxZoom: zoomTo });
+          }
+        };
         return container;
       }
     });
