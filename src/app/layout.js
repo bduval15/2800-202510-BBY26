@@ -14,8 +14,9 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={roboto.variable}>
-     <body className="antialiased">
+    <html lang="en">
+     <body 
+      className={'${robotoSans.variable} ${robotoMono.variable} antialiased'}>
         {children}
       </body>
     </html>

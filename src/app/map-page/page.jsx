@@ -20,6 +20,7 @@ import FilterBar from '@/components/mapComponents/FilterBar';
 import styles from '@/components/mapComponents/EventMap.module.css';
 import { clientDB } from '@/supabaseClient';
 import { loadAllEvents } from '@/utils/loadAllEvents';
+import AIbutton from '@/components/buttons/AIbutton';
 
 const EventMap = dynamic(
   () => import('@/components/mapComponents/EventMap'),
@@ -35,6 +36,33 @@ const EventMap = dynamic(
 
 export default function MapPage() {
   const [events, setEvents] = useState([]);
+  const [interests, setInterests] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchInterests = async () => {
+      const { data: { user } } = await clientDB.auth.getUser();
+      if (!user) return;
+  
+      const { data, error } = await clientDB
+        .from('user_profiles')
+        .select('interests')
+        .eq('id', user.id)
+        .single();
+  
+      if (error) {
+        console.error('Failed to fetch interests:', error.message);
+      } else if (data?.interests) {
+        setInterests(Array.isArray(data.interests)
+          ? data.interests
+          : data.interests.split(','));
+      }
+  
+      setLoading(false);
+    };
+  
+    fetchInterests();
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -99,16 +127,16 @@ export default function MapPage() {
       setEvents(formatted);
     })();
   }, []);
-  
+
   const threads = useMemo(() => ([
-    { id: 'hacks',  name: 'Hacks'       },
-    { id: 'deals',  name: 'Deals'       },
+    { id: 'hacks', name: 'Hacks' },
+    { id: 'deals', name: 'Deals' },
     { id: 'events', name: 'Events' }
   ]), []);
 
   const [selectedThreads, setSelectedThreads] = useState(
-    () => threads.map(t => t.id) 
-      );
+    () => threads.map(t => t.id)
+  );
 
   const filteredEvents = useMemo(() => {
     return events.filter(evt => selectedThreads.includes(evt.table_id));
@@ -142,7 +170,7 @@ export default function MapPage() {
 
     fetchInterests();
   }, []);
-  
+
   return (
     <>
       <StickyNavbar />
@@ -150,12 +178,12 @@ export default function MapPage() {
         <div className="flex-1 overflow-auto pb-20">
           <FilterBar
             threads={threads}
-           initialSelected={selectedThreads}
-           onFilterChange={handleFilterChange}
+            initialSelected={selectedThreads}
+            onFilterChange={handleFilterChange}
           />
           <div className="px-4">
             <div className={styles.mapWrapper}>
-              <EventMap events={filteredEvents}/>
+              <EventMap events={filteredEvents} />
             </div>
 
             <div className="px-4 py-2 max-w-md mx-auto w-full">

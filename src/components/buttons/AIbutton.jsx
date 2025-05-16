@@ -29,7 +29,7 @@ export default function AIbutton({ interests }) {
 
     // Tooltip Timeout
     useEffect(() => {
-        const timer = setTimeout(() => setShowTooltip(false), 5000)
+        const timer = setTimeout(() => setShowTooltip(false), 3500)
         return () => clearTimeout(timer)
     }, [])
 
