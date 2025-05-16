@@ -22,15 +22,45 @@ import AIbutton from '@/components/buttons/AIbutton';
  */
 
 export default function DealsPage() {
+  const [selectedTags, setSelectedTags] = useState([]);
   const [allDeals, setAllDeals] = useState([]);
   const [interests, setInterests] = useState([]);
   const [loading, setLoading] = useState(true);
   const supabase = clientDB;
 
+  const tags = [
+    'Animal Care',
+    'Art',
+    'Board Games',
+    'Comedy',
+    'Coding',
+    'Cooking',
+    'Cycling',
+    'Esports',
+    'Entrepreneurship',
+    'Fitness',
+    'Football',
+    'Gaming',
+    'Hiking',
+    'Investing',
+    'Mental Health',
+    'Movies',
+    'Music',
+    'Photography',
+    'Public Speaking',
+    'Reading',
+    'Study Groups',
+    'Sustainability',
+    'Yoga'
+  ];
+
   useEffect(() => {
     const fetchInterests = async () => {
       const { data: { user } } = await clientDB.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        setLoading(false);
+        return;
+      }
   
       const { data, error } = await clientDB
         .from('user_profiles')
@@ -57,32 +87,49 @@ export default function DealsPage() {
     const fetchDeals = async () => {
       const { data, error } = await supabase
         .from('deals')
-        .select('*'); // Fetches all columns
+        .select('*') // Fetches all columns
+        .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error fetching deals:', error);
+        setAllDeals([]);
       } else {
-        setAllDeals(data);
+        setAllDeals(data || []);
       }
     };
 
     fetchDeals();
   }, [supabase]);
 
-  const dealsToDisplay = allDeals;
+  const handleTagToggle = (tag) => {
+    if (tag === "ALL") {
+      setSelectedTags([]);
+    } else {
+      setSelectedTags(prevSelectedTags =>
+        prevSelectedTags.includes(tag)
+          ? prevSelectedTags.filter(t => t !== tag)
+          : [...prevSelectedTags, tag]
+      );
+    }
+  };
 
-
+  const dealsToDisplay = selectedTags.length === 0
+    ? allDeals
+    : allDeals.filter(deal => 
+        deal.tags && selectedTags.some(selTag => deal.tags.includes(selTag))
+      );
 
   return (
     <div className="bg-[#F5E3C6] pb-6">
       <FeedLayout
+        title="Deals"
+        tagOptions={tags}
+        selectedTags={selectedTags}
+        onTagToggle={handleTagToggle}
       >
-        <div className="text-left text-2xl font-bold text-[#8B4C24] pl-4 mb-4 mt-4">
-          Deals
-        </div>
         {dealsToDisplay.length > 0 ? (
           dealsToDisplay.map(deal => {
-            let displayLocation = deal.location; // Default to the original location
+            let displayLocation = deal.location; 
             if (deal.location && typeof deal.location === 'string') {
               try {
                 const parsedLocation = JSON.parse(deal.location);
@@ -90,8 +137,7 @@ export default function DealsPage() {
                   displayLocation = parsedLocation.address;
                 }
               } catch (e) {
-                console.warn("Failed to parse location JSON:", deal.location, e);
-                // displayLocation remains deal.location if parsing fails or address is not found
+                console.warn("Failed to parse location JSON:", deal.location, e);        
               }
             } else if (deal.location && typeof deal.location === 'object' && deal.location.address) {
               displayLocation = deal.location.address;
@@ -102,13 +148,17 @@ export default function DealsPage() {
                 key={deal.id}
                 id={deal.id}
                 title={deal.title}
-                location={displayLocation} // Pass the extracted address
+                location={displayLocation} 
                 price={deal.price}
+                tags={deal.tags}
+                upvotes={deal.upvotes}
+                downvotes={deal.downvotes}
+                createdAt={deal.created_at}
               />
             );
           })
         ) : (
-          <p className="text-center text-gray-500 px-4">No deals found. Try adding one!</p>
+          <p className="text-center text-gray-500 px-4">No deals found for the selected tags. Try adding one!</p>
         )}
 
         <div className="px-4 py-2 max-w-md mx-auto w-full">
@@ -119,4 +169,4 @@ export default function DealsPage() {
       <BottomNav />
     </div>
   )
-} 
+}

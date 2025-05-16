@@ -22,32 +22,7 @@ import { clientDB } from '@/supabaseClient';
 
 export default function AddFormPage() {
   const router = useRouter();
-  const hackTags = [
-    "Gaming",
-    "Cooking",
-    "Coding",
-    "Photography",
-    "Reading",
-    "Movies",
-    "Art",
-    "Music",
-    "Investing",
-    "Yoga",
-    "Hacks",
-    "Cycling",
-    "Football",
-    "Fitness",
-    "Public Speaking",
-    "Study Groups",
-    "Sustainability",
-    "Entrepreneurship",
-    "Hiking",
-    "Mental Health",
-    "Animal Care",
-    "Board Games",
-    "Comedy",
-    "Esports",
-  ];
+  const tags = ['Animal Care', 'Art', 'Board Games', 'Comedy', 'Coding', 'Cooking', 'Cycling', 'Esports', 'Entrepreneurship', 'Fitness', 'Football', 'Gaming', 'Hiking', 'Investing', 'Mental Health', 'Movies', 'Music', 'Photography', 'Public Speaking', 'Reading', 'Study Groups', 'Sustainability', 'Yoga'];
 
   const handleSubmitHack = async (formData) => {
     const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
@@ -77,7 +52,8 @@ export default function AddFormPage() {
         tags: lowerTags,
         upvotes: 0,
         downvotes: 0,
-        location: formData.location
+        location: formData.location,
+        table_id: 'hacks'
       };
     } else if (formData.postType === 'deal') {
       tableName = 'deals';
@@ -87,7 +63,10 @@ export default function AddFormPage() {
         location: formData.location,
         tags: lowerTags,
         price: formData.price,
-        user_id: userId
+        description: formData.description,
+        user_id: userId,
+        tags: formData.tags,
+        table_id: 'deals'
       };
     }
       else if (formData.postType === 'event') {
@@ -139,7 +118,7 @@ export default function AddFormPage() {
       <StickyNavbar />
       <div className="flex-grow container mx-auto pt-20 px-4 py-8">
         <AddPostForm
-          hackTags={hackTags}
+          tags={tags}
           onSubmit={handleSubmitHack}
           onClose={handleCancel}
         />

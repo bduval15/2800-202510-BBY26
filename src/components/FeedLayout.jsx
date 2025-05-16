@@ -10,24 +10,112 @@
 
 'use client'
 
-import { useState } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import SortDropdown from "./SortDropdown"
 import StickyNavbar from './StickyNavbar'
+import { CheckIcon, ChevronDownIcon } from "@heroicons/react/24/outline"
 
 
-export default function FeedLayout({ children, title = 'Student Hacks', tagOptions = [], selectedTag = "All Tags", onTagChange = () => {} }) {
+export default function FeedLayout({
+  children,
+  title,
+  tagOptions = [],
+  selectedTags = [],
+  onTagToggle = (tag) => {},
+}) {
   const [bestSort, setBestSort] = useState("Best")
   const [dateSort, setDateSort] = useState("Newest")
+  const [tagDropdownOpen, setTagDropdownOpen] = useState(false)
+  const tagDropdownRef = useRef(null)
+  const [sortedAndFilteredChildren, setSortedAndFilteredChildren] = useState([])
 
-  const bestOptions = ["Best", "Top", "Hot", "New"]
+  const bestOptions = ["Best", "Worst"]
   const dateOptions = ["Newest", "Oldest"]
   
+  const baseTagButtonClass = "py-1 px-3 rounded-full text-xs font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap";
+  const activeTagButtonClass = "bg-[#8B4C24] text-white hover:bg-[#7a421f]";
+  const inactiveTagButtonClass = "bg-white text-[#8B4C24] hover:bg-gray-100 ring-1 ring-inset ring-[#D1905A]";
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (tagDropdownRef.current && !tagDropdownRef.current.contains(event.target)) {
+        setTagDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [tagDropdownRef]);
+
+  useEffect(() => {
+    const childrenArray = React.Children.toArray(children);
+
+    const processedChildren = [...childrenArray].sort((childA, childB) => {
+      // Directly access props from the child, not child.props.post
+      const propsA = childA?.props;
+      const propsB = childB?.props;
+
+      const isValidPostForSorting = (itemProps, currentSelectedTags) => {
+        if (!itemProps || typeof itemProps.upvotes !== 'number' || typeof itemProps.downvotes !== 'number' || !itemProps.createdAt) {
+          return false;
+        }
+    
+        return true;
+      };
+
+      const isSortableA = isValidPostForSorting(propsA, selectedTags);
+      const isSortableB = isValidPostForSorting(propsB, selectedTags);
+
+      if (isSortableA && !isSortableB) return -1; 
+      if (!isSortableA && isSortableB) return 1;  
+      if (!isSortableA && !isSortableB) return 0; 
+
+      // Both are sortable, proceed with actual sorting logic
+      const scoreA = propsA.upvotes - propsA.downvotes;
+      const scoreB = propsB.upvotes - propsB.downvotes;
+      
+      const timeA = new Date(propsA.createdAt).getTime();
+      const timeB = new Date(propsB.createdAt).getTime();
+      const dateA = !isNaN(timeA) ? timeA : 0;
+      const dateB = !isNaN(timeB) ? timeB : 0;
+
+      // Primary sort: bestSort
+      if (bestSort === "Best") {
+        if (scoreB !== scoreA) return scoreB - scoreA; // Descending score
+      } else if (bestSort === "Controversial") { // "worst" means lowest score first
+        if (scoreA !== scoreB) return scoreA - scoreB; // Ascending score
+      }
+
+      // Secondary sort: dateSort
+      if (dateSort === "Newest") {
+        return dateB - dateA; // Descending date
+      } else if (dateSort === "Oldest") {
+        return dateA - dateB; // Ascending date
+      }
+      
+      return 0;
+    });
+
+    setSortedAndFilteredChildren(processedChildren);
+  }, [children, bestSort, dateSort, selectedTags]);
+
+  const getTagButtonLabel = () => {
+    if (selectedTags.length === 0) {
+      return "Tags";
+    }
+    if (selectedTags.length === 1) {
+      return `1 Tag Selected`;
+    }
+    return `${selectedTags.length} Tags Selected`;
+  };
+
   return (
     <>
       <StickyNavbar />
 
-      <div className="sticky top-16 z-10 bg-[#F5E3C6] border-b border-[#D1905A]">
-        <div className="max-w-md mx-auto flex items-center space-x-4 px-4 py-2">
+      <div className="sticky top-16 z-10 bg-[#F5E3C6]">
+        <div className="max-w-md mx-auto flex items-center space-x-4 px-4 py-2 border-b border-[#D1905A]">
           <SortDropdown
             label={bestSort}
             options={bestOptions}
@@ -42,20 +130,65 @@ export default function FeedLayout({ children, title = 'Student Hacks', tagOptio
           {tagOptions.length > 0 && (
             <>
               <span className="h-4 border-l border-[#D1905A]" />
-              <SortDropdown
-                label={selectedTag}
-                options={["All Tags", ...tagOptions]}
-                onChange={onTagChange}
-              />
+              <div ref={tagDropdownRef} className="relative inline-block text-left">
+                <button
+                  onClick={() => setTagDropdownOpen(o => !o)}
+                  className="flex items-center space-x-1 text-sm font-medium text-[#8B4C24] hover:text-[#639751] focus:outline-none"
+                >
+                  <span>{getTagButtonLabel()}</span>
+                  <ChevronDownIcon className="h-4 w-4" />
+                </button>
+
+                {tagDropdownOpen && (
+                  <ul className="absolute mt-1 w-48 bg-white border border-[#D1905A] rounded-md shadow-lg z-20 overflow-hidden max-h-60 overflow-y-auto">
+                    <li>
+                      <button
+                        onClick={() => {
+                          onTagToggle("ALL");
+                        }}
+                        className={`
+                          block w-full text-left px-3 py-2 text-sm flex items-center justify-between
+                          ${selectedTags.length === 0
+                            ? "bg-[#639751] text-white font-semibold"
+                            : "text-[#8B4C24] hover:bg-[#F5E3C6]"
+                          }
+                        `}
+                      >
+                        All Tags
+                        {selectedTags.length === 0 && <CheckIcon className="h-4 w-4" />}
+                      </button>
+                    </li>
+                    {tagOptions.map(tag => (
+                      <li key={tag}>
+                        <button
+                          onClick={() => {
+                            onTagToggle(tag);
+                          }}
+                          className={`
+                            block w-full text-left px-3 py-2 text-sm flex items-center justify-between
+                            ${selectedTags.includes(tag)
+                              ? "bg-[#a0ce94] text-[#4a7c3a] font-medium"
+                              : "text-[#8B4C24] hover:bg-[#F5E3C6]"
+                            }
+                          `}
+                        >
+                          {tag}
+                          {selectedTags.includes(tag) && <CheckIcon className="h-4 w-4 text-[#639751]" />}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </>
           )}
         </div>
       </div>
 
       <main className="max-w-md mx-auto px-4 py-6 space-y-6">
-        <h1 className="text-2xl font-bold text-[#8B4C24]">{title}</h1>
-        {/* pass bestSort, dateSort, and selectedTag down to your feed-rendering logic */}
-        {children}
+        <h1 className="text-2xl font-bold text-[#8B4C24] pl-4 pt-14">{title}</h1>
+        {/* pass bestSort, dateSort, and selectedTags down to your feed-rendering logic */}
+        {sortedAndFilteredChildren}
       </main>
     </>
   )

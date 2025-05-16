@@ -8,7 +8,6 @@ import BottomNav from '@/components/BottomNav'
 import { clientDB } from '@/supabaseClient';
 import AIbutton from '@/components/buttons/AIbutton';
 
-
 /**
  * HacksPage.jsx
  * Loaf Life - Hacks Page
@@ -23,14 +22,37 @@ import AIbutton from '@/components/buttons/AIbutton';
  */
 
 export default function HacksPage() {
-  const [selectedTag, setSelectedTag] = useState("All Tags");
+  const [selectedTags, setSelectedTags] = useState([]);
   const [allHacks, setAllHacks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [interests, setInterests] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  const hackTags = ['Campus Life', 'Health & Wellness', 'Study Tips', 'Food', 'Career', 'Finance', 'Technology', 'Social', "Photography", "Gaming"];
+  const tags = [
+    'Animal Care',
+    'Art',
+    'Board Games',
+    'Comedy',
+    'Coding',
+    'Cooking',
+    'Cycling',
+    'Esports',
+    'Entrepreneurship',
+    'Fitness',
+    'Football',
+    'Gaming',
+    'Hiking',
+    'Investing',
+    'Mental Health',
+    'Movies',
+    'Music',
+    'Photography',
+    'Public Speaking',
+    'Reading',
+    'Study Groups',
+    'Sustainability',
+    'Yoga'
+  ];
 
   useEffect(() => {
     const fetchInterests = async () => {
@@ -50,12 +72,11 @@ export default function HacksPage() {
           ? data.interests
           : data.interests.split(','));
       }
-  
-      setLoading(false);
     };
   
     fetchInterests();
   }, []);
+
   useEffect(() => {
     const fetchHacks = async () => {
       setIsLoading(true);
@@ -63,7 +84,8 @@ export default function HacksPage() {
       try {
         const { data, error: fetchError } = await clientDB
           .from('hacks')
-          .select('id, title, description, created_at, user_id, tags, upvotes, downvotes, location');
+          .select('id, title, description, created_at, user_id, tags, upvotes, downvotes, location')
+          .order('created_at', { ascending: false });
 
         console.log("[HacksPage] Fetched data:", data);
         console.log("[HacksPage] Fetch error:", fetchError);
@@ -85,21 +107,34 @@ export default function HacksPage() {
   }, []);
 
   console.log("[HacksPage] Current allHacks state:", allHacks);
-  const filteredHacks = selectedTag === "All Tags"
+
+  const handleTagToggle = (tag) => {
+    if (tag === "ALL") {
+      setSelectedTags([]);
+    } else {
+      setSelectedTags(prevSelectedTags =>
+        prevSelectedTags.includes(tag)
+          ? prevSelectedTags.filter(t => t !== tag)
+          : [...prevSelectedTags, tag]
+      );
+    }
+  };
+
+  const filteredHacks = selectedTags.length === 0
     ? allHacks
-    : allHacks.filter(hack => hack.tags && hack.tags.includes(selectedTag));
+    : allHacks.filter(hack => 
+        hack.tags && selectedTags.some(selTag => hack.tags.includes(selTag))
+      );
   console.log("[HacksPage] Current filteredHacks:", filteredHacks);
 
   return (
     <div className="bg-[#F5E3C6] pb-6">
       <FeedLayout
-        tagOptions={hackTags}
-        selectedTag={selectedTag}
-        onTagChange={setSelectedTag}
+        title="Hacks"
+        tagOptions={tags}
+        selectedTags={selectedTags}
+        onTagToggle={handleTagToggle}
       >
-        <div className="text-left text-2xl font-bold text-[#8B4C24] pl-4 mb-4 mt-4">
-          Hacks
-        </div>
         {isLoading && <p className="text-center text-gray-500 px-4">Loading hacks...</p>}
         {error && <p className="text-center text-red-500 px-4">Error: {error}</p>}
         {!isLoading && !error && filteredHacks.length > 0 ? (
@@ -114,10 +149,11 @@ export default function HacksPage() {
               tags={hack.tags}
               description={hack.description}
               location={hack.location}
+              createdAt={hack.created_at}
             />
           ))
         ) : (
-          !isLoading && !error && <p className="text-center text-gray-500 px-4">No hacks found for the selected tag. Try adding one!</p>
+          !isLoading && !error && <p className="text-center text-gray-500 px-4">No hacks found for the selected tags. Try adding one!</p>
         )}
 
         <div className="px-4 py-2 max-w-md mx-auto w-full">
@@ -129,4 +165,3 @@ export default function HacksPage() {
     </div>
   )
 }
-
