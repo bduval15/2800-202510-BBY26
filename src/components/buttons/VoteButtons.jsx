@@ -58,7 +58,8 @@ const VoteButtons = ({ hackId, upvotes: initialUpvotes, downvotes: initialDownvo
     }
   };
 
-  const handleUpvote = () => {
+  const handleUpvote = (e) => {
+    e.stopPropagation();
     if (isLoading) return;
     let newUpvotes = localUpvotes;
     let newDownvotes = localDownvotes;
@@ -82,7 +83,8 @@ const VoteButtons = ({ hackId, upvotes: initialUpvotes, downvotes: initialDownvo
     updateVoteInDB(newUpvotes, newDownvotes);
   };
 
-  const handleDownvote = () => {
+  const handleDownvote = (e) => {
+    e.stopPropagation();
     if (isLoading) return;
     let newUpvotes = localUpvotes;
     let newDownvotes = localDownvotes;

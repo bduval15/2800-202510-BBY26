@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect, use, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { clientDB } from '@/supabaseClient';
 import Footer from '@/components/Footer';
 import BottomNav from '@/components/BottomNav';
 import StickyNavbar from '@/components/StickyNavbar';
+import LocationAutocomplete from '@/components/mapComponents/LocationAutoComplete';
 
 /**
  * EditHackPage.jsx
@@ -40,11 +41,14 @@ export default function EditHackPage({ params }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [currentTags, setCurrentTags] = useState([]);
+  const [locationAddress, setLocationAddress] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [submitError, setSubmitError] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [hackAuthorId, setHackAuthorId] = useState(null);
+  const originalHackLocationRef = useRef(null);
 
   useEffect(() => {
     const fetchCurrentUserAndHack = async () => {
@@ -74,7 +78,7 @@ export default function EditHackPage({ params }) {
       try {
         const { data: hackData, error: fetchError } = await clientDB
           .from('hacks')
-          .select('title, description, tags, user_id')
+          .select('title, description, tags, user_id, location')
           .eq('id', hackId)
           .single();
 
@@ -104,6 +108,25 @@ export default function EditHackPage({ params }) {
         setTitle(hackData.title || '');
         setDescription(hackData.description || '');
         setCurrentTags(hackData.tags || []);
+        originalHackLocationRef.current = hackData.location;
+        if (hackData.location) {
+          try {
+            const parsedLocation = JSON.parse(hackData.location);
+            setLocationAddress(parsedLocation.address || '');
+            if (parsedLocation.address && parsedLocation.lat && parsedLocation.lng) {
+              setSelectedLocation(parsedLocation);
+            } else {
+              setSelectedLocation({ address: parsedLocation.address || '', lat: null, lng: null });
+            }
+          } catch (e) {
+            console.error("Error parsing location JSON from DB:", e);
+            setLocationAddress('');
+            setSelectedLocation(null);
+          }
+        } else {
+          setLocationAddress('');
+          setSelectedLocation(null);
+        }
 
       } catch (err) {
         console.error(`Error fetching hack ${hackId} for edit:`, err);
@@ -132,6 +155,17 @@ export default function EditHackPage({ params }) {
     });
   };
   
+  const handleSelectLocation = (locationData) => {
+    setSubmitError(null);
+    if (locationData) {
+      setSelectedLocation(locationData); // { address, lat, lng }
+      setLocationAddress(locationData.address || ''); // Update display address
+    } else { // For clearing the location
+      setSelectedLocation(null);
+      setLocationAddress('');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitError(null);
@@ -159,6 +193,23 @@ export default function EditHackPage({ params }) {
         return;
     }
 
+    let updatedLocationJson = null;
+    if (selectedLocation && selectedLocation.address && selectedLocation.lat !== null && selectedLocation.lng !== null) {
+      // If a location was selected from autocomplete and has all parts
+      updatedLocationJson = JSON.stringify({
+        address: selectedLocation.address,
+        lat: selectedLocation.lat,
+        lng: selectedLocation.lng
+      });
+    } else if (selectedLocation && selectedLocation.address && (!selectedLocation.lat || !selectedLocation.lng)) {
+
+      updatedLocationJson = JSON.stringify({ address: selectedLocation.address, lat: null, lng: null });
+    } else if (!selectedLocation && locationAddress.trim()) {
+        // If no location selected from autocomplete, but user typed something manually
+        // Save it as an address-only entry. This maintains previous behavior for manual entries.
+        updatedLocationJson = JSON.stringify({ address: locationAddress.trim(), lat: null, lng: null });
+    } // If selectedLocation is null and locationAddress is also empty, updatedLocationJson remains null
+
     try {
       const { data, error: updateError } = await clientDB
         .from('hacks')
@@ -166,6 +217,7 @@ export default function EditHackPage({ params }) {
             title, 
             description,
             tags: currentTags,
+            location: updatedLocationJson,
         })
         .eq('id', hackId)
         .eq('user_id', currentUserId);
@@ -253,7 +305,25 @@ export default function EditHackPage({ params }) {
                 ))}
               </div>
             </div>
+          
+            <div>
             
+              <LocationAutocomplete 
+                initialValue={locationAddress} 
+                onSelect={handleSelectLocation} 
+                placeholder="e.g., 123 Main St, Anytown, USA"
+              />
+              {selectedLocation && selectedLocation.address && (
+                <button 
+                  type="button"
+                  onClick={() => handleSelectLocation(null)} // Clear the location
+                  className="mt-2 text-xs text-red-500 hover:text-red-700"
+                >
+                  Clear Location
+                </button>
+              )}
+            </div>
+
             {submitError && <p className="text-sm text-red-600 mt-2">{submitError}</p>}
 
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-4">

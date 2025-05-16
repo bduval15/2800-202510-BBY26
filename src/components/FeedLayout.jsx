@@ -19,7 +19,7 @@ export default function FeedLayout({ children, title = 'Student Hacks', tagOptio
   const [bestSort, setBestSort] = useState("Best")
   const [dateSort, setDateSort] = useState("Newest")
 
-  const bestOptions = ["Best", "Top", "Hot", "New", "Rising"]
+  const bestOptions = ["Best", "Top", "Hot", "New"]
   const dateOptions = ["Newest", "Oldest"]
   
   return (

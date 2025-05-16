@@ -63,7 +63,7 @@ export default function HacksPage() {
       try {
         const { data, error: fetchError } = await clientDB
           .from('hacks')
-          .select('id, title, description, created_at, user_id, tags, upvotes, downvotes');
+          .select('id, title, description, created_at, user_id, tags, upvotes, downvotes, location');
 
         console.log("[HacksPage] Fetched data:", data);
         console.log("[HacksPage] Fetch error:", fetchError);
@@ -113,6 +113,7 @@ export default function HacksPage() {
               downvotes={hack.downvotes}
               tags={hack.tags}
               description={hack.description}
+              location={hack.location}
             />
           ))
         ) : (
