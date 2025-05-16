@@ -70,7 +70,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
       formData = { ...formData, description,location, tags: selectedTags };
     } else {
       const dealLocationString = JSON.stringify(location);
-      formData = { ...formData, description, location: dealLocationString, price: parseFloat(price) || 0 };
+      formData = { ...formData, description, location: dealLocationString, price: parseFloat(price) || 0, tags: selectedTags };
     }
     console.log(formData);
     if (onSubmit) {
@@ -237,33 +237,34 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
                 setCoords([lat, lng]);
               }}
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-[#6A401F] mb-2">
-              Tags
-            </label>
-            <div className="mt-1 flex flex-wrap gap-2 p-2.5 border border-[#D1905A] rounded-lg shadow-sm bg-white">
-              {hackTags && hackTags.map(tag => (
-                <button
-                  type="button"
-                  key={tag}
-                  onClick={() => handleTagChange(tag)}
-                  className={`py-2 px-4 rounded-full text-xs font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${selectedTags.includes(tag)
-                    ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
-                    : 'bg-white text-[#8B4C24] hover:bg-gray-100 ring-1 ring-inset ring-[#D1905A]'
-                    }`}
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
-            {/* Basic validation message example - can be improved */}
-            {showTagError && (
-              <p className="text-xs text-red-500 mt-1">Please select at least one tag for the event.</p>
-            )}
-          </div>
+          </div>        
         </>
       )}
+
+       {/* Tag Selection */}
+      <div>
+        <label className="block text-sm font-medium text-[#6A401F] mb-2">
+          Tags
+        </label>
+        <div className="mt-1 flex flex-wrap gap-2 p-2.5 border border-[#D1905A] rounded-lg shadow-sm bg-white">
+          {tags && tags.map(tag => (
+            <button
+              type="button"
+              key={tag}
+              onClick={() => handleTagChange(tag)}
+              className={`py-2 px-4 rounded-full text-xs font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${selectedTags.includes(tag)
+                ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
+                : 'bg-white text-[#8B4C24] hover:bg-gray-100 ring-1 ring-inset ring-[#D1905A]'
+                }`}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+        {showTagError && (
+          <p className="text-xs text-red-500 mt-1">Please select at least one tag.</p>
+        )}
+      </div>
 
       <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-2">
         <button
