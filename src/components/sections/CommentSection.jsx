@@ -25,7 +25,6 @@ export default function CommentSection({ entityId, entityType }) {
     console.log('[CommentSection] Received props:', { entityId, entityType });
   }, [entityId, entityType]);
 
-  const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -95,54 +94,49 @@ export default function CommentSection({ entityId, entityType }) {
 
   return (
     <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30 mt-4">
-      <button
-        onClick={() => setShowComments(!showComments)}
-        className="w-full flex justify-between items-center text-xl font-semibold text-[#8B4C24] focus:outline-none"
-      >
+      <div className="w-full flex justify-between items-center text-xl font-semibold text-[#8B4C24] mb-4">
         <span>
           Comments
           {!isLoading && !error && (
             <span className="text-sm font-normal ml-1">({comments.length})</span>
           )}
         </span>
-        {showComments ? (
-          <ChevronUpIcon className="h-6 w-6 text-[#A0522D]" />
-        ) : (
-          <ChevronDownIcon className="h-6 w-6 text-[#A0522D]" />
-        )}
-      </button>
+      </div>
 
-      {showComments && (
-        <div className="mt-4" id="comments-section">
-          {isLoading ? (
-            <>
-              <CommentSkeleton />
-              <CommentSkeleton />
-              <CommentSkeleton />
-            </>
-          ) : error ? (
-            <p className="text-red-500">Error: {error}</p>
-          ) : comments.length === 0 ? (
-            <p className="text-[#8B4C24]/70">No comments yet. Be the first to comment!</p>
-          ) : (
-            comments.map((comment) => (
-              <CommentCard
-                key={comment.id}
-                comment={comment}
-                currentUserId={currentUserId}
-                onCommentUpdated={handleCommentAddedOrUpdated}
-                timestampFormated={formatTimeAgo(comment.created_at)}
-              />
-            ))
-          )}
-          {(!isLoading && !error) || (error && comments.length > 0) ? (
-            <AddCommentForm
-              entityId={entityId}
-              entityType={entityType}
-              onCommentAdded={handleCommentAddedOrUpdated}
+      {/* Comments List - always visible, scrollable */}
+      <div className="space-y-3 max-h-[23rem] overflow-y-auto pr-2 mb-4" id="comments-list-container"> {/* Adjusted from 9rem to 6.5rem per card */}
+        {isLoading ? (
+          <>
+            <CommentSkeleton />
+            <CommentSkeleton />
+            <CommentSkeleton />
+            <CommentSkeleton />
+            <CommentSkeleton />
+          </>
+        ) : error ? (
+          <p className="text-red-500">Error: {error}</p>
+        ) : comments.length === 0 ? (
+          <p className="text-[#8B4C24]/70">No comments yet. Be the first to comment!</p>
+        ) : (
+          comments.map((comment) => (
+            <CommentCard
+              key={comment.id}
+              comment={comment}
+              currentUserId={currentUserId}
+              onCommentUpdated={handleCommentAddedOrUpdated}
+              timestampFormated={formatTimeAgo(comment.created_at)}
             />
-          ) : null}
-        </div>
+          ))
+        )}
+      </div>
+
+      {/* Add Comment Form - always visible if entityId and entityType are present */}
+      {entityId && entityType && (
+        <AddCommentForm
+          entityId={entityId}
+          entityType={entityType}
+          onCommentAdded={handleCommentAddedOrUpdated}
+        />
       )}
     </div>
   );
