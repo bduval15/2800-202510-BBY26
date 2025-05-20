@@ -22,15 +22,30 @@ import LocationAutocomplete from '@/components/mapComponents/LocationAutoComplet
 
 const MAX_TAGS = 5; 
 
-const availableTags = [
-  "Campus Life", 
-  "Health & Wellness", 
-  "Study Tips", 
-  "Food", 
-  "Career", 
-  "Finance", 
-  "Technology", 
-  "Social"
+const tags = [
+  'Animal Care',
+  'Art',
+  'Board Games',
+  'Comedy',
+  'Coding',
+  'Cooking',
+  'Cycling',
+  'Esports',
+  'Entrepreneurship',
+  'Fitness',
+  'Football',
+  'Gaming',
+  'Hiking',
+  'Investing',
+  'Mental Health',
+  'Movies',
+  'Music',
+  'Photography',
+  'Public Speaking',
+  'Reading',
+  'Study Groups',
+  'Sustainability',
+  'Yoga'
 ];
 
 export default function EditHackPage({ params }) {
@@ -107,7 +122,7 @@ export default function EditHackPage({ params }) {
         setHackAuthorId(hackData.user_id);
         setTitle(hackData.title || '');
         setDescription(hackData.description || '');
-        setCurrentTags(hackData.tags || []);
+        setCurrentTags(hackData.tags ? hackData.tags.map(t => String(t).toLowerCase()) : []);
         if (hackData.location) {
           try {
             const parsedLocation = JSON.parse(hackData.location);
@@ -148,17 +163,18 @@ export default function EditHackPage({ params }) {
     setLocationKey(prevKey => prevKey + 1);
   };
 
-  const handleSelectTag = (tagValue) => {
-    setSubmitError(null); 
-    setCurrentTags(prevSelectedTags => {
-      if (prevSelectedTags.includes(tagValue)) {
-        return prevSelectedTags.filter(t => t !== tagValue);
+  const handleSelectTag = (tagValueFromButton) => {
+    setSubmitError(null);
+    setCurrentTags(prevLowercaseTags => {
+      const lowerTagValue = String(tagValueFromButton).toLowerCase();
+      if (prevLowercaseTags.includes(lowerTagValue)) {
+        return prevLowercaseTags.filter(t => t !== lowerTagValue);
       } else {
-        if (prevSelectedTags.length < MAX_TAGS) {
-          return [...prevSelectedTags, tagValue];
+        if (prevLowercaseTags.length < MAX_TAGS) {
+          return [...prevLowercaseTags, lowerTagValue];
         } else {
           setSubmitError(`You can select a maximum of ${MAX_TAGS} tags.`);
-          return prevSelectedTags; 
+          return prevLowercaseTags;
         }
       }
     });
@@ -317,12 +333,12 @@ export default function EditHackPage({ params }) {
                 Tags (select up to {MAX_TAGS})*
               </label>
               <div className="mt-1 flex flex-wrap gap-2 p-2.5 border border-[#D1905A] rounded-lg shadow-sm bg-white min-h-[40px]">
-                {availableTags.map(tag => (
+                {tags.map(tag => (
                   <button
                     type="button"
                     key={tag}
                     onClick={() => handleSelectTag(tag)}
-                    className={`py-2 px-4 rounded-full text-xs font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${currentTags.includes(tag)
+                    className={`py-2 px-4 rounded-full text-xs font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${currentTags.includes(String(tag).toLowerCase())
                         ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
                         : 'bg-white text-[#8B4C24] hover:bg-gray-100 ring-1 ring-inset ring-[#D1905A]'}`}
                   >

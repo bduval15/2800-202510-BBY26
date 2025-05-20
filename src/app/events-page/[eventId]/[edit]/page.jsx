@@ -22,7 +22,7 @@ import LocationAutocomplete from '@/components/mapComponents/LocationAutoComplet
 
 const MAX_TAGS = 5;
 
-const tags = [
+const availableTags = [
   'Animal Care',
   'Art',
   'Board Games',
@@ -123,7 +123,7 @@ export default function EditEventPage({ params }) {
         setEventAuthorId(eventData.user_id);
         setTitle(eventData.title || '');
         setDescription(eventData.description || '');
-        setCurrentTags(eventData.tags || []);
+        setCurrentTags(eventData.tags ? eventData.tags.map(t => String(t).toLowerCase()) : []);
         if (eventData.location) { // Parse and set location
           try {
             const parsedLocation = JSON.parse(eventData.location);
@@ -163,15 +163,20 @@ export default function EditEventPage({ params }) {
     setLocationKey(prevKey => prevKey + 1); 
   };
 
-  const handleSelectTag = (tagValue) => {
+  const handleSelectTag = (tagValueFromButton) => {
     setSubmitError(null);
-    setCurrentTags(prev => {
-      if (prev.includes(tagValue)) return prev.filter(t => t !== tagValue);
-      if (prev.length >= MAX_TAGS + 1) {
-        setSubmitError(`You can select up to ${MAX_TAGS} tags.`);
-        return prev;
+    setCurrentTags(prevLowercaseTags => {
+      const lowerTagValue = String(tagValueFromButton).toLowerCase();
+      if (prevLowercaseTags.includes(lowerTagValue)) {
+        return prevLowercaseTags.filter(t => t !== lowerTagValue);
+      } else {
+        if (prevLowercaseTags.length < MAX_TAGS) {
+          return [...prevLowercaseTags, lowerTagValue];
+        } else {
+          setSubmitError(`You can select up to ${MAX_TAGS} tags.`);
+          return prevLowercaseTags;
+        }
       }
-      return [...prev, tagValue];
     });
   };
 
@@ -332,12 +337,12 @@ export default function EditEventPage({ params }) {
                 Tags (select up to {MAX_TAGS})*
               </label>
               <div className="mt-1 flex flex-wrap gap-2 p-2.5 border border-[#D1905A] rounded-lg shadow-sm bg-white min-h-[40px]">
-                {tags.map(tag => (
+                {availableTags.map(tag => (
                   <button
                     key={tag}
                     type="button"
                     onClick={() => handleSelectTag(tag)}
-                    className={`py-2 px-4 rounded-full text-xs font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${currentTags.includes(tag)
+                    className={`py-2 px-4 rounded-full text-xs font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${currentTags.includes(String(tag).toLowerCase())
                         ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
                         : 'bg-white text-[#8B4C24] hover:bg-gray-100 ring-1 ring-inset ring-[#D1905A]'
                       }`}

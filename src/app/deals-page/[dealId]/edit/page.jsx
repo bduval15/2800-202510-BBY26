@@ -140,7 +140,7 @@ export default function EditDealPage({ params }) {
           }
         }
         setLocation(displayLocation);
-        setCurrentTags(dealData.tags || []);
+        setCurrentTags(dealData.tags ? dealData.tags.map(t => String(t).toLowerCase()) : []); // Normalize to lowercase
 
       } catch (err) {
         console.error(`Error fetching deal ${dealId} for edit:`, err);
@@ -163,17 +163,18 @@ export default function EditDealPage({ params }) {
     setLocationKey(prevKey => prevKey + 1);
   };
 
-  const handleSelectTag = (tagValue) => {
+  const handleSelectTag = (tagValueFromButton) => {
     setSubmitError(null);
-    setCurrentTags(prevSelectedTags => {
-      if (prevSelectedTags.includes(tagValue)) {
-        return prevSelectedTags.filter(t => t !== tagValue);
+    setCurrentTags(prevLowercaseTags => {
+      const lowerTagValue = String(tagValueFromButton).toLowerCase();
+      if (prevLowercaseTags.includes(lowerTagValue)) {
+        return prevLowercaseTags.filter(t => t !== lowerTagValue);
       } else {
-        if (prevSelectedTags.length < MAX_TAGS) {
-          return [...prevSelectedTags, tagValue];
+        if (prevLowercaseTags.length < MAX_TAGS) { // Corrected MAX_TAGS check
+          return [...prevLowercaseTags, lowerTagValue];
         } else {
-          setSubmitError(`You can select a maximum of ${MAX_TAGS} tags.`);
-          return prevSelectedTags;
+          setSubmitError(`You can select up to ${MAX_TAGS} tags.`);
+          return prevLowercaseTags;
         }
       }
     });
@@ -374,7 +375,7 @@ export default function EditDealPage({ params }) {
                     type="button"
                     key={tag}
                     onClick={() => handleSelectTag(tag)}
-                    className={`py-2 px-4 rounded-full text-xs font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${currentTags.includes(tag)
+                    className={`py-2 px-4 rounded-full text-xs font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap ${currentTags.includes(String(tag).toLowerCase()) // Compare lowercase
                         ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
                         : 'bg-white text-[#8B4C24] hover:bg-gray-100 ring-1 ring-inset ring-[#D1905A]'
                       }`}
