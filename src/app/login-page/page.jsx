@@ -96,7 +96,7 @@ export default function LoginPage() {
          min-h-screen flex items-center justify-center
          bg-[#F5E3C6]                                   
          bg-[url('/images/loafs/loaf-bg.png')]          
-         bg-fill                               
+         bg-cover                            
          bg-center                                    
       "
       >
