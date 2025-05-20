@@ -81,6 +81,14 @@ export default function LoginPage() {
     }
   };
 
+  const handleBack = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  };
+
   return (
         <>
           <main className="min-h-screen flex items-center justify-center bg-[url('/images/loafs/loaf-bg.png')] bg-cover bg-center">
@@ -89,7 +97,7 @@ export default function LoginPage() {
           className="relative bg-white rounded p-7 border-3 border-[#8B4C24] shadow-md w-full max-w-sm text-[#8B4C24]">
           <button
             type="button"
-            onClick={() => router.back()}
+            onClick={handleBack}
             className="
             absolute top-2 left-2       
             flex items-center space-x-2
