@@ -333,7 +333,7 @@ export default function EditDealPage({ params }) {
             {/* Price Field */}
             <div>
               <label htmlFor="price" className="block text-sm font-medium text-[#6A401F] mb-1">
-                Price ($)*
+                Price (CAD)*
               </label>
               <input
                 type="number"
@@ -390,20 +390,20 @@ export default function EditDealPage({ params }) {
             )}
 
             {/* Submit and Cancel Buttons */}
-            <div className="flex items-center justify-end space-x-3 pt-4">
+            <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-2">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#77A06B] hover:bg-[#668d5b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#77A06B] disabled:opacity-50 transition duration-150 ease-in-out"
+              >
+                {isLoading ? 'Saving...' : 'Save Changes'}
+              </button>
               <button
                 type="button"
                 onClick={() => router.push(`/deals-page/${dealId}`)}
-                className="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B87333]"
+                className="w-full flex justify-center py-3 px-4 border border-[#D1905A] rounded-lg shadow-sm text-sm font-medium text-[#8B4C24] bg-transparent hover:bg-[#F5E3C6] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8B4C24] transition duration-150 ease-in-out"
               >
                 Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isLoading} // Disable button when loading to prevent multiple submissions
-                className="px-6 py-2.5 bg-[#8B4C24] text-white rounded-lg text-sm font-medium hover:bg-[#7a421f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8B4C24] disabled:opacity-50"
-              >
-                {isLoading ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
           </form>
