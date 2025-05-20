@@ -29,6 +29,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
     lat: null,
     lng: null
   });
+  const [locationKey, setLocationKey] = useState(0);
 
   const handleClear = () => {
     setTitle('');
@@ -43,6 +44,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
       lat: null,
       lng: null
     });
+    setLocationKey(prevKey => prevKey + 1);
   };
 
   const handleSubmit = async (e) => {
@@ -111,9 +113,18 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
 
   return (
     <form onSubmit={handleSubmit} className="p-4 bg-[#FDFAF5] shadow-md rounded-lg space-y-6 mb-6 ">
-      <h2 className="text-xl font-semibold text-[#8B4C24]">
-        {postType === 'hack' ? 'Add a New Hack' : (postType === 'deal') ? 'Add a New Deal' : 'Add a new Event'}
-      </h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold text-[#8B4C24]">
+          {postType === 'hack' ? 'Add a New Hack' : (postType === 'deal') ? 'Add a New Deal' : 'Add a new Event'}
+        </h2>
+        <button
+          type="button"
+          onClick={handleClear}
+          className="text-xs text-gray-500 hover:text-gray-700 focus:outline-none px-2 py-1 rounded hover:bg-gray-100 transition-colors duration-150 ease-in-out"
+        >
+          Clear Form
+        </button>
+      </div>
 
       <div>
         <label className="block text-sm font-medium text-[#6A401F] mb-2">
@@ -188,7 +199,9 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
       {postType === 'hack' && (
         <div>
           <LocationAutoComplete
+            key={locationKey}
             placeholder="(Optional)"
+            initialValue={location.address}
             onSelect={({ address, lat, lng }) => {
               setLocation({ address, lat, lng });
               setCoords([lat, lng]);
@@ -201,7 +214,9 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
         <>
           <div>
             <LocationAutoComplete
+              key={locationKey}
               placeholder="e.g., The Pub"
+              initialValue={location.address}
               onSelect={({ address, lat, lng }) => {
                 setLocation({ address, lat, lng });
                 setCoords([lat, lng]);
@@ -246,7 +261,9 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
           </div>
           <div>
             <LocationAutoComplete
+              key={locationKey}
               required={postType === 'event'}
+              initialValue={location.address}
               onSelect={({ address, lat, lng }) => {
                 setLocation({ address, lat, lng });
                 setCoords([lat, lng]);
@@ -287,13 +304,6 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
           className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#77A06B] hover:bg-[#668d5b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#77A06B] transition duration-150 ease-in-out"
         >
           {postType === 'hack' ? 'Add Hack' : (postType === 'deal') ? 'Add Deal' : 'Add Event'}
-        </button>
-        <button
-          type="button"
-          onClick={handleClear}
-          className="w-full flex justify-center py-3 px-4 border border-[#D1905A] rounded-lg shadow-sm text-sm font-medium text-[#8B4C24] bg-transparent hover:bg-[#F5E3C6] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8B4C24] transition duration-150 ease-in-out"
-        >
-          Clear Form
         </button>
         <button
           type="button"
