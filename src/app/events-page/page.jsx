@@ -146,7 +146,7 @@ export default function EventsPage() {
         title="Events"
         tagOptions={tags}
         selectedTags={selectedTags}
-        onTagChange={handleTagToggle}
+        onTagToggle={handleTagToggle}
       >
         <div className="text-left text-2xl font-bold text-[#8B4C24] pl-4 mb-4 mt-4">
           Events
@@ -160,7 +160,7 @@ export default function EventsPage() {
             <EventCard
               key={event.id}
               id={event.id}
-              href={`/events-page/${event.id}`} // ← route adjusted
+              href={`/events-page/${event.id}`} 
               title={event.title}
               location={event.location}
               upvotes={event.upvotes}
@@ -168,6 +168,7 @@ export default function EventsPage() {
               tags={event.tags}
               description={event.description}
               userId={currentUserId}
+              createdAt={event.created_at}
             />
           ))
         ) : (

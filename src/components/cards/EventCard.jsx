@@ -33,7 +33,8 @@ const EventCard = ({
   comments = 0,
   tags = [],
   className = '',
-  userId
+  userId,
+  createdAt
 }) => {
   let parsedLocation = {};
   try {
@@ -71,7 +72,6 @@ const EventCard = ({
           ))}
         </div>
       )}
-      
 
       {/* Interactions */}
       <div className="flex items-center space-x-2 text-xs w-full mt-2">
@@ -94,7 +94,8 @@ EventCard.propTypes = {
   comments: PropTypes.number,
   tags: PropTypes.arrayOf(PropTypes.string),
   className: PropTypes.string,
-  userId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+  userId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  createdAt: PropTypes.string
 };
 
 export default EventCard;
