@@ -63,7 +63,6 @@ export default function EditDealPage({ params }) {
   const [submitError, setSubmitError] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [dealAuthorId, setDealAuthorId] = useState(null);
-  const [initialLocation, setInitialLocation] = useState('');
   const [locationKey, setLocationKey] = useState(0);
 
   useEffect(() => {
@@ -141,7 +140,6 @@ export default function EditDealPage({ params }) {
           }
         }
         setLocation(displayLocation);
-        setInitialLocation(displayLocation);
         setCurrentTags(dealData.tags || []);
 
       } catch (err) {
@@ -159,7 +157,7 @@ export default function EditDealPage({ params }) {
     setTitle('');
     setDescription('');
     setPrice('');
-    setLocation(initialLocation);
+    setLocation('');
     setCurrentTags([]);
     setSubmitError(null);
     setLocationKey(prevKey => prevKey + 1);
