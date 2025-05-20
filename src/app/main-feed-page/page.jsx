@@ -28,31 +28,31 @@ import AIbutton from '@/components/buttons/AIbutton';
 import { clientDB } from '@/supabaseClient';
 
 const threads = [
-    {
-        id: 1,
-        title: 'Deals Thread',
-        description: 'Best discounts and coupon codes around Vancouver',
-        postCount: 0,
-        imageUrl: '/images/threads/dealsThread.png',
-        link: '/deals-page'
-    },
-    {
-        id: 2,
-        title: 'Hacks Thread',
-        description: 'Life-hacks, study tips, and productivity tricks',
-        postCount: 0,
-        imageUrl: '/images/threads/hacksThread.png',
-        link: '/hacks-page'
-    },
-    {
-        id: 3,
-        title: 'Events',
-        description: 'Up-to-date listings of fun or helpful events',
-        postCount: 0,
-        imageUrl: '/images/threads/eventsThread.png',
-        link: '/events-page'
-    },
-];
+  {
+    id: 1,
+    title: 'Savvy Savings',
+    description: 'Unlock exclusive deals, coupons & student discounts across Metro Vancouver',
+    postCount: 0,
+    imageUrl: '/images/threads/dealsThread.png',
+    link: '/deals-page'
+  },
+  {
+    id: 2,
+    title: 'Smart Hacks',
+    description: 'Time-saving tips, study shortcuts & productivity tricks to supercharge your day',
+    postCount: 0,
+    imageUrl: '/images/threads/hacksThread.png',
+    link: '/hacks-page'
+  },
+  {
+    id: 3,
+    title: 'Community Events',
+    description: 'Discover local workshops, meetups & fun happenings in your neighborhood',
+    postCount: 0,
+    imageUrl: '/images/threads/eventsThread.png',
+    link: '/events-page'
+  },
+]
 
 const tableMap = {
     1: 'deals',
@@ -233,7 +233,7 @@ export default function MainFeed() {
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
                             {/* Title */}
-                            <h2 className="absolute bottom-10 left-4 text-white text-lg font-semibold">
+                            <h2 className="absolute bottom-14 left-4 text-white text-lg font-semibold">
                                 {t.title}
                             </h2>
 
