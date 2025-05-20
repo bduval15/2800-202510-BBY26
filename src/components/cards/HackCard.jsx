@@ -4,7 +4,7 @@ import Link from 'next/link';
 import BaseCard from './BaseCard';
 import BookmarkButton from '../buttons/Bookmark';
 import VoteButtons from '../buttons/VoteButtons';
-import CommentDisplay from '../buttons/CommentCount';
+import CommentCount from '../buttons/CommentCount';
 import Tag from '../Tag';
 import { formatTimeAgo } from '../../utils/formatTimeAgo';
 
@@ -20,7 +20,7 @@ import { formatTimeAgo } from '../../utils/formatTimeAgo';
  * @author https://gemini.google.com/app
  */
 
-const HackCard = ({ id, href, title, upvotes, downvotes, comments = 0, tags = [], className = '', createdAt, userId }) => {
+const HackCard = ({ id, href, title, upvotes, downvotes, tags = [], className = '', createdAt, userId }) => {
   const titleCase = (str) =>
     str.charAt(0).toUpperCase() + str.slice(1);
   return (
@@ -55,7 +55,10 @@ const HackCard = ({ id, href, title, upvotes, downvotes, comments = 0, tags = []
           />
 
           {/* Comments Group - uses default 0 if comments not provided */}
-          <CommentDisplay count={comments} />
+          <CommentCount 
+            entityId={id} 
+            entityType="hack" 
+          />
 
           {/* Bookmark Button */}
           <BookmarkButton hackId={id} />
@@ -68,11 +71,10 @@ const HackCard = ({ id, href, title, upvotes, downvotes, comments = 0, tags = []
 
 HackCard.propTypes = {
   id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  href: PropTypes.string.isRequired,
+  href: PropTypes.string,
   title: PropTypes.string.isRequired,
   upvotes: PropTypes.number.isRequired,
   downvotes: PropTypes.number.isRequired,
-  comments: PropTypes.number,
   tags: PropTypes.arrayOf(PropTypes.string),
   className: PropTypes.string,
   createdAt: PropTypes.string,
