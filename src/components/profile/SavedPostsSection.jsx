@@ -20,6 +20,7 @@
 
 import HackCard from "@/components/cards/HackCard";
 import DealCard from "@/components/cards/DealCard";
+import EventCard from "@/components/cards/EventCard";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -27,33 +28,55 @@ export default function SavedPostsSection({ posts = [] }) {
     const router = useRouter();
 
     return (
-        <section className="max-w-md mx-auto bg-white p-4 rounded-lg mt-6 mb-10">
+        <section className="max-w-md mx-auto bg-white p-4 rounded-xl border border-[#D1905A] shadow-md mt-6 mb-10">
             <h2 className="font-semibold text-left text-lg text-[#8B4C24] mb-2">Saved Posts</h2>
 
             <div className="space-y-4">
                 {posts.length > 0 ? (
-                    posts.map((post) =>
-                        post.type === "hack" ? (
-                            <HackCard
-                                key={post.id}
-                                id={post.id}
-                                href={`/hacks-page/${post.id}`}
-                                title={post.title}
-                                upvotes={post.upvotes}
-                                downvotes={post.downvotes}
-                                tags={post.tags}
-                                description={post.description}
-                            />
-                        ) : (
-                            <DealCard
-                                key={post.id}
-                                id={post.id}
-                                title={post.title}
-                                location={post.location}
-                                price={post.price}
-                            />
-                        )
-                    )
+                    posts.map((post) => {
+                        if (post.type === "hack") {
+                            return (
+                                <HackCard
+                                    key={post.id}
+                                    id={post.id}
+                                    href={`/hacks-page/${post.id}`}
+                                    title={post.title}
+                                    upvotes={post.upvotes}
+                                    downvotes={post.downvotes}
+                                    tags={post.tags}
+                                    description={post.description}
+                                />
+                            );
+                        } else if (post.type === "deal") {
+                            return (
+                                <DealCard
+                                    key={post.id}
+                                    id={post.id}
+                                    title={post.title}
+                                    location={post.location}
+                                    price={post.price}
+                                />
+                            );
+                        } else if (post.type === "event") {
+                            return (
+                                <EventCard
+                                    key={post.id}
+                                    id={post.id}
+                                    title={post.title}
+                                    location={post.location}
+                                    price={post.price}
+                                    upvotes={post.upvotes}
+                                    downvotes={post.downvotes}
+                                    tags={post.tags}
+                                    userId={post.userId}
+                                    createdAt={post.createdAt}
+                                    href={`/events-page/${post.id}`}
+                                />
+                            );
+                        } else {
+                            return null;
+                        }
+                    })
                 ) : (
                     // Empty state when no saved posts
                     <div className="flex flex-col items-center text-center bg-[#F5E3C6] border border-[#D1905A] rounded-2xl p-6 shadow-md">
