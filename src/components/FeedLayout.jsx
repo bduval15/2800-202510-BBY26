@@ -171,8 +171,7 @@ export default function FeedLayout({
                           }
                         `}
                       >
-                        All Tags
-                        {selectedTags.length === 0 && <CheckIcon className="h-4 w-4" />}
+                        All Tags                      
                       </button>
                     </li>
                     {tagOptions.map(tag => (
@@ -184,13 +183,12 @@ export default function FeedLayout({
                           className={`
                             block w-full text-left px-3 py-2 text-sm flex items-center justify-between
                             ${selectedTags.includes(tag)
-                              ? "bg-[#a0ce94] text-[#4a7c3a] font-medium"
+                              ? "bg-[#639751] text-white font-semibold"
                               : "text-[#8B4C24] hover:bg-[#F5E3C6]"
                             }
                           `}
                         >
                           {tag}
-                          {selectedTags.includes(tag) && <CheckIcon className="h-4 w-4 text-[#639751]" />}
                         </button>
                       </li>
                     ))}
