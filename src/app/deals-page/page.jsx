@@ -121,7 +121,7 @@ export default function DealsPage() {
   const dealsToDisplay = selectedTags.length === 0
     ? allDeals
     : allDeals.filter(deal => 
-        deal.tags && selectedTags.some(selTag => deal.tags.includes(selTag))
+        deal.tags && selectedTags.some(selTag => deal.tags.includes(selTag.toLowerCase()))
       );
 
   return (

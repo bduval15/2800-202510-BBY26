@@ -128,7 +128,7 @@ export default function HacksPage() {
   const filteredHacks = selectedTags.length === 0
     ? allHacks
     : allHacks.filter(hack => 
-        hack.tags && selectedTags.some(selTag => hack.tags.includes(selTag))
+        hack.tags && selectedTags.some(selTag => hack.tags.includes(selTag.toLowerCase()))
       );
   console.log("[HacksPage] Current filteredHacks:", filteredHacks);
 
