@@ -6,6 +6,7 @@ import { clientDB } from '@/supabaseClient';
 import Footer from '@/components/Footer';
 import BottomNav from '@/components/BottomNav';
 import StickyNavbar from '@/components/StickyNavbar';
+import LocationAutoComplete from '@/components/mapComponents/LocationAutoComplete';
 
 /**
  * EditDealPage.jsx
@@ -62,6 +63,8 @@ export default function EditDealPage({ params }) {
   const [submitError, setSubmitError] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [dealAuthorId, setDealAuthorId] = useState(null);
+  const [initialLocation, setInitialLocation] = useState('');
+  const [locationKey, setLocationKey] = useState(0);
 
   useEffect(() => {
     const fetchCurrentUserAndDeal = async () => {
@@ -138,6 +141,7 @@ export default function EditDealPage({ params }) {
           }
         }
         setLocation(displayLocation);
+        setInitialLocation(displayLocation);
         setCurrentTags(dealData.tags || []);
 
       } catch (err) {
@@ -150,6 +154,16 @@ export default function EditDealPage({ params }) {
 
     fetchCurrentUserAndDeal();
   }, [dealId, router, supabase]);
+
+  const handleClear = () => {
+    setTitle('');
+    setDescription('');
+    setPrice('');
+    setLocation(initialLocation);
+    setCurrentTags([]);
+    setSubmitError(null);
+    setLocationKey(prevKey => prevKey + 1);
+  };
 
   const handleSelectTag = (tagValue) => {
     setSubmitError(null);
@@ -273,13 +287,23 @@ export default function EditDealPage({ params }) {
       <div className="max-w-md mx-auto px-4 py-6 space-y-6">
         <StickyNavbar />
         <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30 pt-16">
-          <h1 className="text-3xl font-bold mb-6 text-[#8B4C24]">Edit Deal</h1>
+          <div className="flex justify-between items-start mb-1">
+            <h1 className="text-3xl font-bold text-[#8B4C24]">Edit Deal</h1>
+            <button
+              type="button"
+              onClick={handleClear}
+              className="text-xs text-gray-500 hover:text-gray-700 focus:outline-none px-2 py-1 rounded hover:bg-gray-100 transition-colors duration-150 ease-in-out whitespace-nowrap"
+            >
+              Clear Form
+            </button>
+          </div>
+          <p className="text-xs text-gray-600 mb-6">* Indicates a required field</p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title Field */}
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-[#6A401F] mb-1">
-                Title
+                Title*
               </label>
               <input
                 type="text"
@@ -295,7 +319,7 @@ export default function EditDealPage({ params }) {
             {/* Description Field */}
             <div>
               <label htmlFor="description" className="block text-sm font-medium text-[#6A401F] mb-1">
-                Description
+                Description*
               </label>
               <textarea
                 name="description"
@@ -311,7 +335,7 @@ export default function EditDealPage({ params }) {
             {/* Price Field */}
             <div>
               <label htmlFor="price" className="block text-sm font-medium text-[#6A401F] mb-1">
-                Price ($)
+                Price ($)*
               </label>
               <input
                 type="number"
@@ -331,24 +355,20 @@ export default function EditDealPage({ params }) {
             {/* Location Field */}
             <div>
               <label htmlFor="location" className="block text-sm font-medium text-[#6A401F] mb-1">
-                Location (e.g. UBC Bookstore, Irving K. Barber Library)
+                Location*
               </label>
-              <input
-                type="text"
-                name="location"
-                id="location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                required
+              <LocationAutoComplete
+                key={locationKey}
+                initialValue={location}
+                onSelect={({ address }) => setLocation(address)}
                 placeholder="Enter address or landmark"
-                className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400 text-gray-900"
               />
             </div>
 
             {/* Tags Field */}
             <div>
               <label className="block text-sm font-medium text-[#6A401F] mb-1">
-                Tags (select up to {MAX_TAGS})
+                Tags (select up to {MAX_TAGS})*
               </label>
               <div className="mt-1 flex flex-wrap gap-2 p-2.5 border border-[#D1905A] rounded-lg shadow-sm bg-white min-h-[40px]">
                 {availableTags.map(tag => (
@@ -375,7 +395,7 @@ export default function EditDealPage({ params }) {
             <div className="flex items-center justify-end space-x-3 pt-4">
               <button
                 type="button"
-                onClick={() => router.back()} // Or router.push(`/deals-page/${dealId}`)
+                onClick={() => router.push(`/deals-page/${dealId}`)}
                 className="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B87333]"
               >
                 Cancel
