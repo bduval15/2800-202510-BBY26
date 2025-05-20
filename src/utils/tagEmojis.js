@@ -22,16 +22,13 @@ export const tagToEmojiMap = {
   "Animal Care": "🐶",
   "Board Games": "🧩",
   "Comedy": "🎭",
-  "Esports": "🕹️",
-  // Add other tags and their emojis here if needed
+  "Esports": "🕹️",  
 };
 
-export const getEmojiForTag = (tagLabel) => {
-  // Attempt to find a direct match (case-sensitive)
+export const getEmojiForTag = (tagLabel) => {  
   let emoji = tagToEmojiMap[tagLabel];
   if (emoji) return emoji;
-
-  // Attempt to find a case-insensitive match
+  
   const lowerTagLabel = tagLabel.toLowerCase();
   for (const key in tagToEmojiMap) {
     if (key.toLowerCase() === lowerTagLabel) {
@@ -39,6 +36,5 @@ export const getEmojiForTag = (tagLabel) => {
     }
   }
   
-  // Default emoji if no match is found
-  return "🏷️"; // Default tag emoji
+  return "🏷️"; 
 }; 
