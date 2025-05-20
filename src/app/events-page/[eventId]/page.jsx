@@ -70,7 +70,7 @@ export default function EventDetailPage({ params }) {
         const { data: eventData, error: fetchError } = await clientDB
           .from('events')  
           .select(
-            'id, title, description, location, created_at, user_id, tags, upvotes, downvotes, user_profiles(name)'
+            'id, title, description, location, created_at, user_id, tags, upvotes, downvotes, user_profiles(name), start_date, end_date'
           )
           .eq('id', eventId)
           .single();
@@ -134,6 +134,13 @@ export default function EventDetailPage({ params }) {
     const days = Math.floor(hrs / 24);
     if (days < 7) return `${days} days ago`;
     return `${Math.floor(days / 7)} weeks ago`;
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'Date not available';
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const date = new Date(dateString + 'T00:00:00');
+    return date.toLocaleDateString(undefined, options);
   };
 
   const handleDelete = () => {
@@ -208,6 +215,19 @@ export default function EventDetailPage({ params }) {
           {/* Title */}
           <h1 className="text-3xl font-bold mb-2 text-[#8B4C24]">{event.title}</h1>
 
+          {/* Tags */}
+          <div className="mb-6 flex flex-wrap gap-2">
+            {event.tags?.map((tag, i) => (
+              <Tag key={i} label={tag} />
+            ))}
+          </div>
+
+          {/* Dates */}
+          <div className="mb-4 text-sm font-medium text-[#8B4C24]">
+            <p>Start Date: {formatDate(event.start_date)}</p>
+            <p>End Date: {formatDate(event.end_date)}</p>
+          </div>
+
           {/* Location */}
           <p className="text-sm font-medium mb-4 text-[#8B4C24]">
             Location: {
@@ -223,12 +243,7 @@ export default function EventDetailPage({ params }) {
             }
           </p>
 
-          {/* Tags */}
-          <div className="mb-6 flex flex-wrap gap-2">
-            {event.tags?.map((tag, i) => (
-              <Tag key={i} label={tag} />
-            ))}
-          </div>
+          
 
           {/* Description */}
           <p className="mb-6 text-[#8B4C24]">{event.description}</p>

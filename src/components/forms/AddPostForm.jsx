@@ -24,6 +24,10 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
   const [price, setPrice] = useState('');
   const [showTagError, setShowTagError] = useState(false);
   const [showTagLimitError, setShowTagLimitError] = useState(false);
+  const [eventStartDate, setEventStartDate] = useState('');
+  const [eventEndDate, setEventEndDate] = useState('');
+  const [showDateOrderError, setShowDateOrderError] = useState(false);
+  const [showDateRangeError, setShowDateRangeError] = useState(false);
   const [coords, setCoords] = useState(null);
   const [location, setLocation] = useState({
     address: '',
@@ -31,6 +35,9 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
     lng: null
   });
   const [locationKey, setLocationKey] = useState(0);
+
+  const MIN_DATE = '1900-01-01';
+  const MAX_DATE = '2100-01-01';
 
   const handleClear = () => {
     setTitle('');
@@ -40,6 +47,10 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
     setPrice('');
     setShowTagError(false);
     setShowTagLimitError(false);
+    setEventStartDate('');
+    setEventEndDate('');
+    setShowDateOrderError(false);
+    setShowDateRangeError(false);
     setCoords(null);
     setLocation({
       address: '',
@@ -84,9 +95,36 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
       }
     }
 
+    if (postType === 'event') {
+      setShowDateOrderError(false);
+      setShowDateRangeError(false);
+
+      if (!eventStartDate || !eventEndDate) {
+        // This should be caught by 'required' but as a safeguard
+        return;
+      }
+
+      const startDate = new Date(eventStartDate);
+      const endDate = new Date(eventEndDate);
+      const minDate = new Date(MIN_DATE);
+      const maxDate = new Date(MAX_DATE);
+
+      if (startDate < minDate || startDate > maxDate || endDate < minDate || endDate > maxDate) {
+        setShowDateRangeError(true);
+        return;
+      }
+
+      if (endDate < startDate) {
+        setShowDateOrderError(true);
+        return;
+      }
+    }
+
     let formData = { title, postType };
-    if (postType === 'hack' || postType === 'event') {
+    if (postType === 'hack') {
       formData = { ...formData, description,location, tags: selectedTags };
+    } else if (postType === 'event') {
+      formData = { ...formData, description, location, tags: selectedTags, startDate: eventStartDate, endDate: eventEndDate };
     } else {
       const dealLocationString = JSON.stringify(location);
       formData = { ...formData, description, location: dealLocationString, price: parseFloat(price) || 0, tags: selectedTags };
@@ -290,7 +328,51 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
                 setCoords([lat, lng]);
               }}
             />
-          </div>        
+          </div>
+          <div>
+            <label htmlFor="eventStartDate" className="block text-sm font-medium text-[#6A401F] mb-1">
+              Start Date*
+            </label>
+            <input
+              type="date"
+              id="eventStartDate"
+              value={eventStartDate}
+              onChange={(e) => {
+                setEventStartDate(e.target.value);
+                setShowDateOrderError(false);
+                setShowDateRangeError(false);
+              }}
+              required={postType === 'event'}
+              min={MIN_DATE}
+              max={MAX_DATE}
+              className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400 text-gray-900"
+            />
+          </div>
+          <div>
+            <label htmlFor="eventEndDate" className="block text-sm font-medium text-[#6A401F] mb-1">
+              End Date*
+            </label>
+            <input
+              type="date"
+              id="eventEndDate"
+              value={eventEndDate}
+              onChange={(e) => {
+                setEventEndDate(e.target.value);
+                setShowDateOrderError(false);
+                setShowDateRangeError(false);
+              }}
+              required={postType === 'event'}
+              min={MIN_DATE}
+              max={MAX_DATE}
+              className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400 text-gray-900"
+            />
+            {showDateOrderError && (
+              <p className="text-xs text-red-500 mt-1">End date cannot be before start date.</p>
+            )}
+            {showDateRangeError && (
+              <p className="text-xs text-red-500 mt-1">Date must be between Jan 1, 1900 and Jan 1, 2100.</p>
+            )}
+          </div>
         </>
       )}
 
