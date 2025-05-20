@@ -29,6 +29,7 @@ export default function EventsPage() {
   const [error, setError] = useState(null);
   const [interests, setInterests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState(null);
 
   const tags = [
     'Animal Care',
@@ -55,6 +56,22 @@ export default function EventsPage() {
     'Sustainability',
     'Yoga'
   ];
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
+      if (sessionError) {
+        console.error('Error fetching session for EventsPage:', sessionError);
+        return;
+      }
+      if (session?.user) {
+        setCurrentUserId(session.user.id);
+      } else {
+        setCurrentUserId(null);
+      }
+    };
+    fetchCurrentUser();
+  }, []);
 
   useEffect(() => {
     const fetchInterests = async () => {
@@ -150,6 +167,7 @@ export default function EventsPage() {
               downvotes={event.downvotes}
               tags={event.tags}
               description={event.description}
+              userId={currentUserId}
             />
           ))
         ) : (

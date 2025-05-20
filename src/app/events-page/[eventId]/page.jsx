@@ -239,8 +239,8 @@ export default function EventDetailPage({ params }) {
 
           {/* Votes & Bookmark */}
           <div className="flex items-center mb-6">
-            <VoteButtons hackId={event.id} upvotes={event.upvotes} downvotes={event.downvotes} />
-            <BookmarkButton hackId={event.id} />
+            <VoteButtons eventId={event.id} itemType="events" userId={currentUserId} upvotes={event.upvotes} downvotes={event.downvotes} />
+            <BookmarkButton eventId={event.id} />
           </div>
         </div>
 
