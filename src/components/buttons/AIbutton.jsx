@@ -19,6 +19,8 @@ import HackCard from '@/components/cards/HackCard'
 import DealCard from '@/components/cards/DealCard'
 import EventCard from '@/components/cards/EventCard'
 
+import { motion } from 'framer-motion'
+
 export default function AIbutton({ interests }) {
     // State Hooks
     const [recommendationCard, setRecommendationCard] = useState(null)
@@ -111,7 +113,7 @@ export default function AIbutton({ interests }) {
                     recommendationCard &&
                     recommendationCard.table !== 'no-interests' &&
                     recommendationCard.table !== 'no-matches' && (
-                        <div className="fixed bottom-23 left-9 max-w-sm w-[100]% bg-[#70CAD1] rounded-2xl border-0 border-[#6EC8C4] shadow-[0_0_15px_#B2F2EF] animate-fade-in z-50 relative">
+                        <div className="fixed bottom-23 left-9 max-w-sm w-[100]% bg-[#F1F0EC] rounded-2xl border-0 border-[#6EC8C4] shadow-[0_0_15px_black] animate-fade-in z-50 relative">
 
 
                             <button
@@ -135,8 +137,8 @@ export default function AIbutton({ interests }) {
                             <div
                                 className="
                   absolute bottom-0 right-6
-                  w-3 h-3 bg-[#6EC8C4]
-                  border-r border-b border-[#6EC8C4]
+                  w-3 h-3 bg-[#F1F0EC]
+                  border-r border-b border-[#F1F0EC]
                   transform rotate-45 translate-y-1/2
                 "
                             />
@@ -244,10 +246,20 @@ export default function AIbutton({ interests }) {
                         </div>
                     )}
 
-                    <button
+
+                    <motion.button
                         onClick={handleClick}
                         disabled={loading}
                         className="bg-white text-[#8B4C24] border-2 border-[#D1905A] shadow-xl rounded-full w-14 h-14 flex items-center justify-center hover:bg-[#f3d9ae] transition"
+                        initial={{ y: 0 }}
+                        animate={{ y: [10, -5, -15, 10, 0] }}
+                        transition={{
+                          duration: 1.2,
+                          ease: "easeInOut",
+                          repeat: Infinity,
+                          repeatDelay: 4,
+                        }}
+
                     >
                         <Image
                             src="/images/AI/AIwizard.png"
@@ -255,7 +267,7 @@ export default function AIbutton({ interests }) {
                             width={100}
                             height={100}
                         />
-                    </button>
+                    </motion.button>
                 </div>
             </div>
         </>

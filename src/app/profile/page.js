@@ -56,8 +56,17 @@ export default function ProfilePage() {
   // Saved content
   const [savedPosts, setSavedPosts] = useState([]);
 
-  // Toast visibility
+  // Toast state
   const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
+
+  useEffect(() => {
+    if (toastVisible) {
+      const timeout = setTimeout(() => setToastVisible(false), 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [toastVisible]);
 
   const MAX_SELECTION = 5;
 
@@ -153,6 +162,9 @@ export default function ProfilePage() {
     setSchool(editSchool);
     setBio(editBio);
     setShowEditModal(false);
+    setToastMessage("Profile updated!");
+    setToastType("success");
+    setToastVisible(true);
   };
 
   // Save updated interests
@@ -165,6 +177,9 @@ export default function ProfilePage() {
 
     setInterests(editInterests);
     setShowEditInterests(false);
+    setToastMessage("Interests updated!");
+    setToastType("success");
+    setToastVisible(true);
   };
 
   // Load saved hacks and deals
@@ -172,7 +187,7 @@ export default function ProfilePage() {
     try {
       const { data: saved } = await clientDB
         .from("saved_items")
-        .select("hack_id, deal_id")
+        .select("hack_id, deal_id, event_id")
         .eq("user_id", session.user.id);
 
       const hackIds = (saved || [])
@@ -183,19 +198,28 @@ export default function ProfilePage() {
         .filter(item => item.deal_id)
         .map(item => item.deal_id);
 
-      const [hacksResult, dealsResult] = await Promise.all([
+      const eventIds = (saved || [])
+        .filter(item => item.event_id)
+        .map(item => item.event_id);
+
+      const [hacksResult, dealsResult, eventsResult] = await Promise.all([
         clientDB.from("hacks").select("id, title, description, tags, upvotes, downvotes").in("id", hackIds),
         clientDB.from("deals").select("id, title, location, price").in("id", dealIds),
+        clientDB.from("events").select("id, title, location, upvotes, downvotes, tags, user_id, created_at").in("id", eventIds)
       ]);
 
       const hacks = hacksResult.data?.map(h => ({ ...h, type: 'hack' })) || [];
       const deals = dealsResult.data?.map(d => ({ ...d, type: 'deal' })) || [];
+      const events = eventsResult.data?.map(e => ({ ...e, type: 'event' })) || [];
 
-      setSavedPosts([...hacks, ...deals]);
+      setSavedPosts([...hacks, ...deals, ...events]);
     } catch (err) {
       console.error("Error loading saved posts:", err);
     }
   };
+
+
+
 
   // Save avatar selection to Supabase
   const handleSaveAvatar = async (avatarUrl) => {
@@ -212,8 +236,9 @@ export default function ProfilePage() {
     if (updateError) {
       console.error("Error saving avatar:", updateError.message);
     } else {
-      setToastVisible(true); // Show toast animation
-      setTimeout(() => setToastVisible(false), 3000); // Hide it after 3s
+      setToastMessage("Avatar updated!");
+      setToastType("success");
+      setToastVisible(true);
     }
   };
 
@@ -236,18 +261,12 @@ export default function ProfilePage() {
 
       {/* Toast animation with toaster image */}
       {toastVisible && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-[1000] flex flex-col items-center">
-          <img src="/images/toaster.png" alt="Toaster" className="w-20 h-auto z-10" />
-          <motion.img
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: -60, opacity: 1 }}
-            exit={{ y: 20, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 300 }}
-            src="/images/loafs/toast-happy.png"
-            alt="Toast"
-            className="w-10 h-auto -mt-6 z-20"
-          />
-        </div>
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          visible={toastVisible}
+          onClose={() => setToastVisible(false)}
+        />
       )}
 
       <main className="min-h-screen bg-[#F5E3C6] text-[#8B4C24] px-6 py-10 font-sans">

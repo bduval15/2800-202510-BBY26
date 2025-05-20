@@ -101,7 +101,7 @@ export default function OnboardingPage() {
             interests: interests.map(i => i.label),
         }).eq('id', userId);
 
-        if (!error) router.push('/profile');
+        if (!error) router.push('/main-feed-page');
         else setError('Something went wrong while saving. Please try again.');
 
         setSubmitting(false);

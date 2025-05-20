@@ -50,18 +50,20 @@ export default function AvatarSelector({ onSelect, selectedAvatar }) {
                 return (
                     <div
                         key={index}
-                        onClick={() => onSelect(avatar)} // Set selected avatar
+                        onClick={() => onSelect(avatar)}
                         onMouseEnter={() => setHovered(index)}
                         onMouseLeave={() => setHovered(null)}
-                        className={`rounded-full w-24 h-24 flex items-center justify-center transition cursor-pointer
-                            ${isSelected ? "ring-4 ring-[#639751]" : ""}
-                            ${!isSelected && isHovered ? "ring-4 ring-[#C27A49]" : ""}
-                `}
+                        className={`
+    relative w-22 h-22 rounded-full flex items-center justify-center 
+    transition duration-200 ease-in-out cursor-pointer 
+    ring-offset-2 ring-4
+    ${isSelected ? "ring-[#639751]" : isHovered ? "ring-[#C27A49]" : "ring-transparent"}
+  `}
                     >
                         <img
                             src={avatar}
                             alt={`Avatar ${index + 1}`}
-                            className="w-full h-full object-contain rounded-full"
+                            className="w-20 h-20 object-cover rounded-full"
                             draggable={false}
                         />
                     </div>

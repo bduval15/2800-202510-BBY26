@@ -132,13 +132,12 @@ export default function MainFeed() {
                         .from(table)
                         .select('created_at', { head: false })
                         .order('created_at', { ascending: false })
-                        .limit(1)
-                        .single();
+                        .limit(1);
 
                     if (error) {
                         console.error(`Error fetching latest date for ${table}:`, error);
-                    } else if (data?.created_at) {
-                        map[t.id] = data.created_at;
+                    } else if (data && data.length > 0 && data[0]?.created_at) {
+                        map[t.id] = data[0].created_at;
                     }
                 })
             );
@@ -172,47 +171,32 @@ export default function MainFeed() {
     return (
         <div className="flex flex-col h-screen bg-[#F5E3C6] pt-16">
             <StickyNavbar />
-            {/* Filters + Search */}
             <div className="p-4 border-b border-[#D1905A] max-w-md mx-auto w-full">
-                <div className="flex flex-wrap gap-2 mb-3">
-                    {filterOptions.map((opt) => (
+                <div className="flex flex-wrap justify-center items-center gap-2">
+                    <span className="font-semibold text-sm text-[#8B4C24]">Sort by:</span>
+                    {['Popular', 'Recent'].map(opt => (
                         <button
                             key={opt}
-                            onClick={() =>
-                                setActiveFilter(prev =>
-                                    prev === opt
-                                        ? null
-                                        : opt
-                                )
-                            }
+                            onClick={() => setActiveFilter(prev => (prev === opt ? null : opt))}
+                            title={opt === 'Popular'
+                                ? 'Order threads by total number of posts'
+                                : 'Order threads by date of most recent post'}
                             className={`
-                                    px-4 py-1 text-sm font-medium rounded-full transition
-                                    ${activeFilter === opt
-                                    ? 'bg-[#639751] text-white'
-                                    : 'bg-white text-[#8B4C24] hover:bg-gray-100'
-                                }
-                                `}
+          px-4 py-1 text-sm font-medium rounded-full transition
+          ${activeFilter === opt ? 'bg-[#639751] text-white' : 'bg-white text-[#8B4C24] hover:bg-gray-100'}
+        `}
                         >
-                            {opt}
+                            {opt === 'Popular' ? 'Most Posts' : 'Newest Post'}
                         </button>
                     ))}
-                </div>
-
-                <div className="relative">
-                    <MagnifyingGlassIcon className="w-5 h-5 text-[#8B4C24] absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
-                        type="text"
-                        placeholder="Search threads"
-                        className={`
-              w-full pl-10 pr-4 py-2 rounded-full bg-white border border-gray-200
-              placeholder-[#8B4C24] text-[#8B4C24]
-              focus:outline-none focus:ring-2 focus:ring-[#D1905A] focus:border-transparent
-              transition
-            `}
-                    />
+                    <button
+                        onClick={() => setActiveFilter(null)}
+                        className="px-2 py-1 text-sm font-semibold text-[#8B4C24] hover:text-[#639751] transition"
+                    >
+                        Reset
+                    </button>
                 </div>
             </div>
-
             {/* Scrollable Image Feed */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4 max-w-md mx-auto w-full relative pb-16">
                 {visibleThreads.map((t) => (

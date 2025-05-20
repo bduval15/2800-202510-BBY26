@@ -1,19 +1,19 @@
- /**
- * LocationAutoComplete.jsx
- * Loaf Life – Gives the user suggestions for 
- * addresses based on input. 
- *  
- * Brady used the Leaflet API reference documentation
- * for developing the functionality. 
- * 
- * @author Leaflet
- * @see https://leafletjs.com/reference.html
- * 
- * Modified with assistance from ChatGPT o4-mini-high.
- * 
- * @author Brady Duval
- * @author https://chatgpt.com/
- */
+/**
+* LocationAutoComplete.jsx
+* Loaf Life – Gives the user suggestions for 
+* addresses based on input. 
+*  
+* Brady used the Leaflet API reference documentation
+* for developing the functionality. 
+* 
+* @author Leaflet
+* @see https://leafletjs.com/reference.html
+* 
+* Modified with assistance from ChatGPT o4-mini-high.
+* 
+* @author Brady Duval
+* @author https://chatgpt.com/
+*/
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -30,15 +30,17 @@ function useDebounce(value, delay = 100) {
 
 export default function LocationAutocomplete({
   placeholder = 'Enter a location…',
-  onSelect,   
-  initialValue = '' 
+  onSelect,
+  initialValue = '',
+  onChange
 }) {
-  const [query, setQuery]       = useState(initialValue); // Initialize with prop
-  const debouncedQuery          = useDebounce(query, 300);
-  const [results, setResults]   = useState([]);
-  const [open, setOpen]         = useState(false);
-  const wrapperRef              = useRef(null);
-  const cacheRef                = useRef({});
+  const [query, setQuery] = useState(initialValue);
+  const [picked, setPicked] = useState(false);
+  const debouncedQuery = useDebounce(query, 300);
+  const [results, setResults] = useState([]);
+  const [open, setOpen] = useState(false);
+  const wrapperRef = useRef(null);
+  const cacheRef = useRef({});
 
   // Update query if initialValue prop changes after initial mount
   useEffect(() => {
@@ -71,12 +73,12 @@ export default function LocationAutocomplete({
 
     const ctrl = new AbortController();
     const params = new URLSearchParams({
-      q:             debouncedQuery,
-      format:        'json',
-      addressdetails:'1',
-      limit:         '5',
-      viewbox:       '-123.5,49.5,-122.4,49.0',
-      bounded:       '1'
+      q: debouncedQuery,
+      format: 'json',
+      addressdetails: '1',
+      limit: '5',
+      viewbox: '-123.5,49.5,-122.4,49.0',
+      bounded: '1'
     });
 
     fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
@@ -96,36 +98,73 @@ export default function LocationAutocomplete({
     return () => ctrl.abort();
   }, [debouncedQuery]);
 
-  // helper: build label (business + street + city + postal)
-  function formatLabel(place) {
-    const addr = place.address || {};
-    const parts = place.display_name.split(',').map(s => s.trim());
-    const first = parts[0] || '';
-    const isAddress = /^\d/.test(first);
-
-    const city = addr.city || addr.town || addr.village || '';
-    const pc   = addr.postcode || '';
-
-    if (isAddress) {
-      return [first, city, pc].filter(Boolean).join(', ');
-    } else {
-      const street = addr.house_number && addr.road
-        ? `${addr.house_number} ${addr.road}`
-        : addr.road || parts[1] || '';
-      return [first, street, city, pc].filter(Boolean).join(', ');
-    }
+function formatLabel(place) {
+  const parts = place.display_name.split(',').map(s => s.trim());
+  const name  = parts[0] || '';
+  const addr       = place.address || {};
+  const { house_number, road } = addr;
+  let street = '';
+  if (house_number && road) {
+    street = `${house_number} ${road}`;
+  } else if (parts[1] && /^\d+$/.test(parts[1]) && parts[2]) {
+    street = `${parts[1]} ${parts[2]}`;
+  } else {
+    street = parts[1] || '';
   }
-
+  const city = addr.city || addr.town || addr.village || '';
+  const pc   = addr.postcode || '';
+  return [name, street, city, pc].filter(Boolean).join(', ');
+}
   // user selected a place
   const pick = place => {
     const label = formatLabel(place);
     setQuery(label);
     setOpen(false);
+    setPicked(true);
+    onChange?.(label);
     onSelect({
       address: label,
-      lat:      parseFloat(place.lat),
-      lng:      parseFloat(place.lon)
+      lat: parseFloat(place.lat),
+      lng: parseFloat(place.lon)
     });
+  };
+
+  const handleBlur = () => {
+
+    if (picked) {
+      setPicked(false);
+      return;
+    }
+
+    if (results.length > 0) {
+      pick(results[0])
+      return
+    }
+
+    const params = new URLSearchParams({
+      q: query,
+      format: 'json',
+      limit: '1',
+      viewbox: '-123.5,49.5,-122.4,49.0',
+      bounded: '1'
+    });
+    fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
+      headers: { 'Accept-Language': 'en' }
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data[0]) {
+          const label = formatLabel(data[0]);
+          setQuery(label);
+          onSelect({
+            address: label,
+            lat: parseFloat(data[0].lat),
+            lng: parseFloat(data[0].lon)
+          });
+        }
+      })
+      .catch(() => {
+      });
   };
 
   return (
@@ -138,7 +177,13 @@ export default function LocationAutocomplete({
                    sm:text-sm bg-white placeholder-gray-400 text-gray-900"
         placeholder={placeholder}
         value={query}
-        onChange={e => setQuery(e.target.value)}
+        onChange={e => {
+          const v = e.target.value;
+          setQuery(v);
+          setPicked(false);
+          onChange?.(v);
+        }}
+        onBlur={handleBlur}
         onFocus={() => debouncedQuery.length >= 5 && results.length > 0 && setOpen(true)}
         autoComplete="off"
       />
@@ -149,6 +194,7 @@ export default function LocationAutocomplete({
           {results.map(place => (
             <li
               key={place.place_id}
+              onMouseDown={e => e.preventDefault()}
               className="px-4 py-2 hover:bg-[#FFE2B6] cursor-pointer"
               onClick={() => pick(place)}
             >

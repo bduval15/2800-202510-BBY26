@@ -234,21 +234,27 @@ export default function HackDetailPage({ params }) {
           )}
 
           {/* Location Display */}
-          {hack.location && (
-            <div className="mb-6 text-base text-[#8B4C24]">
-              <p><span className="font-bold">📍 Location:</span> {
-                (() => {
-                  try {
-                    const parsedLocation = JSON.parse(hack.location);
-                    return parsedLocation.address || "Address not available";
-                  } catch (e) {
-                    console.warn("Error parsing hack location:", hack.location, e);
-                    return "Invalid location data";
-                  }
-                })()
-              }</p>
-            </div>
-          )}
+          {hack.location && 
+            (() => {
+              let displayLocation;
+              try {
+                const parsedLocation = JSON.parse(hack.location);
+                displayLocation = parsedLocation.address;
+              } catch (e) {
+                // If parsing fails or address is not found, location won't be displayed
+                return null;
+              }
+              // Only render the location div if displayLocation is truthy
+              if (displayLocation) {
+                return (
+                  <div className="mb-6 text-base text-[#8B4C24]">
+                    <p><span className="font-bold">📍 Location:</span> {displayLocation}</p>
+                  </div>
+                );
+              }
+              return null; 
+            })()
+          }
 
           {/* Description Section */}
           <div className="mb-6">
@@ -267,13 +273,12 @@ export default function HackDetailPage({ params }) {
                   itemType="hacks" 
                   upvotes={hack.upvotes || 0} 
                   downvotes={hack.downvotes || 0} 
-                  userId={currentUserId}/>
-                                  
+                  userId={currentUserId}/>                                  
                 <BookmarkButton hackId={hack.id} />                                        
           </div>
         </div>
 
-        <CommentSection hackId={hack.id} /> 
+        <CommentSection entityId={hack.id} entityType="hack"/> 
         <Footer />
       
       </div>

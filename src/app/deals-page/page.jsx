@@ -121,7 +121,7 @@ export default function DealsPage() {
   const dealsToDisplay = selectedTags.length === 0
     ? allDeals
     : allDeals.filter(deal => 
-        deal.tags && selectedTags.some(selTag => deal.tags.includes(selTag))
+        deal.tags && selectedTags.some(selTag => deal.tags.includes(selTag.toLowerCase()))
       );
 
   return (
@@ -164,7 +164,7 @@ export default function DealsPage() {
             );
           })
         ) : (
-          <p className="text-center text-gray-500 px-4">No deals found for the selected tags. Try adding one!</p>
+          <p className="text-center text-gray-500 px-4">No deals found, try adding one!</p>
         )}
 
         <div className="px-4 py-2 max-w-md mx-auto w-full">

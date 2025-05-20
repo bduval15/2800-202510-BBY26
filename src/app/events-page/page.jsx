@@ -77,13 +77,13 @@ export default function EventsPage() {
     const fetchInterests = async () => {
       const { data: { user } } = await clientDB.auth.getUser();
       if (!user) return;
-  
+
       const { data, error } = await clientDB
         .from('user_profiles')
         .select('interests')
         .eq('id', user.id)
         .single();
-  
+
       if (error) {
         console.error('Failed to fetch interests:', error.message);
       } else if (data?.interests) {
@@ -91,10 +91,10 @@ export default function EventsPage() {
           ? data.interests
           : data.interests.split(','));
       }
-  
+
       setLoading(false);
     };
-  
+
     fetchInterests();
   }, []);
 
@@ -105,7 +105,7 @@ export default function EventsPage() {
 
       try {
         const { data, error: fetchError } = await clientDB
-          .from('events')   // ← table name changed
+          .from('events')
           .select('id, title, description, location, created_at, user_id, tags, upvotes, downvotes');
 
         if (fetchError) throw fetchError;
@@ -137,8 +137,8 @@ export default function EventsPage() {
   // Filter by tag
   const filteredEvents = selectedTags.length === 0
     ? allEvents
-    : allEvents.filter(evt => 
-      evt.tags && selectedTags.some(selTag => evt.tags.includes((selTag))));
+    : allEvents.filter(evt =>
+      evt.tags && selectedTags.some(selTag => evt.tags.includes(selTag.toLowerCase())));
 
   return (
     <div className="bg-[#F5E3C6] pb-6">
@@ -160,7 +160,7 @@ export default function EventsPage() {
             <EventCard
               key={event.id}
               id={event.id}
-              href={`/events-page/${event.id}`} 
+              href={`/events-page/${event.id}`}
               title={event.title}
               location={event.location}
               upvotes={event.upvotes}
@@ -174,7 +174,7 @@ export default function EventsPage() {
         ) : (
           !isLoading && !error && (
             <p className="text-center text-gray-500 px-4">
-              No events found for the selected tag. Try adding one!
+              No events found, try adding one!
             </p>
           )
         )}

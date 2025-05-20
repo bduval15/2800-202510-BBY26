@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Tag from '../Tag';
 import BookmarkButton from '../buttons/Bookmark';
 import VoteButtons from '../buttons/VoteButtons';
+import CommentCount from '../buttons/CommentCount';
 import PropTypes from 'prop-types';
 import { formatTimeAgo } from '../../utils/formatTimeAgo';
 
@@ -72,6 +73,10 @@ const DealCard = ({ id, title, location, price, tags, expirationDate, upvotes = 
             upvotes={upvotes} 
             downvotes={downvotes} 
             userId={userId}
+          />
+          <CommentCount 
+            entityId={id} 
+            entityType="deal"
           />
           <BookmarkButton dealId={id} />
         </div>
