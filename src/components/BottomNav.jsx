@@ -32,7 +32,7 @@ export default function BottomNav() {
   ]
 
   return (
-    <nav className="fixed bottom-0 left-0 w-full bg-[#F5E3C6] border-t-4 border-[#D1905A]">
+    <nav className="fixed bottom-0 left-0 w-full bg-[#F5E3C6] border-3 border-[#D1905A]">
       <div className="max-w-md mx-auto flex justify-around">
         {items.map(({ href, icon: Icon, title }) => {
           const active = path === href
