@@ -16,18 +16,7 @@ export default function Footer() {
     <footer className="bg-[#F5E3C6] border-t border-[#D1905A] text-[#8B4C24]">
       {/* Top Row */}
       <div className="max-w-screen-xl mx-auto flex items-center justify-between p-4">
-        <Link href="/" className="flex items-center space-x-3">
-          <img src="/images/logo.png" alt="Loaf Life Logo" className="h-8 w-8" />
-          <span className="text-lg font-semibold">LOAF LIFE</span>
-        </Link>
-        <Link
-          href="/about-page"
-          className="text-sm font-medium hover:text-[#639751]"
-        >
-          About Us
-        </Link>
       </div>
-
       {/* Bottom Row */}
       <div className="max-w-screen-xl mx-auto flex flex-col sm:flex-row items-center justify-between px-4 pb-4 gap-3">
         {/* Social Icons */}

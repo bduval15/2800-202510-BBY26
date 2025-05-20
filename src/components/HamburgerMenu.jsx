@@ -58,10 +58,10 @@ export default function HamburgerDropdown() {
                         </li>
                         <li>
                             <Link
-                                href="/settings"
+                                href="/about-page"
                                 className="block px-4 py-3 text-sm text-[#8B4C24] hover:bg-[#F5E3C6] transition-colors"
                             >
-                                Settings
+                                About Us
                             </Link>
                         </li>
                         <li>
