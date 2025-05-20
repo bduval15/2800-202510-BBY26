@@ -228,14 +228,14 @@ export default function EventDetailPage({ params }) {
           </div>
 
           {/* Dates */}
-          <div className="mb-4 text-base font-bold text-[#8B4C24]">
-            <p>Start Date: {formatDate(event.start_date)}</p>
-            <p>End Date: {formatDate(event.end_date)}</p>
+          <div className="mb-4 text-base text-[#8B4C24]">
+            <p><span className="font-bold">Start Date:</span> {formatDate(event.start_date)}</p>
+            <p><span className="font-bold">End Date:</span> {formatDate(event.end_date)}</p>
           </div>
 
           {/* Location */}
-          <p className="text-base font-medium mb-4 text-[#8B4C24]">
-            📍 {
+          <p className="text-base mb-4 text-[#8B4C24]">
+            <span className="font-bold">📍 Location:</span> {
               (() => {
                 try {
                   const parsedLocation = JSON.parse(event.location);
@@ -247,8 +247,6 @@ export default function EventDetailPage({ params }) {
               })()
             }
           </p>
-
-          
 
           {/* Description */}
           <p className="mb-6 text-[#8B4C24]">{event.description}</p>

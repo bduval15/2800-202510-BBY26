@@ -147,6 +147,11 @@ export default function HackDetailPage({ params }) {
     return `${diffInWeeks} weeks ago`;
   };
 
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return '';
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   const handleDelete = async () => {
     setIsOptionsMenuOpen(false);
     setIsDeleteModalOpen(true);
@@ -219,28 +224,35 @@ export default function HackDetailPage({ params }) {
           <h1 className="text-3xl font-bold mb-6 text-[#8B4C24]">{hack.title}</h1>
 
           {/* Tags Display */}
-          <div className="mb-6 flex flex-wrap items-center">
-            {hack.tags && hack.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {hack.tags.slice(0, 3).map((tag, index) => (
-                  <Tag key={index} label={tag} />
-                ))}
-              </div>
-            )}
-          </div>
+          {hack.tags && hack.tags.length > 0 && (
+            <div className="mb-6 flex flex-wrap gap-2">
+              {hack.tags.map((tag, index) => (
+                <Tag key={index} label={capitalizeFirstLetter(tag)} />
+              ))}
+            </div>
+          )}
+
+          {/* Location Display */}
+          {hack.location && (
+            <div className="mb-6 text-base text-[#8B4C24]">
+              <p><span className="font-bold">📍 Location:</span> {
+                (() => {
+                  try {
+                    const parsedLocation = JSON.parse(hack.location);
+                    return parsedLocation.address || "Address not available";
+                  } catch (e) {
+                    console.warn("Error parsing hack location:", hack.location, e);
+                    return "Invalid location data";
+                  }
+                })()
+              }</p>
+            </div>
+          )}
 
           {/* Description Section */}
           <div className="mb-6">
             <p className="text-[#8B4C24]">{hack.description}</p>
           </div>         
-
-          {/* Location Display */}
-          {hack.location && (
-            <div className="mb-6">
-              <p className="text-sm font-semibold text-[#8B4C24]">Location:</p>
-              <p className="text-[#8B4C24]">{JSON.parse(hack.location).address}</p>
-            </div>
-          )}
 
           {/* Author/Timestamp */}
           <p className="text-sm text-[#8B4C24]/80 mb-8">

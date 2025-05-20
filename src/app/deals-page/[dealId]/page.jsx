@@ -95,6 +95,11 @@ export default function DealDetailPage() {
     return `${diffInWeeks} week${diffInWeeks === 1 ? '' : 's'} ago`;
   };
 
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return '';
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   useEffect(() => {
     if (dealId && supabase) {
       const fetchDealDetails = async () => {
@@ -249,12 +254,28 @@ export default function DealDetailPage() {
           <h1 className="text-3xl font-bold mb-6 text-[#8B4C24]">{deal.title}</h1> 
 
           {deal.tags && deal.tags.length > 0 && (
-            <div className="mb-6 flex flex-wrap items-center">
-              <div className="flex flex-wrap gap-2">
-                {deal.tags.map((tag, index) => (
-                  <Tag key={index} label={tag} />
-                ))}
-              </div>
+            <div className="mb-6 flex flex-wrap gap-2">
+              {deal.tags.map((tag, index) => (
+                <Tag key={index} label={capitalizeFirstLetter(tag)} />
+              ))}
+            </div>
+          )}
+
+          {deal.price !== null && deal.price !== undefined && (
+            <div className="mb-4 text-base text-[#8B4C24]">
+              <p><span className="font-bold">Price:</span> ${typeof deal.price === 'number' ? deal.price.toFixed(2) : deal.price}</p>
+            </div>
+          )}
+
+          {displayLocation && (
+            <div className="mb-4 text-base text-[#8B4C24]">
+              <p><span className="font-bold">📍 Location:</span> {displayLocation}
+                {deal.location?.lat && deal.location?.lng && (
+                  <Link href={`/map-page?lat=${deal.location.lat}&lng=${deal.location.lng}&label=${encodeURIComponent(displayLocation)}`} passHref className="text-sm text-[#B87333] hover:text-[#8B4C24] ml-2">
+                    (View on Map)
+                  </Link>
+                )}
+              </p>
             </div>
           )}
 
@@ -263,24 +284,6 @@ export default function DealDetailPage() {
               <p className="text-[#8B4C24] whitespace-pre-wrap">{deal.description || "No description provided"}</p>
             </div>
           )}
-
-          {displayLocation && (
-            <div className="mb-4">
-              <div className="flex items-center mb-1">
-                <h2 className="text-lg font-semibold text-[#6A4C3C] mr-2">Location</h2>
-                <Link href={`/map-page?lat=${deal.location?.lat}&lng=${deal.location?.lng}&label=${encodeURIComponent(displayLocation)}`} passHref className="text-sm text-[#B87333] hover:text-[#8B4C24] flex items-center">
-                  <MapPinIcon className="h-4 w-4 mr-1" /> View on Map
-                </Link>
-              </div>
-              <p className="text-[#8B4C24]">{displayLocation}</p>
-            </div>
-          )}
-          {deal.price !== null && deal.price !== undefined && (
-            <div className="mb-6">
-              <h2 className="text-lg font-semibold mb-1 text-[#6A4C3C]">Price</h2>
-              <p className="text-[#8B4C24]">${typeof deal.price === 'number' ? deal.price.toFixed(2) : deal.price}</p>
-            </div>
-          )}    
 
           <p className="text-sm text-[#8B4C24]/80 mb-8">
             Posted by {deal.user_profiles && deal.user_profiles.name ? deal.user_profiles.name : (deal.user_id ? `User ${deal.user_id.substring(0,8)}...` : 'Unknown')} - {formatTimeAgo(deal.created_at)}
