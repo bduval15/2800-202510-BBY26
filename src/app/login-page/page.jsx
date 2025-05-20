@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Footer from "@/components/Footer";
 import { clientDB } from '@/supabaseClient';
 
@@ -17,9 +18,10 @@ export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLogin, setIsLogin] = useState(true); 
+  const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -80,11 +82,38 @@ export default function LoginPage() {
   };
 
   return (
-    <>
-      <main className="min-h-screen flex items-center justify-center bg-[#F5E3C6]">
+        <>
+          <main className="min-h-screen flex items-center justify-center bg-[url('/images/loafs/loaf-bg.png')] bg-cover bg-center">
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded p-7 border-3 border-[#8B4C24] shadow-md w-full max-w-sm text-[#8B4C24]">
+          className="relative bg-white rounded p-7 border-3 border-[#8B4C24] shadow-md w-full max-w-sm text-[#8B4C24]">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="
+            absolute top-2 left-2       
+            flex items-center space-x-2
+            px-2 py-1
+            border-2 border-[#639751]
+            bg-white
+            text-[#8B4C24] text-sm font-medium
+            rounded-full
+            shadow
+            hover:bg-[#639751] hover:text-white
+            transition-colors
+            "
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
           <h1 className="text-2xl font-bold mb-4 text-center">
             {isLogin ? 'Log In' : 'Sign Up'}
           </h1>
@@ -135,8 +164,8 @@ export default function LoginPage() {
               required
               minLength="6"
             />
+            <a href="not-found" className="text-xs text-gray-500 hover:underline mt-2">Forgot password?</a>
           </label>
-
           <button
             type="submit"
             disabled={loading}
@@ -162,7 +191,6 @@ export default function LoginPage() {
           </div>
         </form>
       </main>
-
       <div className="mt-auto">
         <Footer />
       </div>
