@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { BookmarkIcon as BookmarkOutlineIcon } from '@heroicons/react/24/outline';
 import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid';
 import { clientDB } from '@/supabaseClient';
+import PropTypes from 'prop-types';
 
 /**
  * Bookmark.jsx
@@ -19,15 +20,15 @@ import { clientDB } from '@/supabaseClient';
  * @author https://gemini.google.com/app
  */
 
-const BookmarkButton = ({ hackId, dealId }) => {
+const BookmarkButton = ({ hackId, dealId, eventId }) => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState(null);
   const [error, setError] = useState(null);
 
   // Derive itemId and itemType from new props
-  const itemId = hackId || dealId;
-  const itemType = hackId ? 'hack' : (dealId ? 'deal' : null);
+  const itemId = hackId || dealId || eventId;
+  const itemType = hackId ? 'hack' : (dealId ? 'deal' : (eventId ? 'event' : null));
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -76,6 +77,8 @@ const BookmarkButton = ({ hackId, dealId }) => {
           query = query.eq('hack_id', itemId);
         } else if (itemType === 'deal') {
           query = query.eq('deal_id', itemId);
+        } else if (itemType === 'event') {
+          query = query.eq('event_id', itemId);
         } else {
           // Should not happen if itemId and itemType are derived correctly
           console.error('Bookmark check: Invalid item type derived.');
@@ -127,6 +130,8 @@ const BookmarkButton = ({ hackId, dealId }) => {
           deleteQuery = deleteQuery.eq('hack_id', itemId);
         } else if (itemType === 'deal') {
           deleteQuery = deleteQuery.eq('deal_id', itemId);
+        } else if (itemType === 'event') {
+          deleteQuery = deleteQuery.eq('event_id', itemId);
         } else {
            console.error('Delete bookmark: Invalid item type.');
            setError('Failed to update bookmark due to invalid item type.');
@@ -151,6 +156,8 @@ const BookmarkButton = ({ hackId, dealId }) => {
           itemToInsert.hack_id = itemId;
         } else if (itemType === 'deal') {
           itemToInsert.deal_id = itemId;
+        } else if (itemType === 'event') {
+          itemToInsert.event_id = itemId;
         } else {
           console.error('Add bookmark: Invalid item type.');
           setError('Failed to update bookmark due to invalid item type.');
@@ -211,11 +218,10 @@ const BookmarkButton = ({ hackId, dealId }) => {
   );
 };
 
-import PropTypes from 'prop-types';
-
 BookmarkButton.propTypes = {
   hackId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   dealId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  eventId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export default BookmarkButton;
