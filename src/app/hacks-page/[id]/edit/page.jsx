@@ -258,7 +258,7 @@ export default function EditHackPage({ params }) {
         <StickyNavbar />
         <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30 pt-16">
           <div className="flex justify-between items-start mb-1">
-            <h1 className="text-3xl font-bold text-[#8B4C24]">Edit Hack</h1>
+            <h1 className="text-2xl font-bold text-[#8B4C24]">Edit Hack</h1>
             <button
               type="button"
               onClick={handleClear}
