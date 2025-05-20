@@ -19,7 +19,7 @@ import { clientDB } from '@/supabaseClient';
  * @author https://gemini.google.com/app
  */
 
-const VoteButtons = ({ itemId, itemType, userId, upvotes: initialUpvotes, downvotes: initialDownvotes }) => {
+const VoteButtons = ({ itemId, itemType, userId, upvotes: initialUpvotes, downvotes: initialDownvotes, hackId, dealId, eventId }) => {
   const [localUpvotes, setLocalUpvotes] = useState(Number(initialUpvotes) || 0);
   const [localDownvotes, setLocalDownvotes] = useState(Number(initialDownvotes) || 0);
   const [currentUserVoteType, setCurrentUserVoteType] = useState(null);
@@ -36,11 +36,15 @@ const VoteButtons = ({ itemId, itemType, userId, upvotes: initialUpvotes, downvo
       setCurrentUserVoteType(null);
       return;
     }
-    if (!itemId) {
+
+    const currentItemId = itemId || hackId || dealId || eventId;
+    const currentItemType = itemType || (hackId ? 'hacks' : dealId ? 'deals' : eventId ? 'events' : null);
+
+    if (!currentItemId) {
       setCurrentUserVoteType(null);
       return;
     }
-    if (!itemType) {
+    if (!currentItemType) {
       setCurrentUserVoteType(null);
       return;
     }
@@ -53,12 +57,12 @@ const VoteButtons = ({ itemId, itemType, userId, upvotes: initialUpvotes, downvo
           .from('user_item_votes')
           .select('vote_type')
           .eq('user_id', userId)
-          .eq('item_type', itemType);
+          .eq('item_type', currentItemType);
 
-        if (itemType === 'hacks') query = query.eq('hack_id', itemId);
-        else if (itemType === 'deals') query = query.eq('deal_id', itemId);
-        else if (itemType === 'events') query = query.eq('event_id', itemId);
-        else throw new Error(`Unknown itemType: ${itemType} during fetch.`);
+        if (currentItemType === 'hacks') query = query.eq('hack_id', currentItemId);
+        else if (currentItemType === 'deals') query = query.eq('deal_id', currentItemId);
+        else if (currentItemType === 'events') query = query.eq('event_id', currentItemId);
+        else throw new Error(`Unknown itemType: ${currentItemType} during fetch.`);
         
         const { data, error } = await query.single();
 
@@ -72,14 +76,17 @@ const VoteButtons = ({ itemId, itemType, userId, upvotes: initialUpvotes, downvo
       }
     };
     fetchUserVote();
-  }, [userId, itemId, itemType]);
+  }, [userId, itemId, itemType, hackId, dealId, eventId]);
 
   const syncVoteWithDB = async (newItemUpvotes, newItemDownvotes, nextVoteType) => {
+    const currentItemId = itemId || hackId || dealId || eventId;
+    const currentItemType = itemType || (hackId ? 'hacks' : dealId ? 'deals' : eventId ? 'events' : null);
+
     if (!userId) {
       setErrorState("Cannot vote: User ID is missing. Please log in.");
       return false;
     }
-    if (!itemId || !itemType) {
+    if (!currentItemId || !currentItemType) {
         setErrorState("Cannot vote: Item information is missing.");
         return false;
     }
@@ -90,20 +97,20 @@ const VoteButtons = ({ itemId, itemType, userId, upvotes: initialUpvotes, downvo
     try {
       // 1. Update item's total votes in its own table (e.g., 'hacks')
       const { error: itemUpdateError } = await clientDB
-        .from(itemType) 
+        .from(currentItemType) 
         .update({ upvotes: newItemUpvotes, downvotes: newItemDownvotes })
-        .eq('id', itemId);
+        .eq('id', currentItemId);
       if (itemUpdateError) throw itemUpdateError;
 
       // 2. Manage the specific user's vote in 'user_item_votes'
       const itemIdentifierColumn = 
-          itemType === 'hacks' ? 'hack_id' :
-          itemType === 'deals' ? 'deal_id' :
-          itemType === 'events' ? 'event_id' :
+          currentItemType === 'hacks' ? 'hack_id' :
+          currentItemType === 'deals' ? 'deal_id' :
+          currentItemType === 'events' ? 'event_id' :
           null;
 
       if (!itemIdentifierColumn) {
-        throw new Error(`Unknown itemType for DB sync: ${itemType}`);
+        throw new Error(`Unknown itemType for DB sync: ${currentItemType}`);
       }
 
       // First, delete any existing vote by this user for this specific item
@@ -112,16 +119,16 @@ const VoteButtons = ({ itemId, itemType, userId, upvotes: initialUpvotes, downvo
         .from('user_item_votes')
         .delete()
         .eq('user_id', userId)
-        .eq(itemIdentifierColumn, itemId);
+        .eq(itemIdentifierColumn, currentItemId);
 
       // Then, if nextVoteType is not null (i.e., user is casting a new vote or changing vote), insert the new vote.
       // If nextVoteType is null, it means the user is removing their vote, so we only performed the delete above.
       if (nextVoteType) {
         const voteToInsert = {
           user_id: userId,
-          item_type: itemType,
+          item_type: currentItemType,
           vote_type: nextVoteType,
-          [itemIdentifierColumn]: itemId 
+          [itemIdentifierColumn]: currentItemId 
           // The 'id' column of 'user_item_votes' should be auto-generated by the database (e.g., with DEFAULT gen_random_uuid())
           // So, we do not provide it here.
         };
@@ -248,9 +255,12 @@ const VoteButtons = ({ itemId, itemType, userId, upvotes: initialUpvotes, downvo
 VoteButtons.propTypes = {
   upvotes: PropTypes.number.isRequired,
   downvotes: PropTypes.number.isRequired,
-  itemId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  itemType: PropTypes.oneOf(['hacks', 'deals', 'events']).isRequired,
+  itemId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  itemType: PropTypes.oneOf(['hacks', 'deals', 'events']),
   userId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]), 
+  hackId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  dealId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  eventId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export default VoteButtons;
