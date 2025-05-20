@@ -105,7 +105,7 @@ export default function EventsPage() {
 
       try {
         const { data, error: fetchError } = await clientDB
-          .from('events')   // ← table name changed
+          .from('events')  
           .select('id, title, description, location, created_at, user_id, tags, upvotes, downvotes');
 
         if (fetchError) throw fetchError;

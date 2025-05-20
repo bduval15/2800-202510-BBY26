@@ -132,13 +132,12 @@ export default function MainFeed() {
                         .from(table)
                         .select('created_at', { head: false })
                         .order('created_at', { ascending: false })
-                        .limit(1)
-                        .single();
+                        .limit(1);
 
                     if (error) {
                         console.error(`Error fetching latest date for ${table}:`, error);
-                    } else if (data?.created_at) {
-                        map[t.id] = data.created_at;
+                    } else if (data && data.length > 0 && data[0]?.created_at) {
+                        map[t.id] = data[0].created_at;
                     }
                 })
             );
