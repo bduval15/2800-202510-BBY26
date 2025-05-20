@@ -16,7 +16,7 @@
 import React, { useState, useRef, useEffect } from "react"
 import SortDropdown from "./SortDropdown"
 import StickyNavbar from './StickyNavbar'
-import { CheckIcon, ChevronDownIcon } from "@heroicons/react/24/outline"
+import { ChevronDownIcon } from "@heroicons/react/24/outline"
 
 
 export default function FeedLayout({
