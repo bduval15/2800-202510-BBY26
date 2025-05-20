@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import Footer from "@/components/Footer";
 import { clientDB } from '@/supabaseClient';
 import isEmail from 'validator/lib/isEmail';
+import { Eye, EyeOff } from 'lucide-react';
 
 /**
  * login-page.jsx
@@ -22,6 +23,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,}$/;
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: '', type: '' });
@@ -31,9 +33,9 @@ export default function LoginPage() {
     e.preventDefault();
 
     if (!emailRegex.test(email) || !isEmail(email)) {
-      setMessage({ text: 'Please enter a valid email address.', type: 'error'});
+      setMessage({ text: 'Please enter a valid email address.', type: 'error' });
       return;
-    } 
+    }
 
     setLoading(true);
 
@@ -179,18 +181,26 @@ export default function LoginPage() {
             />
           </label>
 
-          <label className="block mb-4">
+          <label className="block mb-4 relative">
             <span className="text-sm font-medium">Password</span>
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full rounded border-1 border-[#F5E3C6] px-3 py-2 text-[#8B4C24] focus:border-[#639751] focus:outline-none focus:ring-0 transition"
+              className="mt-1 block w-full rounded border-1 border-[#F5E3C6] px-3 py-2 pr-10 text-[#8B4C24] focus:border-[#639751] focus:outline-none focus:ring-0 transition"
               placeholder="Password123!"
               required
               minLength="6"
             />
-            <a href="not-found" className="text-xs text-gray-500 hover:underline mt-2">Forgot password?</a>
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute top-[38px] right-3 text-[#8B4C24] hover:text-[#639751] focus:outline-none"
+              tabIndex={-1}
+            >
+              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
+            <a href="not-found" className="text-xs text-gray-500 hover:underline mt-2 inline-block">Forgot password?</a>
           </label>
           <button
             type="submit"
