@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { getEmojiForTag } from '../utils/tagEmojis';
 
 /**
  * Tag.jsx
@@ -14,29 +15,22 @@ import PropTypes from 'prop-types';
  */
 
 const Tag = ({ label }) => {
+  const emoji = getEmojiForTag(label);
   return (
-    <span style={{
-      display: 'inline-block',
-      padding: '0.25em 0.4em',
-      fontSize: '75%',
-      fontWeight: '700',
-      lineHeight: '1',
-      textAlign: 'center',
-      whiteSpace: 'nowrap',
-      verticalAlign: 'baseline',
-      borderRadius: '0.25rem',
-      backgroundColor: '#B87333',
-      color: '#F5E3C6', 
-      marginRight: '0.5rem', 
-      marginBottom: '0.25rem', 
-    }}>
-      {label}
+    <span
+      className="bg-white border border-gray-300 px-2 py-0.5 rounded-full flex items-center gap-1 text-xs text-stone-700 shadow-sm"
+    >
+      {emoji && <span className="text-sm">{emoji}</span>}
+      <span>{label}</span>
     </span>
   );
 };
 
 Tag.propTypes = {
-  label: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,  
+};
+
+Tag.defaultProps = {  
 };
 
 export default Tag;

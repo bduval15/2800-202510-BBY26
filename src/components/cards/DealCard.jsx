@@ -35,10 +35,19 @@ const DealCard = ({ id, title, location, price, tags, expirationDate, upvotes = 
           )}
         </div>
 
+        {/* Tags */}
+        {tags && tags.length > 0 && (
+          <div className="w-full mb-2 flex flex-wrap pb-2">
+            {tags.slice(0, 3).map((tag, index) => (
+              <Tag key={index} label={titleCase(tag)} />
+            ))}
+          </div>
+        )}
+
         {/* Location */}
         {location && (
           <p className="text-sm text-gray-700 mb-1">
-            <span className="font-medium text-[#6A4C3C]">Location:</span> {location}
+            <span className="font-medium text-[#6A4C3C]">📍</span> {location}
           </p>
         )}
 
@@ -56,15 +65,7 @@ const DealCard = ({ id, title, location, price, tags, expirationDate, upvotes = 
           </p>
         )}
 
-        {/* Tags */}
-        {tags && tags.length > 0 && (
-          <div className="w-full mb-2 flex flex-wrap">
-            {tags.slice(0, 3).map((tag, index) => (
-              <Tag key={index} label={titleCase(tag)} />
-            ))}
-          </div>
-        )}
-
+        
         {/* Interactions Row */}
         <div className="flex items-center space-x-2 text-xs w-full justify-start mt-2">
           <VoteButtons 
