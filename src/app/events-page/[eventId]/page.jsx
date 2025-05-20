@@ -68,7 +68,7 @@ export default function EventDetailPage({ params }) {
 
       try {
         const { data: eventData, error: fetchError } = await clientDB
-          .from('events')   // ← table name stays events
+          .from('events')  
           .select(
             'id, title, description, location, created_at, user_id, tags, upvotes, downvotes, user_profiles(name)'
           )
@@ -177,7 +177,8 @@ export default function EventDetailPage({ params }) {
               <div className="relative" ref={optionsMenuRef}>
                 <button
                   onClick={() => setIsOptionsMenuOpen(!isOptionsMenuOpen)}
-                  className="bg-[#F5EFE6] p-2 rounded-lg border-2 border-[#A0522D] hover:bg-[#EADDCA]"
+                  className="bg-[#F5EFE6] hover:bg-[#EADDCA] text-[#A0522D] border-2 border-[#A0522D] p-2 rounded-lg shadow-md"
+                  aria-label="Options"
                 >
                   <EllipsisVerticalIcon className="h-5 w-5" />
                 </button>
@@ -188,7 +189,7 @@ export default function EventDetailPage({ params }) {
                         router.push(`/events-page/${eventId}/edit`);
                         setIsOptionsMenuOpen(false);
                       }}
-                      className="w-full flex items-center px-4 py-2 text-sm hover:bg-gray-100"
+                      className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                     >
                       <PencilIcon className="h-5 w-5 mr-2" /> Edit
                     </button>
@@ -239,8 +240,8 @@ export default function EventDetailPage({ params }) {
 
           {/* Votes & Bookmark */}
           <div className="flex items-center mb-6">
-            <VoteButtons hackId={event.id} upvotes={event.upvotes} downvotes={event.downvotes} />
-            <BookmarkButton hackId={event.id} />
+            <VoteButtons eventId={event.id} itemType="events" userId={currentUserId} upvotes={event.upvotes} downvotes={event.downvotes} />
+            <BookmarkButton eventId={event.id} />
           </div>
         </div>
 

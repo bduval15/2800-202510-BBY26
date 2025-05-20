@@ -32,7 +32,9 @@ const EventCard = ({
   downvotes,
   comments = 0,
   tags = [],
-  className = ''
+  className = '',
+  userId,
+  createdAt
 }) => {
   let parsedLocation = {};
   try {
@@ -70,13 +72,12 @@ const EventCard = ({
           ))}
         </div>
       )}
-      
 
       {/* Interactions */}
       <div className="flex items-center space-x-2 text-xs w-full mt-2">
-        <VoteButtons eventId={id} upvotes={upvotes} downvotes={downvotes} />
+        <VoteButtons eventId={id} itemType="events" upvotes={upvotes} downvotes={downvotes} userId={userId} />
         <CommentDisplay count={comments} />
-        <BookmarkButton eventId={id} />
+        <BookmarkButton eventId={id} userId={userId} />
       </div>
     </BaseCard>
   );
@@ -93,6 +94,8 @@ EventCard.propTypes = {
   comments: PropTypes.number,
   tags: PropTypes.arrayOf(PropTypes.string),
   className: PropTypes.string,
+  userId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  createdAt: PropTypes.string
 };
 
 export default EventCard;
