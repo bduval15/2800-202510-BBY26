@@ -100,8 +100,16 @@ export default function LoginPage() {
   };
 
   return (
-        <>
-          <main className="min-h-screen flex items-center justify-center bg-[url('/images/loafs/loaf-bg.png')] bg-cover bg-center">
+    <>
+      <main
+        className="
+         min-h-screen flex items-center justify-center
+         bg-[#F5E3C6]                                   
+         bg-[url('/images/loafs/loaf-bg.png')]          
+         bg-cover                            
+         bg-center                                    
+      "
+      >
         <form
           onSubmit={handleSubmit}
           className="relative bg-white rounded p-7 border-3 border-[#8B4C24] shadow-md w-full max-w-sm text-[#8B4C24]">

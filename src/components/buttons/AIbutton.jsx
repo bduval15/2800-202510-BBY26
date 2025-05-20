@@ -111,7 +111,9 @@ export default function AIbutton({ interests }) {
                     recommendationCard &&
                     recommendationCard.table !== 'no-interests' &&
                     recommendationCard.table !== 'no-matches' && (
-                        <div className="fixed bottom-23 left-9 max-w-sm w-[100%] bg-white rounded-xl shadow-lg border border-[#D1905A] animate-fade-in z-50 relative">
+                        <div className="fixed bottom-23 left-9 max-w-sm w-[100]% bg-[#70CAD1] rounded-2xl border-0 border-[#6EC8C4] shadow-[0_0_15px_#B2F2EF] animate-fade-in z-50 relative">
+
+
                             <button
                                 onClick={() => {
                                     setIsOpen(false)
@@ -133,8 +135,8 @@ export default function AIbutton({ interests }) {
                             <div
                                 className="
                   absolute bottom-0 right-6
-                  w-3 h-3 bg-white
-                  border-r border-b border-[#D1905A]
+                  w-3 h-3 bg-[#6EC8C4]
+                  border-r border-b border-[#6EC8C4]
                   transform rotate-45 translate-y-1/2
                 "
                             />

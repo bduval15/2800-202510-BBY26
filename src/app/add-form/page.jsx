@@ -61,11 +61,10 @@ export default function AddFormPage() {
       dataToInsert = {
         title: formData.title,
         location: formData.location,
-        tags: lowerTags,
         price: formData.price,
         description: formData.description,
         user_id: userId,
-        tags: formData.tags,
+        tags: lowerTags,
         table_id: 'deals'
       };
     }
