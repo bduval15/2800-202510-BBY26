@@ -186,7 +186,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="mt-1 block w-full rounded border-1 border-[#F5E3C6] px-3 py-2 text-[#8B4C24] focus:border-[#639751] focus:outline-none focus:ring-0 transition"
-              placeholder="••••••••"
+              placeholder="Password123!"
               required
               minLength="6"
             />
@@ -200,7 +200,7 @@ export default function LoginPage() {
             {loading ? (
               <span>Processing...</span>
             ) : (
-              <span>{isLogin ? 'Sign In' : 'Create Account'}</span>
+              <span>{isLogin ? 'Log In' : 'Create Account'}</span>
             )}
           </button>
 
