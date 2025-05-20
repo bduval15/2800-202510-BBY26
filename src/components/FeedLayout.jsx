@@ -29,6 +29,9 @@ export default function FeedLayout({
   const tagDropdownRef = useRef(null)
   const [sortedAndFilteredChildren, setSortedAndFilteredChildren] = useState([])
 
+  const defaultBestSort = "Best";
+  const defaultDateSort = "Newest";
+
   const bestOptions = ["Best", "Worst"]
   const dateOptions = ["Newest", "Oldest"]
   
@@ -110,6 +113,17 @@ export default function FeedLayout({
     return `${selectedTags.length} Tags Selected`;
   };
 
+  const handleClearFilters = () => {
+    setBestSort(defaultBestSort);
+    setDateSort(defaultDateSort);
+    onTagToggle("ALL"); 
+    setTagDropdownOpen(false); 
+  };
+
+  const areFiltersActive = () => {
+    return bestSort !== defaultBestSort || dateSort !== defaultDateSort || selectedTags.length > 0;
+  };
+
   return (
     <>
       <StickyNavbar />
@@ -181,6 +195,14 @@ export default function FeedLayout({
                 )}
               </div>
             </>
+          )}
+          {areFiltersActive() && (
+            <button
+              onClick={handleClearFilters}
+              className="ml-auto text-xs text-[#8B4C24] hover:text-[#639751] focus:outline-none underline"
+            >
+              Clear Filters
+            </button>
           )}
         </div>
       </div>
