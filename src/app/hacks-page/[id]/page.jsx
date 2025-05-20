@@ -273,7 +273,7 @@ export default function HackDetailPage({ params }) {
           </div>
         </div>
 
-        <CommentSection hackId={hack.id} /> 
+        <CommentSection entityId={hack.id} entityType="hack"/> 
         <Footer />
       
       </div>

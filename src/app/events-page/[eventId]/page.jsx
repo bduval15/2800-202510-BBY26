@@ -264,7 +264,7 @@ export default function EventDetailPage({ params }) {
           </div>
         </div>
 
-        <CommentSection hackId={event.id} />
+        <CommentSection entityId={event.id} entityType="event" />
         <Footer />
       </div>
 
