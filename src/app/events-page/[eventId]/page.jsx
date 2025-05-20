@@ -110,15 +110,15 @@ export default function EventDetailPage({ params }) {
   }, [isOptionsMenuOpen]);
 
   if (isLoading) {
-    return <div className="max-w-md mx-auto px-4 py-6 text-center">Loading event details...</div>;
+    return <div className="max-w-md mx-auto px-4 py-8 text-center text-lg">Loading event details...</div>;
   }
 
   if (error) {
-    return <div className="max-w-md mx-auto px-4 py-6 text-center text-red-500">Error: {error}</div>;
+    return <div className="max-w-md mx-auto px-4 py-8 text-center text-red-500 text-lg">Error: {error}</div>;
   }
 
   if (!event) {
-    return <div className="max-w-md mx-auto px-4 py-6 text-center">Event not found.</div>;
+    return <div className="max-w-md mx-auto px-4 py-8 text-center text-lg">Event not found.</div>;
   }
 
   const formatTimeAgo = (timestamp) => {
@@ -141,6 +141,11 @@ export default function EventDetailPage({ params }) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     const date = new Date(dateString + 'T00:00:00');
     return date.toLocaleDateString(undefined, options);
+  };
+
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return '';
+    return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
   const handleDelete = () => {
@@ -218,19 +223,19 @@ export default function EventDetailPage({ params }) {
           {/* Tags */}
           <div className="mb-6 flex flex-wrap gap-2">
             {event.tags?.map((tag, i) => (
-              <Tag key={i} label={tag} />
+              <Tag key={i} label={capitalizeFirstLetter(tag)} />
             ))}
           </div>
 
           {/* Dates */}
-          <div className="mb-4 text-sm font-medium text-[#8B4C24]">
+          <div className="mb-4 text-base font-bold text-[#8B4C24]">
             <p>Start Date: {formatDate(event.start_date)}</p>
             <p>End Date: {formatDate(event.end_date)}</p>
           </div>
 
           {/* Location */}
-          <p className="text-sm font-medium mb-4 text-[#8B4C24]">
-            Location: {
+          <p className="text-base font-medium mb-4 text-[#8B4C24]">
+            📍 {
               (() => {
                 try {
                   const parsedLocation = JSON.parse(event.location);
