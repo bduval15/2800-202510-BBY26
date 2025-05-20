@@ -74,6 +74,31 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
     }
     setShowTagError(false);
 
+    // Date validation for events
+    if (postType === 'event') {
+      if (!eventStartDate || !eventEndDate) {
+        // Or handle as a required field error, this is a basic check
+        console.log("Start and End dates are required for events.")
+        return;
+      }
+      const startDate = new Date(eventStartDate);
+      const endDate = new Date(eventEndDate);
+
+      if (startDate < new Date(MIN_DATE) || startDate > new Date(MAX_DATE) || endDate < new Date(MIN_DATE) || endDate > new Date(MAX_DATE)) {
+        setShowDateRangeError(true);
+        setShowDateOrderError(false);
+        return;
+      }
+      setShowDateRangeError(false);
+
+      if (endDate < startDate) {
+        setShowDateOrderError(true);
+        setShowDateRangeError(false);
+        return; // Prevent submission
+      }
+      setShowDateOrderError(false);
+    }
+
     if (location.lat == null || location.lng == null) {
       if (rawAddress.trim()) {
         try {
@@ -118,6 +143,12 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
         ? { price: parseFloat(price) || 0, description }
         : { description })
     };
+
+    if (postType === 'event') {
+      formData.start_date = eventStartDate;
+      formData.end_date = eventEndDate;
+    }
+
     console.log(formData);
     if (onSubmit) {
       onSubmit(formData);
@@ -330,6 +361,53 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
               }}
             />
           </div>
+          {/* Event Start and End Dates */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="eventStartDate" className="block text-sm font-medium text-[#6A401F] mb-1">
+                Start Date*
+              </label>
+              <input
+                type="date"
+                id="eventStartDate"
+                value={eventStartDate}
+                onChange={(e) => {
+                  setEventStartDate(e.target.value);
+                  setShowDateOrderError(false);
+                  setShowDateRangeError(false);
+                }}
+                required={postType === 'event'}
+                min={MIN_DATE}
+                max={MAX_DATE}
+                className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white text-gray-900"
+              />
+            </div>
+            <div>
+              <label htmlFor="eventEndDate" className="block text-sm font-medium text-[#6A401F] mb-1">
+                End Date*
+              </label>
+              <input
+                type="date"
+                id="eventEndDate"
+                value={eventEndDate}
+                onChange={(e) => {
+                  setEventEndDate(e.target.value);
+                  setShowDateOrderError(false);
+                  setShowDateRangeError(false);
+                }}
+                required={postType === 'event'}
+                min={MIN_DATE} // Dynamically set min based on eventStartDate if preferred
+                max={MAX_DATE}
+                className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white text-gray-900"
+              />
+            </div>
+          </div>
+          {showDateOrderError && (
+            <p className="text-xs text-red-500 mt-1">End date cannot be before the start date.</p>
+          )}
+          {showDateRangeError && (
+            <p className="text-xs text-red-500 mt-1">{`Please select a date between ${MIN_DATE} and ${MAX_DATE}.`}</p>
+          )}
         </>
       )}
 
