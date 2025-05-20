@@ -181,7 +181,7 @@ export default function EventDetailPage({ params }) {
           <div className="flex justify-between items-center mb-4">
             <button
               onClick={() => router.back()}
-              className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] p-2 rounded-lg"
+              className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] px-3 py-1.5 rounded-lg shadow-md"
             >
               <ArrowLeftIcon className="h-5 w-5" />
             </button>
