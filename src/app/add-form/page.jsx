@@ -79,8 +79,8 @@ export default function AddFormPage() {
         upvotes: 0,
         downvotes: 0,
         location: formData.location,
-        start_date: formData.startDate,
-        end_date: formData.endDate
+        start_date: formData.start_date,
+        end_date: formData.end_date
       };
     } else {
       console.error('Unknown post type:', formData.postType);

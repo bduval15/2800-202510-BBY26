@@ -35,14 +35,7 @@ const DealCard = ({ id, title, location, price, tags, expirationDate, upvotes = 
           )}
         </div>
 
-        {/* Tags */}
-        {tags && tags.length > 0 && (
-          <div className="w-full mb-2 flex flex-wrap pb-2">
-            {tags.slice(0, 3).map((tag, index) => (
-              <Tag key={index} label={titleCase(tag)} />
-            ))}
-          </div>
-        )}
+        
 
         {/* Location */}
         {location && (
@@ -54,17 +47,18 @@ const DealCard = ({ id, title, location, price, tags, expirationDate, upvotes = 
         {/* Price */}
         {price !== null && price !== undefined && (
           <p className={`text-sm text-gray-700 ${expirationDate ? 'mb-1' : 'mb-2'}`}>
-            <span className="font-medium text-[#6A4C3C]">Price:</span> ${typeof price === 'number' ? price.toFixed(2) : price}
+            <span className="font-medium text-[#6A4C3C]">💲</span> {typeof price === 'number' ? price.toFixed(2) : price}
           </p>
         )}
 
-        {/* Expiration Date */}
-        {expirationDate && (
-          <p className="text-sm text-gray-700 mb-2">
-            <span className="font-medium text-[#6A4C3C]">Expires:</span> {expirationDate}
-          </p>
+        {/* Tags */}
+        {tags && tags.length > 0 && (
+          <div className="w-full mb-2 flex flex-wrap">
+            {tags.slice(0, 3).map((tag, index) => (
+              <Tag key={index} label={titleCase(tag)} />
+            ))}
+          </div>
         )}
-
         
         {/* Interactions Row */}
         <div className="flex items-center space-x-2 text-xs w-full justify-start mt-2">
