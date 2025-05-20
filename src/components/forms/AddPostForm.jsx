@@ -9,8 +9,9 @@ import LocationAutoComplete from '@/components/mapComponents/LocationAutoComplet
  * 
  * This form allows users to add a new hack to the database.
  * 
- * @author: Nathan O
- * @author: Conner P
+ * @author Nathan O
+ * @author Conner P
+ * @author Brady D
  * 
  * Written with assistance from Google Gemini 2.5 Flash
  * @author https://gemini.google.com/app
@@ -23,6 +24,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
   const [postType, setPostType] = useState('hack');
   const [price, setPrice] = useState('');
   const [showTagError, setShowTagError] = useState(false);
+  const [rawAddress, setRawAddress] = useState('');
   const [coords, setCoords] = useState(null);
   const [location, setLocation] = useState({
     address: '',
@@ -50,6 +52,8 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    let resolvedLocation = location;
+
     // Tag validation for both hacks and deals
     if (selectedTags.length === 0) {
       setShowTagError(true);
@@ -57,38 +61,50 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
     }
     setShowTagError(false);
 
-    if (postType === 'deal' && (location.lat == null || location.lng == null)) {
-      try {
-        const params = new URLSearchParams({
-          q: location.address,
-          format: 'json',
-          limit: '1',
-          viewbox: '-123.5,49.5,-122.4,49.0',
-          bounded: '1'
-        });
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?${params}`,
-          { headers: { 'Accept-Language': 'en' } }
-        );
-        const data = await res.json();
-        if (data[0]) {
-          const lat = parseFloat(data[0].lat);
-          const lng = parseFloat(data[0].lon);
-          setLocation(loc => ({ ...loc, lat, lng }));
-          setCoords([lat, lng]);
+    if (location.lat == null || location.lng == null) {
+      if (rawAddress.trim()) {
+        try {
+          const params = new URLSearchParams({
+            q: rawAddress,
+            format: 'json',
+            limit: '1',
+            viewbox: '-123.5,49.5,-122.4,49.0',
+            bounded: '1'
+          });
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/search?${params}`,
+            { headers: { 'Accept-Language': 'en' } }
+          );
+          const data = await res.json();
+          if (data[0]) {
+            const lat = parseFloat(data[0].lat);
+            const lng = parseFloat(data[0].lon);
+            resolvedLocation = { address: rawAddress, lat, lng };
+          } else {
+            // no hits → mark Not Specified
+            resolvedLocation = { address: 'Not Specified', lat: null, lng: null };
+          }
+        } catch (err) {
+          console.error('geocode lookup failed', err);
+          resolvedLocation = { address: 'Not Specified', lat: null, lng: null };
         }
-      } catch (err) {
-        console.error('fallback geocode failed', err);
+      } else {
+        resolvedLocation = { address: 'Not Specified', lat: null, lng: null };
       }
+
+      setLocation(resolvedLocation); setCoords(resolvedLocation.lat != null ? [resolvedLocation.lat, resolvedLocation.lng] : null);
     }
 
-    let formData = { title, postType };
-    if (postType === 'hack' || postType === 'event') {
-      formData = { ...formData, description,location, tags: selectedTags };
-    } else {
-      const dealLocationString = JSON.stringify(location);
-      formData = { ...formData, description, location: dealLocationString, price: parseFloat(price) || 0, tags: selectedTags };
-    }
+    const formData = {
+      title,
+      postType,
+      rawAddress,
+      location: resolvedLocation,
+      tags: selectedTags,
+      ...(postType === 'deal'
+        ? { price: parseFloat(price) || 0, description }
+        : { description })
+    };
     console.log(formData);
     if (onSubmit) {
       onSubmit(formData);
@@ -208,9 +224,13 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
             key={locationKey}
             placeholder="(Optional)"
             initialValue={location.address}
+            onChange={addr => {
+              setRawAddress(addr);
+            }}
             onSelect={({ address, lat, lng }) => {
               setLocation({ address, lat, lng });
               setCoords([lat, lng]);
+              setRawAddress(address);
             }}
           />
         </div>
@@ -226,9 +246,13 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
               key={locationKey}
               placeholder="e.g., The Pub"
               initialValue={location.address}
+              onChange={addr => {
+                setRawAddress(addr);
+              }}
               onSelect={({ address, lat, lng }) => {
                 setLocation({ address, lat, lng });
                 setCoords([lat, lng]);
+                setRawAddress(address);
               }}
             />
           </div>
@@ -276,16 +300,20 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
               key={locationKey}
               required={postType === 'event'}
               initialValue={location.address}
+              onChange={addr => {
+                setRawAddress(addr);
+              }}
               onSelect={({ address, lat, lng }) => {
                 setLocation({ address, lat, lng });
                 setCoords([lat, lng]);
+                setRawAddress(address);
               }}
             />
-          </div>        
+          </div>
         </>
       )}
 
-       {/* Tag Selection */}
+      {/* Tag Selection */}
       <div>
         <label className="block text-sm font-medium text-[#6A401F] mb-2">
           Tags*
