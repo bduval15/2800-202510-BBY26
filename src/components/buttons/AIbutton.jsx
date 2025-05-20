@@ -252,7 +252,7 @@ export default function AIbutton({ interests }) {
                         disabled={loading}
                         className="bg-white text-[#8B4C24] border-2 border-[#D1905A] shadow-xl rounded-full w-14 h-14 flex items-center justify-center hover:bg-[#f3d9ae] transition"
                         initial={{ y: 0 }}
-                        animate={{ y: [, -5, -15, 10, 0] }}
+                        animate={{ y: [10, -5, -15, 10, 0] }}
                         transition={{
                           duration: 1.2,
                           ease: "easeInOut",
