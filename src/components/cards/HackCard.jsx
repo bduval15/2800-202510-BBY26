@@ -20,7 +20,7 @@ import { formatTimeAgo } from '../../utils/formatTimeAgo';
  * @author https://gemini.google.com/app
  */
 
-const HackCard = ({ id, href, title, upvotes, downvotes, comments = 0, tags = [], className = '', createdAt }) => {
+const HackCard = ({ id, href, title, upvotes, downvotes, comments = 0, tags = [], className = '', createdAt, userId }) => {
   const titleCase = (str) =>
     str.charAt(0).toUpperCase() + str.slice(1);
   return (
@@ -46,7 +46,13 @@ const HackCard = ({ id, href, title, upvotes, downvotes, comments = 0, tags = []
         {/* Interactions */}
         <div className="flex items-center space-x-2 text-xs w-full justify-start mt-2">
           {/* Upvotes / Downvotes Group */}
-          <VoteButtons hackId={id} upvotes={upvotes} downvotes={downvotes} />
+          <VoteButtons 
+            itemId={id} 
+            itemType="hacks" 
+            upvotes={upvotes} 
+            downvotes={downvotes} 
+            userId={userId}
+          />
 
           {/* Comments Group - uses default 0 if comments not provided */}
           <CommentDisplay count={comments} />
@@ -70,6 +76,7 @@ HackCard.propTypes = {
   tags: PropTypes.arrayOf(PropTypes.string),
   className: PropTypes.string,
   createdAt: PropTypes.string,
+  userId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export default HackCard;

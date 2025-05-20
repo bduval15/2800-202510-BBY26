@@ -27,6 +27,7 @@ export default function HacksPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [interests, setInterests] = useState([]);
+  const [currentUserId, setCurrentUserId] = useState(null);
 
   const tags = [
     'Animal Care',
@@ -55,26 +56,30 @@ export default function HacksPage() {
   ];
 
   useEffect(() => {
-    const fetchInterests = async () => {
+    const fetchUserAndInterests = async () => {
       const { data: { user } } = await clientDB.auth.getUser();
-      if (!user) return;
-  
-      const { data, error } = await clientDB
-        .from('user_profiles')
-        .select('interests')
-        .eq('id', user.id)
-        .single();
-  
-      if (error) {
-        console.error('Failed to fetch interests:', error.message);
-      } else if (data?.interests) {
-        setInterests(Array.isArray(data.interests)
-          ? data.interests
-          : data.interests.split(','));
+      if (user) {
+        setCurrentUserId(user.id);
+
+        const { data: interestsData, error: interestsError } = await clientDB
+          .from('user_profiles')
+          .select('interests')
+          .eq('id', user.id)
+          .single();
+
+        if (interestsError) {
+          console.error('Failed to fetch interests:', interestsError.message);
+        } else if (interestsData?.interests) {
+          setInterests(Array.isArray(interestsData.interests)
+            ? interestsData.interests
+            : interestsData.interests.split(','));
+        }
+      } else {
+        setCurrentUserId(null);
       }
     };
-  
-    fetchInterests();
+
+    fetchUserAndInterests();
   }, []);
 
   useEffect(() => {
@@ -150,6 +155,7 @@ export default function HacksPage() {
               description={hack.description}
               location={hack.location}
               createdAt={hack.created_at}
+              userId={currentUserId}
             />
           ))
         ) : (
