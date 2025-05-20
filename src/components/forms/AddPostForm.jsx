@@ -30,6 +30,21 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
     lng: null
   });
 
+  const handleClear = () => {
+    setTitle('');
+    setDescription('');
+    setSelectedTags([]);
+    setPostType('hack');
+    setPrice('');
+    setShowTagError(false);
+    setCoords(null);
+    setLocation({
+      address: '',
+      lat: null,
+      lng: null
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -272,6 +287,13 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
           className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#77A06B] hover:bg-[#668d5b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#77A06B] transition duration-150 ease-in-out"
         >
           {postType === 'hack' ? 'Add Hack' : (postType === 'deal') ? 'Add Deal' : 'Add Event'}
+        </button>
+        <button
+          type="button"
+          onClick={handleClear}
+          className="w-full flex justify-center py-3 px-4 border border-[#D1905A] rounded-lg shadow-sm text-sm font-medium text-[#8B4C24] bg-transparent hover:bg-[#F5E3C6] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8B4C24] transition duration-150 ease-in-out"
+        >
+          Clear Form
         </button>
         <button
           type="button"
