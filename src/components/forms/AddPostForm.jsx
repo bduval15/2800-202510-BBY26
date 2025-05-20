@@ -23,6 +23,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
   const [postType, setPostType] = useState('hack');
   const [price, setPrice] = useState('');
   const [showTagError, setShowTagError] = useState(false);
+  const [showTagLimitError, setShowTagLimitError] = useState(false);
   const [coords, setCoords] = useState(null);
   const [location, setLocation] = useState({
     address: '',
@@ -38,6 +39,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
     setPostType('hack');
     setPrice('');
     setShowTagError(false);
+    setShowTagLimitError(false);
     setCoords(null);
     setLocation({
       address: '',
@@ -104,9 +106,16 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
   const handleTagChange = (tagValue) => {
     setSelectedTags(prevSelectedTags => {
       if (prevSelectedTags.includes(tagValue)) {
+        setShowTagLimitError(false); 
         return prevSelectedTags.filter(t => t !== tagValue);
       } else {
-        return [...prevSelectedTags, tagValue];
+        if (prevSelectedTags.length < 5) {
+          setShowTagLimitError(false); 
+          return [...prevSelectedTags, tagValue];
+        } else {
+          setShowTagLimitError(true);
+          return prevSelectedTags; b
+        }
       }
     });
   };
@@ -307,6 +316,9 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
         </div>
         {showTagError && (
           <p className="text-xs text-red-500 mt-1">Please select at least one tag.</p>
+        )}
+        {showTagLimitError && (
+          <p className="text-xs text-red-500 mt-1">You can select a maximum of 5 tags.</p>
         )}
       </div>
 
