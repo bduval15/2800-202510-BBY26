@@ -48,7 +48,7 @@ export default function EditHackPage({ params }) {
   const [submitError, setSubmitError] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [hackAuthorId, setHackAuthorId] = useState(null);
-  const originalHackLocationRef = useRef(null);
+  const [locationKey, setLocationKey] = useState(0);
 
   useEffect(() => {
     const fetchCurrentUserAndHack = async () => {
@@ -108,7 +108,6 @@ export default function EditHackPage({ params }) {
         setTitle(hackData.title || '');
         setDescription(hackData.description || '');
         setCurrentTags(hackData.tags || []);
-        originalHackLocationRef.current = hackData.location;
         if (hackData.location) {
           try {
             const parsedLocation = JSON.parse(hackData.location);
@@ -139,6 +138,16 @@ export default function EditHackPage({ params }) {
     fetchCurrentUserAndHack();
   }, [hackId, router]);
 
+  const handleClear = () => {
+    setTitle('');
+    setDescription('');
+    setCurrentTags([]);
+    setLocationAddress('');
+    setSelectedLocation(null);
+    setSubmitError(null);
+    setLocationKey(prevKey => prevKey + 1);
+  };
+
   const handleSelectTag = (tagValue) => {
     setSubmitError(null); 
     setCurrentTags(prevSelectedTags => {
@@ -158,9 +167,9 @@ export default function EditHackPage({ params }) {
   const handleSelectLocation = (locationData) => {
     setSubmitError(null);
     if (locationData) {
-      setSelectedLocation(locationData); // { address, lat, lng }
-      setLocationAddress(locationData.address || ''); // Update display address
-    } else { // For clearing the location
+      setSelectedLocation(locationData);
+      setLocationAddress(locationData.address || '');
+    } else {
       setSelectedLocation(null);
       setLocationAddress('');
     }
@@ -195,20 +204,16 @@ export default function EditHackPage({ params }) {
 
     let updatedLocationJson = null;
     if (selectedLocation && selectedLocation.address && selectedLocation.lat !== null && selectedLocation.lng !== null) {
-      // If a location was selected from autocomplete and has all parts
       updatedLocationJson = JSON.stringify({
         address: selectedLocation.address,
         lat: selectedLocation.lat,
         lng: selectedLocation.lng
       });
     } else if (selectedLocation && selectedLocation.address && (!selectedLocation.lat || !selectedLocation.lng)) {
-
       updatedLocationJson = JSON.stringify({ address: selectedLocation.address, lat: null, lng: null });
     } else if (!selectedLocation && locationAddress.trim()) {
-        // If no location selected from autocomplete, but user typed something manually
-        // Save it as an address-only entry. This maintains previous behavior for manual entries.
         updatedLocationJson = JSON.stringify({ address: locationAddress.trim(), lat: null, lng: null });
-    } // If selectedLocation is null and locationAddress is also empty, updatedLocationJson remains null
+    }
 
     try {
       const { data, error: updateError } = await clientDB
@@ -247,18 +252,27 @@ export default function EditHackPage({ params }) {
     return <div className="max-w-md mx-auto px-4 py-6 space-y-6 text-center text-red-500">Error: You are not authorized to edit this hack.</div>;
   }
 
-
   return (
     <div className="pb-6">
       <div className="max-w-md mx-auto px-4 py-6 space-y-6">
         <StickyNavbar />
         <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30 pt-16">
-          <h1 className="text-3xl font-bold mb-6 text-[#8B4C24]">Edit Hack</h1>
+          <div className="flex justify-between items-start mb-1">
+            <h1 className="text-3xl font-bold text-[#8B4C24]">Edit Hack</h1>
+            <button
+              type="button"
+              onClick={handleClear}
+              className="text-xs text-gray-500 hover:text-gray-700 focus:outline-none px-2 py-1 rounded hover:bg-gray-100 transition-colors duration-150 ease-in-out whitespace-nowrap"
+            >
+              Clear Form
+            </button>
+          </div>
+          <p className="text-xs text-gray-600 mb-6">* Indicates a required field</p>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-[#6A401F] mb-1">
-                Title
+                Title*
               </label>
               <input
                 type="text"
@@ -273,7 +287,7 @@ export default function EditHackPage({ params }) {
 
             <div>
               <label htmlFor="description" className="block text-sm font-medium text-[#6A401F] mb-1">
-                Description
+                Description*
               </label>
               <textarea
                 name="description"
@@ -288,7 +302,19 @@ export default function EditHackPage({ params }) {
 
             <div>
               <label className="block text-sm font-medium text-[#6A401F] mb-1">
-                Tags (select up to {MAX_TAGS})
+                Location (Optional)
+              </label>
+              <LocationAutocomplete
+                key={locationKey}
+                initialValue={locationAddress}
+                onSelect={handleSelectLocation}
+                placeholder="e.g., Library, Room SE06"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#6A401F] mb-1">
+                Tags (select up to {MAX_TAGS})*
               </label>
               <div className="mt-1 flex flex-wrap gap-2 p-2.5 border border-[#D1905A] rounded-lg shadow-sm bg-white min-h-[40px]">
                 {availableTags.map(tag => (
@@ -306,37 +332,21 @@ export default function EditHackPage({ params }) {
               </div>
             </div>
           
-            <div>
-            
-              <LocationAutocomplete 
-                initialValue={locationAddress} 
-                onSelect={handleSelectLocation} 
-                placeholder="e.g., 123 Main St, Anytown, USA"
-              />
-              {selectedLocation && selectedLocation.address && (
-                <button 
-                  type="button"
-                  onClick={() => handleSelectLocation(null)} // Clear the location
-                  className="mt-2 text-xs text-red-500 hover:text-red-700"
-                >
-                  Clear Location
-                </button>
-              )}
-            </div>
+           
 
             {submitError && <p className="text-sm text-red-600 mt-2">{submitError}</p>}
 
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-4">
-            <button
-                    type="submit"
-                              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#77A06B] hover:bg-[#668d5b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#A0522D] transition duration-150 ease-in-out disabled:opacity-50"
-                    disabled={isLoading}
-                >
-                    {isLoading ? 'Saving...' : 'Save Changes'}
-                </button>
+              <button
+                type="submit"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#77A06B] hover:bg-[#668d5b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#77A06B] transition duration-150 ease-in-out disabled:opacity-50"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Saving...' : 'Save Changes'}
+              </button>
               <button
                 type="button"
-                onClick={() => router.back()} 
+                onClick={() => router.push(`/hacks-page/${hackId}`)}
                 className="w-full flex justify-center py-3 px-4 border border-[#D1905A] rounded-lg shadow-sm text-sm font-medium text-[#8B4C24] bg-transparent hover:bg-[#F5E3C6] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8B4C24] transition duration-150 ease-in-out"
                 disabled={isLoading}
               >
