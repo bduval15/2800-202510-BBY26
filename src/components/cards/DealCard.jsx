@@ -19,7 +19,7 @@ import { formatTimeAgo } from '../../utils/formatTimeAgo';
  * @author https://gemini.google.com/app
  * @author Nate O
  */
-const DealCard = ({ id, title, location, price, tags, expirationDate, upvotes = 0, downvotes = 0, createdAt }) => {
+const DealCard = ({ id, title, location, price, tags, expirationDate, upvotes = 0, downvotes = 0, createdAt, userId }) => {
   const titleCase = (str) =>
     str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 
@@ -66,7 +66,13 @@ const DealCard = ({ id, title, location, price, tags, expirationDate, upvotes = 
 
         {/* Interactions Row */}
         <div className="flex items-center space-x-2 text-xs w-full justify-start mt-2">
-          <VoteButtons itemId={id} itemType="deals" upvotes={upvotes} downvotes={downvotes} />
+          <VoteButtons 
+            itemId={id} 
+            itemType="deals" 
+            upvotes={upvotes} 
+            downvotes={downvotes} 
+            userId={userId}
+          />
           <BookmarkButton dealId={id} />
         </div>
       </BaseCard>
@@ -84,6 +90,7 @@ DealCard.propTypes = {
   upvotes: PropTypes.number,
   downvotes: PropTypes.number,
   createdAt: PropTypes.string,
+  userId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export default DealCard; 

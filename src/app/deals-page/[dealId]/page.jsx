@@ -289,7 +289,13 @@ export default function DealDetailPage() {
           <div className="flex items-center mb-6">
             <div className="flex items-center">
               <div className="mr-2">
-                <VoteButtons itemId={deal.id} itemType="deals" upvotes={deal.upvotes || 0} downvotes={deal.downvotes || 0} />
+                <VoteButtons 
+                  itemId={deal.id} 
+                  itemType="deals" 
+                  upvotes={deal.upvotes || 0} 
+                  downvotes={deal.downvotes || 0} 
+                  userId={currentUserId}
+                />
               </div>
               <BookmarkButton dealId={deal.id} />
             </div>

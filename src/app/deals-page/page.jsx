@@ -26,6 +26,7 @@ export default function DealsPage() {
   const [allDeals, setAllDeals] = useState([]);
   const [interests, setInterests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState(null);
   const supabase = clientDB;
 
   const tags = [
@@ -55,31 +56,35 @@ export default function DealsPage() {
   ];
 
   useEffect(() => {
-    const fetchInterests = async () => {
-      const { data: { user } } = await clientDB.auth.getUser();
-      if (!user) {
-        setLoading(false);
-        return;
+    const fetchUserAndInterests = async () => {
+      setLoading(true);
+      const { data: { user }, error: userError } = await clientDB.auth.getUser();
+      
+      if (userError) {
+        console.error('Error fetching user:', userError.message);
       }
-  
-      const { data, error } = await clientDB
-        .from('user_profiles')
-        .select('interests')
-        .eq('id', user.id)
-        .single();
-  
-      if (error) {
-        console.error('Failed to fetch interests:', error.message);
-      } else if (data?.interests) {
-        setInterests(Array.isArray(data.interests)
-          ? data.interests
-          : data.interests.split(','));
+      if (user) {
+        setCurrentUserId(user.id);
+        const { data, error } = await clientDB
+          .from('user_profiles')
+          .select('interests')
+          .eq('id', user.id)
+          .single();
+    
+        if (error) {
+          console.error('Failed to fetch interests:', error.message);
+        } else if (data?.interests) {
+          setInterests(Array.isArray(data.interests)
+            ? data.interests
+            : data.interests.split(','));
+        }
+      } else {
+        setCurrentUserId(null);
       }
-  
       setLoading(false);
     };
   
-    fetchInterests();
+    fetchUserAndInterests();
   }, []);
 
 
@@ -154,6 +159,7 @@ export default function DealsPage() {
                 upvotes={deal.upvotes}
                 downvotes={deal.downvotes}
                 createdAt={deal.created_at}
+                userId={currentUserId}
               />
             );
           })
