@@ -12,9 +12,9 @@ export default function NotFound() {
           objectFit="contain"
         />
       </div>
-      <h1 className="text-4xl font-bold mb-4 flex flex-col items-center text-center">
-        <span>Oops!</span>
-        <span className="whitespace-nowrap">Page Not Found</span>
+      <h1 className="font-bold mb-4 flex flex-col items-center text-center">
+        <span className="text-5xl">Oops!</span>
+        <span className="whitespace-nowrap text-4xl ">Page Not Found</span>
       </h1>
       <p className="text-lg mb-8 text-center max-w-md">
         It seems this page has crumbled away or was never baked in the first place.
