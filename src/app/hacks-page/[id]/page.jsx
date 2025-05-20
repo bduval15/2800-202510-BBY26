@@ -251,7 +251,13 @@ export default function HackDetailPage({ params }) {
           <div className="flex items-center mb-6">
             <div className="flex items-center">
               <div className="mr-2">
-                <VoteButtons itemId={hack.id} itemType="hacks" upvotes={hack.upvotes || 0} downvotes={hack.downvotes || 0} />
+                <VoteButtons 
+                  itemId={hack.id} 
+                  itemType="hacks" 
+                  upvotes={hack.upvotes || 0} 
+                  downvotes={hack.downvotes || 0} 
+                  userId={currentUserId}
+                />
               </div>
               <BookmarkButton hackId={hack.id} />
             </div>
