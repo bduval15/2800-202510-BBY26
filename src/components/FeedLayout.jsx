@@ -83,7 +83,7 @@ export default function FeedLayout({
       // Primary sort: bestSort
       if (bestSort === "Best") {
         if (scoreB !== scoreA) return scoreB - scoreA; // Descending score
-      } else if (bestSort === "Controversial") { // "worst" means lowest score first
+      } else if (bestSort === "Worst") { // "worst" means lowest score first
         if (scoreA !== scoreB) return scoreA - scoreB; // Ascending score
       }
 
