@@ -95,6 +95,11 @@ export default function DealDetailPage() {
     return `${diffInWeeks} week${diffInWeeks === 1 ? '' : 's'} ago`;
   };
 
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return '';
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   useEffect(() => {
     if (dealId && supabase) {
       const fetchDealDetails = async () => {
@@ -108,7 +113,7 @@ export default function DealDetailPage() {
 
         if (fetchError) {
           console.error('Error fetching deal details:', fetchError);
-          if (fetchError.code === 'PGRST116') { // Not found error code
+          if (fetchError.code === 'PGRST116') {
             setError('Deal not found.');
           } else {
             setError('Failed to load deal. Please try again.');
@@ -148,8 +153,8 @@ export default function DealDetailPage() {
   const confirmDeleteDeal = async () => {
     setIsDeleteModalOpen(false);
     if (!deal || !deal.id) {
-        alert('Deal information is missing, cannot delete.');
-        return;
+      alert('Deal information is missing, cannot delete.');
+      return;
     }
     try {
       const { error: deleteError } = await supabase
@@ -184,10 +189,10 @@ export default function DealDetailPage() {
       <div className="bg-[#F5E3C6] min-h-screen flex flex-col items-center justify-center">
         <StickyNavbar />
         <div className="max-w-md mx-auto px-4 py-6 text-center">
-            <p className="text-red-500 text-xl mb-4">{error}</p>
-            <Link href="/deals-page" className="text-[#B87333] hover:text-[#8B4C24]">
-                Go back to Deals
-            </Link>
+          <p className="text-red-500 text-xl mb-4">{error}</p>
+          <Link href="/deals-page" className="text-[#B87333] hover:text-[#8B4C24]">
+            Go back to Deals
+          </Link>
         </div>
         <BottomNav />
       </div>
@@ -196,30 +201,31 @@ export default function DealDetailPage() {
 
   if (!deal) {
     return (
-        <div className="bg-[#F5E3C6] min-h-screen flex items-center justify-center">
-            <StickyNavbar />
-            <p className="text-[#8B4C24]">Deal information is not available.</p>
-            <BottomNav />
-        </div>
+      <div className="bg-[#F5E3C6] min-h-screen flex items-center justify-center">
+        <StickyNavbar />
+        <p className="text-[#8B4C24]">Deal information is not available.</p>
+        <BottomNav />
+      </div>
     );
   }
 
   return (
-    <div className="bg-[#F5E3C6] min-h-screen pb-6"> 
+    <div className="bg-[#F5E3C6] min-h-screen pb-6">
       <StickyNavbar />
-      <div className="max-w-md mx-auto px-4 py-6 space-y-6 pt-20"> 
-        
-        <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30"> 
+      <div className="max-w-md mx-auto px-4 py-6 space-y-6 pt-20">
+
+        <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30">
           <div className="flex justify-between items-center mb-4">
-            <Link href="/deals-page" className="inline-block">
-              <button className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] px-3 py-1.5 rounded-lg shadow-md flex items-center">
-                <ArrowLeftIcon className="h-5 w-5" />
-              </button>
-            </Link>
+            <button
+              onClick={() => router.back()}
+              className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] px-3 py-1.5 rounded-lg shadow-md flex items-center"
+            >
+              <ArrowLeftIcon className="h-5 w-5" />
+            </button>
 
             {deal && currentUserId && deal.user_id === currentUserId && (
               <div className="relative" ref={optionsMenuRef}>
-                <button 
+                <button
                   onClick={() => setIsOptionsMenuOpen(!isOptionsMenuOpen)}
                   className="bg-[#F5EFE6] hover:bg-[#EADDCA] text-[#A0522D] border-2 border-[#A0522D] p-2 rounded-lg shadow-md"
                   aria-label="Options"
@@ -228,13 +234,13 @@ export default function DealDetailPage() {
                 </button>
                 {isOptionsMenuOpen && (
                   <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-10">
-                    <button 
+                    <button
                       onClick={() => { router.push(`/deals-page/${dealId}/edit`); setIsOptionsMenuOpen(false); }}
                       className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                     >
                       <PencilIcon className="h-5 w-5 mr-2" /> Edit
                     </button>
-                    <button 
+                    <button
                       onClick={handleDelete}
                       className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700"
                     >
@@ -246,15 +252,31 @@ export default function DealDetailPage() {
             )}
           </div>
 
-          <h1 className="text-3xl font-bold mb-6 text-[#8B4C24]">{deal.title}</h1> 
+          <h1 className="text-3xl font-bold mb-2 text-[#8B4C24]">{deal.title}</h1>
 
           {deal.tags && deal.tags.length > 0 && (
-            <div className="mb-6 flex flex-wrap items-center">
-              <div className="flex flex-wrap gap-2">
-                {deal.tags.map((tag, index) => (
-                  <Tag key={index} label={tag} />
-                ))}
-              </div>
+            <div className="mb-6 flex flex-wrap gap-2">
+              {deal.tags.map((tag, index) => (
+                <Tag key={index} label={capitalizeFirstLetter(tag)} />
+              ))}
+            </div>
+          )}
+
+          {deal.price !== null && deal.price !== undefined && (
+            <div className="mb-4 text-base text-[#8B4C24]">
+              <p><span className="font-bold">Price:</span> ${typeof deal.price === 'number' ? deal.price.toFixed(2) : deal.price}</p>
+            </div>
+          )}
+
+          {displayLocation && (
+            <div className="mb-4 text-base text-[#8B4C24]">
+              <p><span className="font-bold">📍 Location:</span> {displayLocation}
+                {deal.location?.lat && deal.location?.lng && (
+                  <Link href={`/map-page?lat=${deal.location.lat}&lng=${deal.location.lng}&label=${encodeURIComponent(displayLocation)}`} passHref className="text-sm text-[#B87333] hover:text-[#8B4C24] ml-2">
+                    (View on Map)
+                  </Link>
+                )}
+              </p>
             </div>
           )}
 
@@ -264,41 +286,19 @@ export default function DealDetailPage() {
             </div>
           )}
 
-          {displayLocation && (
-            <div className="mb-4">
-              <div className="flex items-center mb-1">
-                <h2 className="text-lg font-semibold text-[#6A4C3C] mr-2">Location</h2>
-                <Link href={`/map-page?lat=${deal.location?.lat}&lng=${deal.location?.lng}&label=${encodeURIComponent(displayLocation)}`} passHref className="text-sm text-[#B87333] hover:text-[#8B4C24] flex items-center">
-                  <MapPinIcon className="h-4 w-4 mr-1" /> View on Map
-                </Link>
-              </div>
-              <p className="text-[#8B4C24]">{displayLocation}</p>
-            </div>
-          )}
-          {deal.price !== null && deal.price !== undefined && (
-            <div className="mb-6">
-              <h2 className="text-lg font-semibold mb-1 text-[#6A4C3C]">Price</h2>
-              <p className="text-[#8B4C24]">${typeof deal.price === 'number' ? deal.price.toFixed(2) : deal.price}</p>
-            </div>
-          )}    
-
           <p className="text-sm text-[#8B4C24]/80 mb-8">
-            Posted by {deal.user_profiles && deal.user_profiles.name ? deal.user_profiles.name : (deal.user_id ? `User ${deal.user_id.substring(0,8)}...` : 'Unknown')} - {formatTimeAgo(deal.created_at)}
-          </p>        
+            Posted by {deal.user_profiles && deal.user_profiles.name ? deal.user_profiles.name : (deal.user_id ? `User ${deal.user_id.substring(0, 8)}...` : 'Unknown')} - {formatTimeAgo(deal.created_at)}
+          </p>
 
           <div className="flex items-center mb-6">
-            <div className="flex items-center">
-              <div className="mr-2">
-                <VoteButtons 
-                  itemId={deal.id} 
-                  itemType="deals" 
-                  upvotes={deal.upvotes || 0} 
-                  downvotes={deal.downvotes || 0} 
-                  userId={currentUserId}
-                />
-              </div>
-              <BookmarkButton dealId={deal.id} />
-            </div>
+            <VoteButtons
+              itemId={deal.id}
+              itemType="deals"
+              upvotes={deal.upvotes || 0}
+              downvotes={deal.downvotes || 0}
+              userId={currentUserId}
+            />
+            <BookmarkButton dealId={deal.id} />
           </div>
         </div>
 

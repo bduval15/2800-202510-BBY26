@@ -70,7 +70,7 @@ export default function EventDetailPage({ params }) {
         const { data: eventData, error: fetchError } = await clientDB
           .from('events')  
           .select(
-            'id, title, description, location, created_at, user_id, tags, upvotes, downvotes, user_profiles(name)'
+            'id, title, description, location, created_at, user_id, tags, upvotes, downvotes, user_profiles(name), start_date, end_date'
           )
           .eq('id', eventId)
           .single();
@@ -110,15 +110,15 @@ export default function EventDetailPage({ params }) {
   }, [isOptionsMenuOpen]);
 
   if (isLoading) {
-    return <div className="max-w-md mx-auto px-4 py-6 text-center">Loading event details...</div>;
+    return <div className="max-w-md mx-auto px-4 py-8 text-center text-lg">Loading event details...</div>;
   }
 
   if (error) {
-    return <div className="max-w-md mx-auto px-4 py-6 text-center text-red-500">Error: {error}</div>;
+    return <div className="max-w-md mx-auto px-4 py-8 text-center text-red-500 text-lg">Error: {error}</div>;
   }
 
   if (!event) {
-    return <div className="max-w-md mx-auto px-4 py-6 text-center">Event not found.</div>;
+    return <div className="max-w-md mx-auto px-4 py-8 text-center text-lg">Event not found.</div>;
   }
 
   const formatTimeAgo = (timestamp) => {
@@ -134,6 +134,18 @@ export default function EventDetailPage({ params }) {
     const days = Math.floor(hrs / 24);
     if (days < 7) return `${days} days ago`;
     return `${Math.floor(days / 7)} weeks ago`;
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'Date not available';
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const date = new Date(dateString + 'T00:00:00');
+    return date.toLocaleDateString(undefined, options);
+  };
+
+  const capitalizeFirstLetter = (string) => {
+    if (!string) return '';
+    return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
   const handleDelete = () => {
@@ -164,14 +176,15 @@ export default function EventDetailPage({ params }) {
       <div className="max-w-md mx-auto px-4 py-6 space-y-6">
         <StickyNavbar />
 
-        <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30 pt-16">
+        <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30 pt-16 relative">
           {/* Header */}
           <div className="flex justify-between items-center mb-4">
-            <Link href="/events-page">
-              <button className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] p-2 rounded-lg">
-                <ArrowLeftIcon className="h-5 w-5" />
-              </button>
-            </Link>
+            <button
+              onClick={() => router.back()}
+              className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] px-3 py-1.5 rounded-lg shadow-md"
+            >
+              <ArrowLeftIcon className="h-5 w-5" />
+            </button>
 
             {event.user_id === currentUserId && (
               <div className="relative" ref={optionsMenuRef}>
@@ -208,9 +221,22 @@ export default function EventDetailPage({ params }) {
           {/* Title */}
           <h1 className="text-3xl font-bold mb-2 text-[#8B4C24]">{event.title}</h1>
 
+          {/* Tags */}
+          <div className="mb-6 flex flex-wrap gap-2">
+            {event.tags?.map((tag, i) => (
+              <Tag key={i} label={capitalizeFirstLetter(tag)} />
+            ))}
+          </div>
+
+          {/* Dates */}
+          <div className="mb-4 text-base text-[#8B4C24]">
+            <p><span className="font-bold">Start Date:</span> {formatDate(event.start_date)}</p>
+            <p><span className="font-bold">End Date:</span> {formatDate(event.end_date)}</p>
+          </div>
+
           {/* Location */}
-          <p className="text-sm font-medium mb-4 text-[#8B4C24]">
-            Location: {
+          <p className="text-base mb-4 text-[#8B4C24]">
+            <span className="font-bold">📍 Location:</span> {
               (() => {
                 try {
                   const parsedLocation = JSON.parse(event.location);
@@ -222,13 +248,6 @@ export default function EventDetailPage({ params }) {
               })()
             }
           </p>
-
-          {/* Tags */}
-          <div className="mb-6 flex flex-wrap gap-2">
-            {event.tags?.map((tag, i) => (
-              <Tag key={i} label={tag} />
-            ))}
-          </div>
 
           {/* Description */}
           <p className="mb-6 text-[#8B4C24]">{event.description}</p>

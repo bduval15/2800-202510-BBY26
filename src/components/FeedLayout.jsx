@@ -108,12 +108,12 @@ export default function FeedLayout({
 
   const getTagButtonLabel = () => {
     if (selectedTags.length === 0) {
-      return "Tags";
+      return "All Tags";
     }
     if (selectedTags.length === 1) {
-      return `1 Tag Selected`;
+      return `1 Tag`;
     }
-    return `${selectedTags.length} Tags Selected`;
+    return `${selectedTags.length} Tags`;
   };
 
   const handleClearFilters = () => {
