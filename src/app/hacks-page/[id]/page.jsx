@@ -184,11 +184,12 @@ export default function HackDetailPage({ params }) {
         <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30 pt-16">
           {/* Header: Back Button and Options Menu Button */}
           <div className="flex justify-between items-center mb-4">
-            <Link href="/hacks-page" className="inline-block">
-              <button className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] px-3 py-1.5 rounded-lg shadow-md">
-                <ArrowLeftIcon className="h-5 w-5" />
-              </button>
-            </Link>
+            <button
+              onClick={() => router.back()}
+              className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] px-3 py-1.5 rounded-lg shadow-md"
+            >
+              <ArrowLeftIcon className="h-5 w-5" />
+            </button>
 
             {/* Options Menu Button and Dropdown - visible only to the author */}
             {hack && currentUserId && hack.user_id === currentUserId && (

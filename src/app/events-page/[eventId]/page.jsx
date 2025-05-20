@@ -179,11 +179,12 @@ export default function EventDetailPage({ params }) {
         <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30 pt-16 relative">
           {/* Header */}
           <div className="flex justify-between items-center mb-4">
-            <Link href="/events-page">
-              <button className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] p-2 rounded-lg">
-                <ArrowLeftIcon className="h-5 w-5" />
-              </button>
-            </Link>
+            <button
+              onClick={() => router.back()}
+              className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] p-2 rounded-lg"
+            >
+              <ArrowLeftIcon className="h-5 w-5" />
+            </button>
 
             {event.user_id === currentUserId && (
               <div className="relative" ref={optionsMenuRef}>

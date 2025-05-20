@@ -216,11 +216,12 @@ export default function DealDetailPage() {
 
         <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30">
           <div className="flex justify-between items-center mb-4">
-            <Link href="/deals-page" className="inline-block">
-              <button className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] px-3 py-1.5 rounded-lg shadow-md flex items-center">
-                <ArrowLeftIcon className="h-5 w-5" />
-              </button>
-            </Link>
+            <button
+              onClick={() => router.back()}
+              className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] px-3 py-1.5 rounded-lg shadow-md flex items-center"
+            >
+              <ArrowLeftIcon className="h-5 w-5" />
+            </button>
 
             {deal && currentUserId && deal.user_id === currentUserId && (
               <div className="relative" ref={optionsMenuRef}>
