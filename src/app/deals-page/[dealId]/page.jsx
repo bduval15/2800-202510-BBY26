@@ -113,7 +113,7 @@ export default function DealDetailPage() {
 
         if (fetchError) {
           console.error('Error fetching deal details:', fetchError);
-          if (fetchError.code === 'PGRST116') { // Not found error code
+          if (fetchError.code === 'PGRST116') {
             setError('Deal not found.');
           } else {
             setError('Failed to load deal. Please try again.');
@@ -153,8 +153,8 @@ export default function DealDetailPage() {
   const confirmDeleteDeal = async () => {
     setIsDeleteModalOpen(false);
     if (!deal || !deal.id) {
-        alert('Deal information is missing, cannot delete.');
-        return;
+      alert('Deal information is missing, cannot delete.');
+      return;
     }
     try {
       const { error: deleteError } = await supabase
@@ -189,10 +189,10 @@ export default function DealDetailPage() {
       <div className="bg-[#F5E3C6] min-h-screen flex flex-col items-center justify-center">
         <StickyNavbar />
         <div className="max-w-md mx-auto px-4 py-6 text-center">
-            <p className="text-red-500 text-xl mb-4">{error}</p>
-            <Link href="/deals-page" className="text-[#B87333] hover:text-[#8B4C24]">
-                Go back to Deals
-            </Link>
+          <p className="text-red-500 text-xl mb-4">{error}</p>
+          <Link href="/deals-page" className="text-[#B87333] hover:text-[#8B4C24]">
+            Go back to Deals
+          </Link>
         </div>
         <BottomNav />
       </div>
@@ -201,20 +201,20 @@ export default function DealDetailPage() {
 
   if (!deal) {
     return (
-        <div className="bg-[#F5E3C6] min-h-screen flex items-center justify-center">
-            <StickyNavbar />
-            <p className="text-[#8B4C24]">Deal information is not available.</p>
-            <BottomNav />
-        </div>
+      <div className="bg-[#F5E3C6] min-h-screen flex items-center justify-center">
+        <StickyNavbar />
+        <p className="text-[#8B4C24]">Deal information is not available.</p>
+        <BottomNav />
+      </div>
     );
   }
 
   return (
-    <div className="bg-[#F5E3C6] min-h-screen pb-6"> 
+    <div className="bg-[#F5E3C6] min-h-screen pb-6">
       <StickyNavbar />
-      <div className="max-w-md mx-auto px-4 py-6 space-y-6 pt-20"> 
-        
-        <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30"> 
+      <div className="max-w-md mx-auto px-4 py-6 space-y-6 pt-20">
+
+        <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30">
           <div className="flex justify-between items-center mb-4">
             <Link href="/deals-page" className="inline-block">
               <button className="bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] px-3 py-1.5 rounded-lg shadow-md flex items-center">
@@ -224,7 +224,7 @@ export default function DealDetailPage() {
 
             {deal && currentUserId && deal.user_id === currentUserId && (
               <div className="relative" ref={optionsMenuRef}>
-                <button 
+                <button
                   onClick={() => setIsOptionsMenuOpen(!isOptionsMenuOpen)}
                   className="bg-[#F5EFE6] hover:bg-[#EADDCA] text-[#A0522D] border-2 border-[#A0522D] p-2 rounded-lg shadow-md"
                   aria-label="Options"
@@ -233,13 +233,13 @@ export default function DealDetailPage() {
                 </button>
                 {isOptionsMenuOpen && (
                   <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-10">
-                    <button 
+                    <button
                       onClick={() => { router.push(`/deals-page/${dealId}/edit`); setIsOptionsMenuOpen(false); }}
                       className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                     >
                       <PencilIcon className="h-5 w-5 mr-2" /> Edit
                     </button>
-                    <button 
+                    <button
                       onClick={handleDelete}
                       className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700"
                     >
@@ -251,7 +251,7 @@ export default function DealDetailPage() {
             )}
           </div>
 
-          <h1 className="text-3xl font-bold mb-6 text-[#8B4C24]">{deal.title}</h1> 
+          <h1 className="text-3xl font-bold mb-2 text-[#8B4C24]">{deal.title}</h1>
 
           {deal.tags && deal.tags.length > 0 && (
             <div className="mb-6 flex flex-wrap gap-2">
@@ -286,22 +286,18 @@ export default function DealDetailPage() {
           )}
 
           <p className="text-sm text-[#8B4C24]/80 mb-8">
-            Posted by {deal.user_profiles && deal.user_profiles.name ? deal.user_profiles.name : (deal.user_id ? `User ${deal.user_id.substring(0,8)}...` : 'Unknown')} - {formatTimeAgo(deal.created_at)}
-          </p>        
+            Posted by {deal.user_profiles && deal.user_profiles.name ? deal.user_profiles.name : (deal.user_id ? `User ${deal.user_id.substring(0, 8)}...` : 'Unknown')} - {formatTimeAgo(deal.created_at)}
+          </p>
 
           <div className="flex items-center mb-6">
-            <div className="flex items-center">
-              <div className="mr-2">
-                <VoteButtons 
-                  itemId={deal.id} 
-                  itemType="deals" 
-                  upvotes={deal.upvotes || 0} 
-                  downvotes={deal.downvotes || 0} 
-                  userId={currentUserId}
-                />
-              </div>
-              <BookmarkButton dealId={deal.id} />
-            </div>
+            <VoteButtons
+              itemId={deal.id}
+              itemType="deals"
+              upvotes={deal.upvotes || 0}
+              downvotes={deal.downvotes || 0}
+              userId={currentUserId}
+            />
+            <BookmarkButton dealId={deal.id} />
           </div>
         </div>
 

@@ -221,7 +221,7 @@ export default function HackDetailPage({ params }) {
           </div>
 
           {/* Hack Title */}
-          <h1 className="text-3xl font-bold mb-6 text-[#8B4C24]">{hack.title}</h1>
+          <h1 className="text-3xl font-bold mb-2 text-[#8B4C24]">{hack.title}</h1>
 
           {/* Tags Display */}
           {hack.tags && hack.tags.length > 0 && (
@@ -260,19 +260,15 @@ export default function HackDetailPage({ params }) {
           </p>
 
           {/* Vote and Bookmark Buttons Row */}
-          <div className="flex items-center mb-6">
-            <div className="flex items-center">
-              <div className="mr-2">
+          <div className="flex items-center mb-6">                        
                 <VoteButtons 
                   itemId={hack.id} 
                   itemType="hacks" 
                   upvotes={hack.upvotes || 0} 
                   downvotes={hack.downvotes || 0} 
-                  userId={currentUserId}
-                />
-              </div>
-              <BookmarkButton hackId={hack.id} />
-            </div>
+                  userId={currentUserId}/>
+                                  
+                <BookmarkButton hackId={hack.id} />                                        
           </div>
         </div>
 
