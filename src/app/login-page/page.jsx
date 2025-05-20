@@ -3,13 +3,16 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Footer from "@/components/Footer";
 import { clientDB } from '@/supabaseClient';
+import isEmail from 'validator/lib/isEmail';
 
 /**
- * page.js
+ * login-page.jsx
  * Loaf Life – login page where users can enter credentials.
  * 
  * Modified with assistance from ChatGPT o4-mini-high.
  * Further assistance in sign up logic
+ * 
+ * @author Conner Ponton
  * 
  * @author https://chatgpt.com/*
  */
@@ -17,6 +20,7 @@ import { clientDB } from '@/supabaseClient';
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,}$/;
   const [password, setPassword] = useState('');
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -25,6 +29,12 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!emailRegex.test(email) || !isEmail(email)) {
+      setMessage({ text: 'Please enter a valid email address.', type: 'error'});
+      return;
+    } 
+
     setLoading(true);
 
     try {
@@ -143,7 +153,7 @@ export default function LoginPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="mt-1 block w-full rounded border-1 border-[#F5E3C6] px-3 py-2 text-[#8B4C24] focus:border-[#639751] focus:outline-none focus:ring-0 transition"
-                placeholder="John Bread"
+                placeholder="John Loaf"
                 required
               />
             </label>
