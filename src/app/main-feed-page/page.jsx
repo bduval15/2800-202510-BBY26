@@ -20,7 +20,6 @@ import StickyNavbar from '@/components/StickyNavbar';
 import BottomNav from '@/components/BottomNav';
 import Footer from '@/components/Footer';
 import {
-    MagnifyingGlassIcon,
     ClipboardIcon,
 } from '@heroicons/react/24/outline';
 
@@ -30,7 +29,7 @@ import { clientDB } from '@/supabaseClient';
 const threads = [
   {
     id: 1,
-    title: 'Savvy Savings',
+    title: 'Deals',
     description: 'Unlock exclusive deals, coupons & student discounts across Metro Vancouver',
     postCount: 0,
     imageUrl: '/images/threads/dealsThread.png',
@@ -38,7 +37,7 @@ const threads = [
   },
   {
     id: 2,
-    title: 'Smart Hacks',
+    title: 'Hacks',
     description: 'Time-saving tips, study shortcuts & productivity tricks to supercharge your day',
     postCount: 0,
     imageUrl: '/images/threads/hacksThread.png',
@@ -46,7 +45,7 @@ const threads = [
   },
   {
     id: 3,
-    title: 'Community Events',
+    title: 'Events',
     description: 'Discover local workshops, meetups & fun happenings in your neighborhood',
     postCount: 0,
     imageUrl: '/images/threads/eventsThread.png',
