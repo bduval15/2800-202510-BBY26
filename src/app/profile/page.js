@@ -190,7 +190,7 @@ export default function ProfilePage() {
       const [hacksResult, dealsResult, eventsResult] = await Promise.all([
         clientDB.from("hacks").select("id, title, description, tags, upvotes, downvotes").in("id", hackIds),
         clientDB.from("deals").select("id, title, location, price").in("id", dealIds),
-        clientDB.from("events").select("id, title, location, date, price, upvotes, downvotes, tags, user_id, created_at").in("id", eventIds),
+        clientDB.from("events").select("id, title, location, upvotes, downvotes, tags, user_id, created_at").in("id", eventIds)
       ]);
 
       const hacks = hacksResult.data?.map(h => ({ ...h, type: 'hack' })) || [];
@@ -202,6 +202,9 @@ export default function ProfilePage() {
       console.error("Error loading saved posts:", err);
     }
   };
+
+
+ 
 
   // Save avatar selection to Supabase
   const handleSaveAvatar = async (avatarUrl) => {
