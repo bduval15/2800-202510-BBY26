@@ -9,8 +9,9 @@ import LocationAutoComplete from '@/components/mapComponents/LocationAutoComplet
  * 
  * This form allows users to add a new hack to the database.
  * 
- * @author: Nathan O
- * @author: Conner P
+ * @author Nathan O
+ * @author Conner P
+ * @author Brady D
  * 
  * Written with assistance from Google Gemini 2.5 Flash
  * @author https://gemini.google.com/app
@@ -28,6 +29,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
   const [eventEndDate, setEventEndDate] = useState('');
   const [showDateOrderError, setShowDateOrderError] = useState(false);
   const [showDateRangeError, setShowDateRangeError] = useState(false);
+  const [rawAddress, setRawAddress] = useState('');
   const [coords, setCoords] = useState(null);
   const [location, setLocation] = useState({
     address: '',
@@ -63,6 +65,8 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    let resolvedLocation = location;
+
     // Tag validation for both hacks and deals
     if (selectedTags.length === 0) {
       setShowTagError(true);
@@ -70,65 +74,50 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
     }
     setShowTagError(false);
 
-    if (postType === 'deal' && (location.lat == null || location.lng == null)) {
-      try {
-        const params = new URLSearchParams({
-          q: location.address,
-          format: 'json',
-          limit: '1',
-          viewbox: '-123.5,49.5,-122.4,49.0',
-          bounded: '1'
-        });
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?${params}`,
-          { headers: { 'Accept-Language': 'en' } }
-        );
-        const data = await res.json();
-        if (data[0]) {
-          const lat = parseFloat(data[0].lat);
-          const lng = parseFloat(data[0].lon);
-          setLocation(loc => ({ ...loc, lat, lng }));
-          setCoords([lat, lng]);
+    if (location.lat == null || location.lng == null) {
+      if (rawAddress.trim()) {
+        try {
+          const params = new URLSearchParams({
+            q: rawAddress,
+            format: 'json',
+            limit: '1',
+            viewbox: '-123.5,49.5,-122.4,49.0',
+            bounded: '1'
+          });
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/search?${params}`,
+            { headers: { 'Accept-Language': 'en' } }
+          );
+          const data = await res.json();
+          if (data[0]) {
+            const lat = parseFloat(data[0].lat);
+            const lng = parseFloat(data[0].lon);
+            resolvedLocation = { address: rawAddress, lat, lng };
+          } else {
+            // no hits → mark Not Specified
+            resolvedLocation = { address: 'Not Specified', lat: null, lng: null };
+          }
+        } catch (err) {
+          console.error('geocode lookup failed', err);
+          resolvedLocation = { address: 'Not Specified', lat: null, lng: null };
         }
-      } catch (err) {
-        console.error('fallback geocode failed', err);
+      } else {
+        resolvedLocation = { address: 'Not Specified', lat: null, lng: null };
       }
+
+      setLocation(resolvedLocation); setCoords(resolvedLocation.lat != null ? [resolvedLocation.lat, resolvedLocation.lng] : null);
     }
 
-    if (postType === 'event') {
-      setShowDateOrderError(false);
-      setShowDateRangeError(false);
-
-      if (!eventStartDate || !eventEndDate) {
-        // This should be caught by 'required' but as a safeguard
-        return;
-      }
-
-      const startDate = new Date(eventStartDate);
-      const endDate = new Date(eventEndDate);
-      const minDate = new Date(MIN_DATE);
-      const maxDate = new Date(MAX_DATE);
-
-      if (startDate < minDate || startDate > maxDate || endDate < minDate || endDate > maxDate) {
-        setShowDateRangeError(true);
-        return;
-      }
-
-      if (endDate < startDate) {
-        setShowDateOrderError(true);
-        return;
-      }
-    }
-
-    let formData = { title, postType };
-    if (postType === 'hack') {
-      formData = { ...formData, description,location, tags: selectedTags };
-    } else if (postType === 'event') {
-      formData = { ...formData, description, location, tags: selectedTags, startDate: eventStartDate, endDate: eventEndDate };
-    } else {
-      const dealLocationString = JSON.stringify(location);
-      formData = { ...formData, description, location: dealLocationString, price: parseFloat(price) || 0, tags: selectedTags };
-    }
+    const formData = {
+      title,
+      postType,
+      rawAddress,
+      location: resolvedLocation,
+      tags: selectedTags,
+      ...(postType === 'deal'
+        ? { price: parseFloat(price) || 0, description }
+        : { description })
+    };
     console.log(formData);
     if (onSubmit) {
       onSubmit(formData);
@@ -255,9 +244,13 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
             key={locationKey}
             placeholder="(Optional)"
             initialValue={location.address}
+            onChange={addr => {
+              setRawAddress(addr);
+            }}
             onSelect={({ address, lat, lng }) => {
               setLocation({ address, lat, lng });
               setCoords([lat, lng]);
+              setRawAddress(address);
             }}
           />
         </div>
@@ -273,9 +266,13 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
               key={locationKey}
               placeholder="e.g., The Pub"
               initialValue={location.address}
+              onChange={addr => {
+                setRawAddress(addr);
+              }}
               onSelect={({ address, lat, lng }) => {
                 setLocation({ address, lat, lng });
                 setCoords([lat, lng]);
+                setRawAddress(address);
               }}
             />
           </div>
@@ -323,60 +320,20 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
               key={locationKey}
               required={postType === 'event'}
               initialValue={location.address}
+              onChange={addr => {
+                setRawAddress(addr);
+              }}
               onSelect={({ address, lat, lng }) => {
                 setLocation({ address, lat, lng });
                 setCoords([lat, lng]);
+                setRawAddress(address);
               }}
             />
-          </div>
-          <div>
-            <label htmlFor="eventStartDate" className="block text-sm font-medium text-[#6A401F] mb-1">
-              Start Date*
-            </label>
-            <input
-              type="date"
-              id="eventStartDate"
-              value={eventStartDate}
-              onChange={(e) => {
-                setEventStartDate(e.target.value);
-                setShowDateOrderError(false);
-                setShowDateRangeError(false);
-              }}
-              required={postType === 'event'}
-              min={MIN_DATE}
-              max={MAX_DATE}
-              className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400 text-gray-900"
-            />
-          </div>
-          <div>
-            <label htmlFor="eventEndDate" className="block text-sm font-medium text-[#6A401F] mb-1">
-              End Date*
-            </label>
-            <input
-              type="date"
-              id="eventEndDate"
-              value={eventEndDate}
-              onChange={(e) => {
-                setEventEndDate(e.target.value);
-                setShowDateOrderError(false);
-                setShowDateRangeError(false);
-              }}
-              required={postType === 'event'}
-              min={MIN_DATE}
-              max={MAX_DATE}
-              className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white placeholder-gray-400 text-gray-900"
-            />
-            {showDateOrderError && (
-              <p className="text-xs text-red-500 mt-1">End date cannot be before start date.</p>
-            )}
-            {showDateRangeError && (
-              <p className="text-xs text-red-500 mt-1">Date must be between Jan 1, 1900 and Jan 1, 2100.</p>
-            )}
           </div>
         </>
       )}
 
-       {/* Tag Selection */}
+      {/* Tag Selection */}
       <div>
         <label className="block text-sm font-medium text-[#6A401F] mb-2">
           Tags*
