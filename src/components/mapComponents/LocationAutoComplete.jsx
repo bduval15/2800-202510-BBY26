@@ -130,9 +130,6 @@ export default function LocationAutocomplete({
 
   return (
     <div ref={wrapperRef} className="relative w-full">
-      <label htmlFor="loc-geo" className="block text-sm font-medium text-[#6A401F] mb-1">
-        Location (Optional)
-      </label>
       <input
         id="loc-geo"
         type="text"

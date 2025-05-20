@@ -117,14 +117,17 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
         <h2 className="text-xl font-semibold text-[#8B4C24]">
           {postType === 'hack' ? 'Add a New Hack' : (postType === 'deal') ? 'Add a New Deal' : 'Add a new Event'}
         </h2>
-        <button
-          type="button"
-          onClick={handleClear}
-          className="text-xs text-gray-500 hover:text-gray-700 focus:outline-none px-2 py-1 rounded hover:bg-gray-100 transition-colors duration-150 ease-in-out"
-        >
-          Clear Form
-        </button>
+        <div className="flex flex-col items-end">
+          <button
+            type="button"
+            onClick={handleClear}
+            className="text-xs text-gray-500 hover:text-gray-700 focus:outline-none px-2 py-1 rounded hover:bg-gray-100 transition-colors duration-150 ease-in-out"
+          >
+            Clear Form
+          </button>
+        </div>
       </div>
+      <p className="text-xs text-gray-600 -mt-4 mb-2">* Indicates a required field</p>
 
       <div>
         <label className="block text-sm font-medium text-[#6A401F] mb-2">
@@ -166,7 +169,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
 
       <div>
         <label htmlFor="title" className="block text-sm font-medium text-[#6A401F] mb-1">
-          Title
+          Title*
         </label>
         <input
           type="text"
@@ -182,7 +185,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
       {(postType === 'hack' || postType === 'deal') && (
         <div>
           <label htmlFor="description" className="block text-sm font-medium text-[#6A401F] mb-1">
-            Description
+            Description*
           </label>
           <textarea
             id="description"
@@ -198,6 +201,9 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
 
       {postType === 'hack' && (
         <div>
+          <label className="block text-sm font-medium text-[#6A401F] mb-1">
+            Location
+          </label>
           <LocationAutoComplete
             key={locationKey}
             placeholder="(Optional)"
@@ -213,6 +219,9 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
       {postType === 'deal' && (
         <>
           <div>
+            <label className="block text-sm font-medium text-[#6A401F] mb-1">
+              Location*
+            </label>
             <LocationAutoComplete
               key={locationKey}
               placeholder="e.g., The Pub"
@@ -222,10 +231,10 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
                 setCoords([lat, lng]);
               }}
             />
-          </div>          
+          </div>
           <div>
             <label htmlFor="price" className="block text-sm font-medium text-[#6A401F] mb-1">
-              Price (CAD)
+              Price (CAD)*
             </label>
             <input
               type="number"
@@ -247,7 +256,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
         <>
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-[#6A401F] mb-1">
-              Description
+              Description*
             </label>
             <textarea
               id="description"
@@ -260,6 +269,9 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
             />
           </div>
           <div>
+            <label className="block text-sm font-medium text-[#6A401F] mb-1">
+              Location*
+            </label>
             <LocationAutoComplete
               key={locationKey}
               required={postType === 'event'}
@@ -276,7 +288,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
        {/* Tag Selection */}
       <div>
         <label className="block text-sm font-medium text-[#6A401F] mb-2">
-          Tags
+          Tags*
         </label>
         <div className="mt-1 flex flex-wrap gap-2 p-2.5 border border-[#D1905A] rounded-lg shadow-sm bg-white">
           {tags && tags.map(tag => (
