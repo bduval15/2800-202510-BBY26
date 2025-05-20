@@ -19,6 +19,8 @@ import HackCard from '@/components/cards/HackCard'
 import DealCard from '@/components/cards/DealCard'
 import EventCard from '@/components/cards/EventCard'
 
+import { motion } from 'framer-motion'
+
 export default function AIbutton({ interests }) {
     // State Hooks
     const [recommendationCard, setRecommendationCard] = useState(null)
@@ -244,10 +246,20 @@ export default function AIbutton({ interests }) {
                         </div>
                     )}
 
-                    <button
+
+                    <motion.button
                         onClick={handleClick}
                         disabled={loading}
                         className="bg-white text-[#8B4C24] border-2 border-[#D1905A] shadow-xl rounded-full w-14 h-14 flex items-center justify-center hover:bg-[#f3d9ae] transition"
+                        initial={{ y: 0 }}
+                        animate={{ y: [10, -5, -15, 10, 0] }}
+                        transition={{
+                          duration: 1.2,
+                          ease: "easeInOut",
+                          repeat: Infinity,
+                          repeatDelay: 4,
+                        }}
+
                     >
                         <Image
                             src="/images/AI/AIwizard.png"
@@ -255,7 +267,7 @@ export default function AIbutton({ interests }) {
                             width={100}
                             height={100}
                         />
-                    </button>
+                    </motion.button>
                 </div>
             </div>
         </>
