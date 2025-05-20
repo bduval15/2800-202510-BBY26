@@ -24,7 +24,7 @@ export default function InterestsSection({
     maxSelection = 5,               // Limit on number of interests
 }) {
     return (
-        <section className="max-w-md mx-auto bg-white p-4 rounded-lg mt-6">
+        <section className="max-w-md mx-auto bg-white p-4 rounded-xl border border-[#D1905A] shadow-md mt-6">
             <h2 className="font-semibold text-left text-lg text-[#8B4C24] mb-2">
                 My Interests
             </h2>

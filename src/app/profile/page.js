@@ -184,8 +184,8 @@ export default function ProfilePage() {
         .map(item => item.deal_id);
 
       const eventIds = (saved || [])
-      .filter(item => item.event_id)
-      .map(item => item.event_id);
+        .filter(item => item.event_id)
+        .map(item => item.event_id);
 
       const [hacksResult, dealsResult, eventsResult] = await Promise.all([
         clientDB.from("hacks").select("id, title, description, tags, upvotes, downvotes").in("id", hackIds),
@@ -204,7 +204,7 @@ export default function ProfilePage() {
   };
 
 
- 
+
 
   // Save avatar selection to Supabase
   const handleSaveAvatar = async (avatarUrl) => {
@@ -246,7 +246,6 @@ export default function ProfilePage() {
       {/* Toast animation with toaster image */}
       {toastVisible && (
         <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-[1000] flex flex-col items-center">
-          <img src="/images/toaster.png" alt="Toaster" className="w-20 h-auto z-10" />
           <motion.img
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: -60, opacity: 1 }}
@@ -254,8 +253,9 @@ export default function ProfilePage() {
             transition={{ type: "spring", stiffness: 300 }}
             src="/images/loafs/toast-happy.png"
             alt="Toast"
-            className="w-10 h-auto -mt-6 z-20"
+            className="w-14 h-auto -mb-6 z-10"
           />
+          <img src="/images/toaster.png" alt="Toaster" className="w-24 h-auto z-20 -mt-12" />
         </div>
       )}
 

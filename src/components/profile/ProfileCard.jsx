@@ -18,12 +18,12 @@
 
 export default function ProfileCard({ selectedAvatar, name, school, onEditClick, onAvatarClick }) {
     return (
-        <section className="relative max-w-md mx-auto bg-white p-12 rounded-xl shadow-md text-center">
+        <section className="relative max-w-md mx-auto bg-white p-4 pb-12 rounded-xl border border-[#D1905A] shadow-md mt-10 text-center">
             {/* User Avatar – click to change */}
             <img
                 src={selectedAvatar}
                 alt="User Avatar"
-                className="w-24 h-24 mx-auto object-contain mb-4 cursor-pointer"
+                className="w-30 h-30 mx-auto object-contain mb-4 mt-6 cursor-pointer"
                 onClick={onAvatarClick}
             />
 
