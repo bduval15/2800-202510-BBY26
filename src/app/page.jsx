@@ -40,16 +40,22 @@ export default function Home() {
         {/* How it Works */}
         <section className="mt-14 grid grid-cols-3 gap-10 text-center text-sm">
           <div>
-            <img src="images/browse.png" alt="Browse" className="w-14 mx-auto mb-2" />
-            <p>Browse</p>
+            <Link href="/login-page">
+              <img src="images/browse.png" alt="Browse" className="w-14 mx-auto mb-2" />
+              <p>Browse</p>
+            </Link>
           </div>
           <div>
-            <img src="images/save.png" alt="Save" className="w-14 mx-auto mb-2" />
-            <p>Save</p>
+            <Link href="/login-page">
+              <img src="images/save.png" alt="Save" className="w-14 mx-auto mb-2" />
+              <p>Save</p>
+            </Link>
           </div>
           <div>
-            <img src="images/live.png" alt="Live Well" className="w-14 mx-auto mb-2" />
-            <p>Live Well</p>
+            <Link href="/login-page">
+              <img src="images/live.png" alt="Live Well" className="w-14 mx-auto mb-2" />
+              <p>Live Well</p>
+            </Link>
           </div>
         </section>
       </main>
