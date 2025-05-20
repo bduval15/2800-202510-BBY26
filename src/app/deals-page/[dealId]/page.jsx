@@ -10,6 +10,7 @@ import BookmarkButton from '@/components/buttons/Bookmark';
 import VoteButtons from '@/components/buttons/VoteButtons';
 import Tag from '@/components/Tag';
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
+import CommentSection from '@/components/sections/CommentSection';
 
 import { ArrowLeftIcon, MapPinIcon, PencilIcon, TrashIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { clientDB } from '@/supabaseClient.js';
@@ -302,6 +303,7 @@ export default function DealDetailPage() {
           </div>
         </div>
 
+        <CommentSection entityId={deal.id} entityType="deal" />
         <Footer />
       </div>
       <BottomNav />

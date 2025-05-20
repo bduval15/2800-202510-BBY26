@@ -105,7 +105,7 @@ export default function EventsPage() {
 
       try {
         const { data, error: fetchError } = await clientDB
-          .from('events')   // ← table name changed
+          .from('events')  
           .select('id, title, description, location, created_at, user_id, tags, upvotes, downvotes');
 
         if (fetchError) throw fetchError;
@@ -174,7 +174,7 @@ export default function EventsPage() {
         ) : (
           !isLoading && !error && (
             <p className="text-center text-gray-500 px-4">
-              No events found for the selected tag. Try adding one!
+              No events found, try adding one!
             </p>
           )
         )}
