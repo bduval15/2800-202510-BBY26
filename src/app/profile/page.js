@@ -172,7 +172,7 @@ export default function ProfilePage() {
     try {
       const { data: saved } = await clientDB
         .from("saved_items")
-        .select("hack_id, deal_id")
+        .select("hack_id, deal_id, event_id")
         .eq("user_id", session.user.id);
 
       const hackIds = (saved || [])
@@ -183,15 +183,21 @@ export default function ProfilePage() {
         .filter(item => item.deal_id)
         .map(item => item.deal_id);
 
-      const [hacksResult, dealsResult] = await Promise.all([
+      const eventIds = (saved || [])
+      .filter(item => item.event_id)
+      .map(item => item.event_id);
+
+      const [hacksResult, dealsResult, eventsResult] = await Promise.all([
         clientDB.from("hacks").select("id, title, description, tags, upvotes, downvotes").in("id", hackIds),
         clientDB.from("deals").select("id, title, location, price").in("id", dealIds),
+        clientDB.from("events").select("id, title, location, date, price, upvotes, downvotes, tags, user_id, created_at").in("id", eventIds),
       ]);
 
       const hacks = hacksResult.data?.map(h => ({ ...h, type: 'hack' })) || [];
       const deals = dealsResult.data?.map(d => ({ ...d, type: 'deal' })) || [];
+      const events = eventsResult.data?.map(e => ({ ...e, type: 'event' })) || [];
 
-      setSavedPosts([...hacks, ...deals]);
+      setSavedPosts([...hacks, ...deals, ...events]);
     } catch (err) {
       console.error("Error loading saved posts:", err);
     }
