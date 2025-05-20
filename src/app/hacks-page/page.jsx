@@ -159,7 +159,7 @@ export default function HacksPage() {
             />
           ))
         ) : (
-          !isLoading && !error && <p className="text-center text-gray-500 px-4">No hacks found for the selected tags. Try adding one!</p>
+          !isLoading && !error && <p className="text-center text-gray-500 px-4">No hacks found, try adding one!</p>
         )}
 
         <div className="px-4 py-2 max-w-md mx-auto w-full">

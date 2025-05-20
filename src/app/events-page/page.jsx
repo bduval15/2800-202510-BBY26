@@ -174,7 +174,7 @@ export default function EventsPage() {
         ) : (
           !isLoading && !error && (
             <p className="text-center text-gray-500 px-4">
-              No events found for the selected tag. Try adding one!
+              No events found, try adding one!
             </p>
           )
         )}
