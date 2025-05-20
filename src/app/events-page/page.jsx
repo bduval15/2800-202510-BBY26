@@ -23,22 +23,37 @@ import AIbutton from '@/components/buttons/AIbutton';
  */
 
 export default function EventsPage() {
-  const [selectedTag, setSelectedTag] = useState("All Tags");
+  const [selectedTags, setSelectedTags] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [interests, setInterests] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const eventTags = [
-    'Campus Life',
-    'Health & Wellness',
-    'Study Tips',
-    'Food',
-    'Career',
-    'Finance',
-    'Technology',
-    'Social'
+  const tags = [
+    'Animal Care',
+    'Art',
+    'Board Games',
+    'Comedy',
+    'Coding',
+    'Cooking',
+    'Cycling',
+    'Esports',
+    'Entrepreneurship',
+    'Fitness',
+    'Football',
+    'Gaming',
+    'Hiking',
+    'Investing',
+    'Mental Health',
+    'Movies',
+    'Music',
+    'Photography',
+    'Public Speaking',
+    'Reading',
+    'Study Groups',
+    'Sustainability',
+    'Yoga'
   ];
 
   useEffect(() => {
@@ -90,17 +105,31 @@ export default function EventsPage() {
     fetchEvents();
   }, []);
 
+  const handleTagToggle = (tag) => {
+    if (tag === "ALL") {
+      setSelectedTags([]);
+    } else {
+      setSelectedTags(prevSelectedTags =>
+        prevSelectedTags.includes(tag)
+          ? prevSelectedTags.filter(t => t !== tag)
+          : [...prevSelectedTags, tag]
+      );
+    }
+  };
+
   // Filter by tag
-  const filteredEvents = selectedTag === "All Tags"
+  const filteredEvents = selectedTags.length === 0
     ? allEvents
-    : allEvents.filter(evt => evt.tags?.includes(selectedTag));
+    : allEvents.filter(evt => 
+      evt.tags && selectedTags.some(selTag => evt.tags.includes((selTag))));
 
   return (
     <div className="bg-[#F5E3C6] pb-6">
       <FeedLayout
-        tagOptions={eventTags}
-        selectedTag={selectedTag}
-        onTagChange={setSelectedTag}
+        title="Events"
+        tagOptions={tags}
+        selectedTags={selectedTags}
+        onTagChange={handleTagToggle}
       >
         <div className="text-left text-2xl font-bold text-[#8B4C24] pl-4 mb-4 mt-4">
           Events
