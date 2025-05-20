@@ -13,9 +13,9 @@ import { clientDB } from '@/supabaseClient';
  * Users can vote once per item, change their vote, or remove their vote.
  * Votes are persistent and reflected in the UI.
  * 
- * @author: Nathan O
- * 
  * Written with assistance from Google Gemini 2.5 Flash
+ * 
+ * @author: Nathan O
  * @author https://gemini.google.com/app
  */
 
