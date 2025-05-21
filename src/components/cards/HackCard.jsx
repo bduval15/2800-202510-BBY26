@@ -28,7 +28,7 @@ const HackCard = ({ id, href, title, upvotes, downvotes, tags = [], className = 
       <BaseCard className={`flex-col items-start bg-[#F5E3C6] border border-[#D1905A] ${className}`}>
         {/* Title wrapped in Link */}
         <div className="w-full mb-2 flex justify-between items-center">
-          <h3 className="text-lg font-semibold text-[#8B4C24] hover:underline cursor-pointer mr-2">{title}</h3>
+          <h3 className="text-lg font-semibold text-[#8B4C24] hover:underline cursor-pointer mr-2">{titleCase(title)}</h3>
           {createdAt && (
             <span className="text-xs text-gray-500 whitespace-nowrap">{formatTimeAgo(createdAt)}</span>
           )}

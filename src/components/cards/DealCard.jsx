@@ -29,7 +29,7 @@ const DealCard = ({ id, title, location, price, tags, expirationDate, upvotes = 
       <BaseCard className="flex-col items-start bg-[#F5E3C6] border border-[#D1905A] mb-4">
         {/* Title */}
         <div className="w-full mb-2 flex justify-between items-center">
-          <h3 className="text-lg font-semibold text-[#8B4C24] hover:underline cursor-pointer mr-2">{title}</h3>
+          <h3 className="text-lg font-semibold text-[#8B4C24] hover:underline cursor-pointer mr-2">{titleCase(title)}</h3>
           {createdAt && (
             <span className="text-xs text-gray-500 whitespace-nowrap">{formatTimeAgo(createdAt)}</span>
           )}
