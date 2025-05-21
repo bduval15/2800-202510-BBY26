@@ -177,8 +177,8 @@ export default function MapPage() {
   return (
     <>
       <StickyNavbar />
-      <div className="flex flex-col min-h-screen bg-[#F5E3C6] pt-16">
-        <div className="flex-1 overflow-auto pb-20">
+      <div className="flex flex-col overflow-hidden h-screen bg-[#F5E3C6] pt-16">
+        <div className="flex-1 overflow-auto pb-0">
           <FilterBar
             threads={threads}
             initialSelected={selectedThreads}
@@ -197,7 +197,6 @@ export default function MapPage() {
               <AIbutton interests={interests} />
             </div>
           </div>
-          <Footer />
         </div>
       </div>
       <BottomNav />
