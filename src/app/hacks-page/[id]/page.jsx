@@ -92,49 +92,53 @@ export default function HackDetailPage({ params }) {
           .single();
 
         if (fetchError) {
-          // Handle specific Supabase error for 'item not found'
+          // Handle specific Supabase error for 'item not found' (PostgREST error code)
           if (fetchError.code === 'PGRST116') {
             setError("Hack not found.");
             setHack(null);
           } else {
-            throw fetchError;
+            throw fetchError; // Re-throw other errors
           }
         } else if (!hackData) {
           setError("Hack not found.");
         } else {
-          setHack(hackData);          
+          setHack(hackData);
+          // Initialize latitude and longitude
           let parsedLat = null;
           let parsedLng = null;
+
+          // Process location data if available
           if (hackData.location) {
             let tempCoords = null;
+            // Case 1: Location is a JSON string
             if (typeof hackData.location === 'string') {
               try {
                 const parsedJson = JSON.parse(hackData.location);
-                if (parsedJson) {
-                  // We don't setDisplayLocation here as hacks page already handles it.
-                  if (typeof parsedJson.lat === 'number' && typeof parsedJson.lng === 'number') {
-                    tempCoords = { lat: parsedJson.lat, lng: parsedJson.lng };
-                  }
+                if (parsedJson && typeof parsedJson.lat === 'number' && typeof parsedJson.lng === 'number') {
+                  tempCoords = { lat: parsedJson.lat, lng: parsedJson.lng };
                 }
               } catch (e) {
+                // Log warning if JSON parsing fails
                 console.warn("Failed to parse location JSON for hack detail:", hackData.location, e);
               }
+            // Case 2: Location is an object (already parsed or structured differently)
             } else if (typeof hackData.location === 'object' && hackData.location.address) {
-              // We don't setDisplayLocation here as hacks page already handles it.
               if (typeof hackData.location.lat === 'number' && typeof hackData.location.lng === 'number') {
                 tempCoords = { lat: hackData.location.lat, lng: hackData.location.lng };
               }
             }
+            // Assign coordinates if successfully parsed
             if (tempCoords) {
               parsedLat = tempCoords.lat;
               parsedLng = tempCoords.lng;
             }
           }
 
+          // Set location coordinates state if both lat and lng are valid
           if (parsedLat !== null && parsedLng !== null) {
             setLocationCoords({ lat: parsedLat, lng: parsedLng });
           } else {
-            setLocationCoords(null);
+            setLocationCoords(null); // Reset if coordinates are not valid
           }
         }
       } catch (err) {
