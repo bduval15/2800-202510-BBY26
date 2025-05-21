@@ -182,7 +182,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
     <form onSubmit={handleSubmit} className="p-4 bg-[#FDFAF5] shadow-md rounded-lg space-y-6 mb-6 ">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-semibold text-[#8B4C24]">
-          {postType === 'hack' ? 'Add a New Hack' : (postType === 'deal') ? 'Add a New Deal' : 'Add a new Event'}
+          {postType === 'hack' ? 'Add a New Hack' : (postType === 'deal') ? 'Add a New Deal' : 'Add a New Event'}
         </h2>
         <div className="flex flex-col items-end">
           <button

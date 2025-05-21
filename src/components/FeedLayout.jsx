@@ -17,6 +17,7 @@ import React, { useState, useRef, useEffect } from "react"
 import SortDropdown from "./SortDropdown"
 import StickyNavbar from './StickyNavbar'
 import { ChevronDownIcon } from "@heroicons/react/24/outline"
+import { ChevronLeftIcon } from "@heroicons/react/24/outline"
 
 
 export default function FeedLayout({
@@ -24,7 +25,7 @@ export default function FeedLayout({
   title,
   tagOptions = [],
   selectedTags = [],
-  onTagToggle = (tag) => {},
+  onTagToggle = (tag) => { },
 }) {
   const [bestSort, setBestSort] = useState("Best")
   const [dateSort, setDateSort] = useState("Newest")
@@ -37,7 +38,7 @@ export default function FeedLayout({
 
   const bestOptions = ["Best", "Worst"]
   const dateOptions = ["Newest", "Oldest"]
-  
+
   const baseTagButtonClass = "py-1 px-3 rounded-full text-xs font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap";
   const activeTagButtonClass = "bg-[#8B4C24] text-white hover:bg-[#7a421f]";
   const inactiveTagButtonClass = "bg-white text-[#8B4C24] hover:bg-gray-100 ring-1 ring-inset ring-[#D1905A]";
@@ -66,21 +67,21 @@ export default function FeedLayout({
         if (!itemProps || typeof itemProps.upvotes !== 'number' || typeof itemProps.downvotes !== 'number' || !itemProps.createdAt) {
           return false;
         }
-    
+
         return true;
       };
 
       const isSortableA = isValidPostForSorting(propsA, selectedTags);
       const isSortableB = isValidPostForSorting(propsB, selectedTags);
 
-      if (isSortableA && !isSortableB) return -1; 
-      if (!isSortableA && isSortableB) return 1;  
-      if (!isSortableA && !isSortableB) return 0; 
+      if (isSortableA && !isSortableB) return -1;
+      if (!isSortableA && isSortableB) return 1;
+      if (!isSortableA && !isSortableB) return 0;
 
       // Both are sortable, proceed with actual sorting logic
       const scoreA = propsA.upvotes - propsA.downvotes;
       const scoreB = propsB.upvotes - propsB.downvotes;
-      
+
       const timeA = new Date(propsA.createdAt).getTime();
       const timeB = new Date(propsB.createdAt).getTime();
       const dateA = !isNaN(timeA) ? timeA : 0;
@@ -99,7 +100,7 @@ export default function FeedLayout({
       } else if (dateSort === "Oldest") {
         return dateA - dateB; // Ascending date
       }
-      
+
       return 0;
     });
 
@@ -119,8 +120,8 @@ export default function FeedLayout({
   const handleClearFilters = () => {
     setBestSort(defaultBestSort);
     setDateSort(defaultDateSort);
-    onTagToggle("ALL"); 
-    setTagDropdownOpen(false); 
+    onTagToggle("ALL");
+    setTagDropdownOpen(false);
   };
 
   const areFiltersActive = () => {
@@ -171,7 +172,7 @@ export default function FeedLayout({
                           }
                         `}
                       >
-                        All Tags                      
+                        All Tags
                       </button>
                     </li>
                     {tagOptions.map(tag => (
@@ -207,10 +208,19 @@ export default function FeedLayout({
           )}
         </div>
       </div>
-
       <main className="max-w-md mx-auto px-4 py-6 space-y-6">
-        <h1 className="text-2xl font-bold text-[#8B4C24] pl-4 pt-14">{title}</h1>
-        {/* pass bestSort, dateSort, and selectedTags down to your feed-rendering logic */}
+        <div className="relative mb-4 pt-14">
+          <button
+            onClick={() => history.back()}
+            className="absolute right-78 flex items-center text-[#8B4C24] hover:text-[#639751] text-sm font-medium transition"
+          >
+            <ChevronLeftIcon className="h-5 w-5 mr-1" />
+            Back
+          </button>
+          <h1 className="text-2xl font-bold text-[#8B4C24] text-center">
+            {title}
+          </h1>
+        </div>
         {sortedAndFilteredChildren}
       </main>
     </>
