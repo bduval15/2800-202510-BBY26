@@ -7,6 +7,7 @@ import VoteButtons from '../buttons/VoteButtons';
 import CommentCount from '../buttons/CommentCount';
 import Tag from '../Tag';
 import { formatTimeAgo } from '../../utils/formatTimeAgo';
+import toTitleCase from '../../utils/toTitleCase';
 
 /**
  * HackCard.jsx
@@ -14,25 +15,11 @@ import { formatTimeAgo } from '../../utils/formatTimeAgo';
  * 
  * This component displays a hack card. 
  * 
- * @author: Nathan O
+ * Written with assistance from Google Gemini 2.5 Pro
  * 
- * Written with assistance from Google Gemini 2.5 Flash
- * @author https://gemini.google.com/app
+ * @author: Nathan O
+ * @author: https://gemini.google.com/app
  */
-
-const toTitleCase = (str) => {
-  if (!str) return '';
-  const minorWords = new Set([
-    "a", "an", "the", "and", "but", "or", "for", "nor", "on", "at", "to", "from", "by", "of", "in", "into", "near", "over", "past", "through", "up", "upon", "with", "without"
-  ]);
-  const words = String(str).toLowerCase().split(' ');
-  return words.map((word, index) => {
-    if (index === 0 || index === words.length - 1 || !minorWords.has(word)) {
-      return word.charAt(0).toUpperCase() + word.slice(1);
-    }
-    return word;
-  }).join(' ');
-};
 
 const HackCard = ({ id, href, title, upvotes, downvotes, tags = [], className = '', createdAt, userId }) => {
   return (
@@ -49,7 +36,7 @@ const HackCard = ({ id, href, title, upvotes, downvotes, tags = [], className = 
         {/* Tags */}
         {tags && tags.length > 0 && (
           <div className="w-full mb-2 flex flex-wrap">
-            {[<Tag key="hack-type-tag" label="Hack" />, ...tags.slice(0, 2)].map((tagComponent, index) => 
+            {[<Tag key="hack-type-tag" label="Hack" />, ...tags.slice(0, 2)].map((tagComponent, index) =>
               tagComponent.key === "hack-type-tag" ? tagComponent : <Tag key={index} label={toTitleCase(tagComponent)} />
             )}
           </div>
@@ -58,18 +45,18 @@ const HackCard = ({ id, href, title, upvotes, downvotes, tags = [], className = 
         {/* Interactions */}
         <div className="flex items-center space-x-2 text-xs w-full justify-start mt-2">
           {/* Upvotes / Downvotes Group */}
-          <VoteButtons 
-            itemId={id} 
-            itemType="hacks" 
-            upvotes={upvotes} 
-            downvotes={downvotes} 
+          <VoteButtons
+            itemId={id}
+            itemType="hacks"
+            upvotes={upvotes}
+            downvotes={downvotes}
             userId={userId}
           />
 
           {/* Comments Group - uses default 0 if comments not provided */}
-          <CommentCount 
-            entityId={id} 
-            entityType="hack" 
+          <CommentCount
+            entityId={id}
+            entityType="hack"
           />
 
           {/* Bookmark Button */}

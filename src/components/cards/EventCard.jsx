@@ -7,6 +7,7 @@ import VoteButtons from '../buttons/VoteButtons';
 import CommentCount from '../buttons/CommentCount';
 import Tag from '../Tag';
 import { formatTimeAgo } from '../../utils/formatTimeAgo';
+import toTitleCase from '../../utils/toTitleCase';
 
 /**
  * EventCard.jsx
@@ -18,22 +19,9 @@ import { formatTimeAgo } from '../../utils/formatTimeAgo';
  * @author: Conner P
  * 
  * Converted from HackCard with table changes for 'events'
- * Written with assistance from Google Gemini 2.5 Flash
- * @author https://gemini.google.com/app
+ * Written with assistance from Google Gemini 2.5 Pro
+ * @author: https://gemini.google.com/app
  */
-const toTitleCase = (str) => {
-  if (!str) return '';
-  const minorWords = new Set([
-    "a", "an", "the", "and", "but", "or", "for", "nor", "on", "at", "to", "from", "by", "of", "in", "into", "near", "over", "past", "through", "up", "upon", "with", "without"
-  ]);
-  const words = String(str).toLowerCase().split(' ');
-  return words.map((word, index) => {
-    if (index === 0 || index === words.length - 1 || !minorWords.has(word)) {
-      return word.charAt(0).toUpperCase() + word.slice(1);
-    }
-    return word;
-  }).join(' ');
-};
 
 const EventCard = ({
   id,
@@ -51,20 +39,26 @@ const EventCard = ({
   endDate
 }) => {
   let parsedLocation = {};
+  // Attempt to parse location, which might be a JSON string or an object.
   try {
     if (typeof location === 'string') {
       parsedLocation = JSON.parse(location);
     } else if (location && typeof location === 'object') {
+      // If location is already an object, use it directly.
       parsedLocation = location;
     }
   } catch (error) {
     console.error("Error parsing location JSON:", error);
+    // Fallback if parsing fails.
     parsedLocation = { address: "Invalid location" };
   }
 
+  // Formats a date string to MM/DD/YYYY.
   const formatDate = (dateString) => {
     if (!dateString) return null;
-    const date = new Date(dateString + 'T00:00:00'); // Ensure date is interpreted as local
+    // Appending T00:00:00 ensures the date is interpreted in the local timezone,
+    // rather than UTC, preventing off-by-one day errors.
+    const date = new Date(dateString + 'T00:00:00');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const day = date.getDate().toString().padStart(2, '0');
     const year = date.getFullYear();
@@ -75,14 +69,19 @@ const EventCard = ({
   const formattedEndDate = formatDate(endDate);
 
   let displayDate = null;
+  // Determine how to display the event date(s).
   if (formattedStartDate) {
     if (formattedEndDate && formattedStartDate !== formattedEndDate) {
+      // If there's a different end date, display a range.
       displayDate = `📅 ${formattedStartDate} - ${formattedEndDate}`;
     } else {
+      // Otherwise, display only the start date.
       displayDate = `📅 ${formattedStartDate}`;
     }
   }
 
+  // Prevents click event from propagating to the parent Link component
+  // when interacting with buttons inside the card (e.g., VoteButtons).
   const handleButtonClick = (e) => {
     e.stopPropagation();
   };
