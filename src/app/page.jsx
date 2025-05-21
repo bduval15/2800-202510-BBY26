@@ -14,6 +14,7 @@
  * - Semantic HTML structure
  * - Responsive layout configuration
  * 
+ * @author Natalia Arseniuk
  * @author https://chatgpt.com/*
  */
 
