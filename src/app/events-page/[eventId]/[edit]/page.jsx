@@ -1,29 +1,26 @@
 /**
  * page.jsx (EditEventPage)
- * Loaf Life – Allows users to edit their created events.
  *
- * This page enables authenticated users to modify details of their events.
- * It fetches existing event data (title, description, tags, location)
- * from Supabase and populates a form. Users can update these fields.
- * The page includes input validation, a confirmation modal for unsaved
- * changes, and location autocomplete. This page was converted from an
- * earlier 'EditHackPage' component, adapting it for 'events'.
+ * Loaf Life
+ *   Allows users to edit their created events. Utilizes Next.js for routing and React for UI
+ *   components. Integrates with Supabase for data fetching and updating, and Google Places API
+ *   for location autocomplete.
  *
- * Features:
- * - Fetches event data from Supabase.
- * - Form for editing event details (title, description, tags, location).
- * - Input validation for form fields.
- * - Tag management (selection up to 5 tags).
- * - Location autocomplete using Google Places API.
- * - Unsaved changes confirmation modal.
- * - Updates event data in the Supabase 'events' table.
+ * Authorship:
+ *   @author Nathan Oloresisimo
+ *   @author Conner Ponton
+ *   @author https://chatgpt.com
  *
- * Portions of logic assisted by ChatGPT.
- * Modified with assistance from ChatGPT (for conversion from EditHackPage).
- *
- * @author Nathan Oloresisimo
- * @author Conner Ponton
- * @author https://chatgpt.com
+ * Main Component:
+ *   @function EditEventPage
+ *   @description Enables authenticated users to modify details of their events (title,
+ *                description, tags, location). Fetches existing event data from Supabase and
+ *                populates a form. Includes input validation, a confirmation modal for
+ *                unsaved changes, and location autocomplete. Updates event data in the
+ *                Supabase 'events' table. This page was converted from an earlier
+ *                'EditHackPage' component.
+ *   @param {object} params - The parameters passed to the page, containing `eventId`.
+ *   @returns {JSX.Element} The rendered edit event page.
  */
 
 'use client';
@@ -41,33 +38,62 @@ import ConfirmCancelModal from '@/components/ConfirmCancelModal';
 
 const MAX_TAGS = 5;
 
+// Main Component: EditEventPage
 export default function EditEventPage({ params }) {
   // -- State Management & Hooks --
+
+  // Resolved event ID from URL parameters.
   const resolvedParams = use(params);
+  // Event ID from resolved parameters.
   const eventId = resolvedParams.eventId;
+  // Next.js router instance for navigation.
   const router = useRouter();
 
+  // State for the event title.
   const [title, setTitle] = useState('');
+  // State for the event description.
   const [description, setDescription] = useState('');
+  // State for the event's selected tags.
   const [currentTags, setCurrentTags] = useState([]);
+  // State to manage loading indicators.
   const [isLoading, setIsLoading] = useState(true);
+  // State for displaying errors during data fetching.
   const [error, setError] = useState(null);
+  // State for displaying errors during form submission.
   const [submitError, setSubmitError] = useState(null);
+  // State for the current authenticated user's ID.
   const [currentUserId, setCurrentUserId] = useState(null);
+  // State for the event author's ID.
   const [eventAuthorId, setEventAuthorId] = useState(null);
+  // State for the event location's address string.
   const [locationAddress, setLocationAddress] = useState('');
+  // State for the selected location object (including lat/lng).
   const [selectedLocation, setSelectedLocation] = useState(null);
+  // State to force re-render of location autocomplete component.
   const [locationKey, setLocationKey] = useState(0);
+  // State to control visibility of cancel confirmation modal.
   const [showCancelConfirmModal, setShowCancelConfirmModal] = useState(false);
 
   // Initial state for unsaved changes detection
+  // Initial event title for unsaved changes detection.
   const [initialTitle, setInitialTitle] = useState('');
+  // Initial event description for unsaved changes detection.
   const [initialDescription, setInitialDescription] = useState('');
+  // Initial event tags for unsaved changes detection.
   const [initialTags, setInitialTags] = useState([]);
+  // Initial location address for unsaved changes detection.
   const [initialLocationAddress, setInitialLocationAddress] = useState('');
+  // Initial selected location for unsaved changes detection.
   const [initialSelectedLocation, setInitialSelectedLocation] = useState(null);
 
   // -- Effects --
+  /**
+   * useEffect: Fetch Current User and Event Data
+   * @description Fetches the current user's session and the event details from Supabase.
+   *              It populates the form fields with existing event data. It also sets initial
+   *              values for detecting unsaved changes. Runs when `eventId` changes.
+   *              Redirects to login if no session. Checks for event ID and authorization.
+   */
   useEffect(() => {
     const fetchCurrentUserAndEvent = async () => {
       setIsLoading(true);
@@ -175,6 +201,12 @@ export default function EditEventPage({ params }) {
   }, [eventId, router]);
 
   // -- Helper Functions --
+  /**
+   * @function hasUnsavedChanges
+   * @description Checks if any form fields (title, description, tags, location) have been
+   *              modified from their initial values.
+   * @returns {boolean} True if unsaved changes exist, false otherwise.
+   */
   const hasUnsavedChanges = () => {
     if (title !== initialTitle) return true;
     if (description !== initialDescription) return true;
@@ -185,6 +217,11 @@ export default function EditEventPage({ params }) {
   };
 
   // -- Event Handlers --
+  /**
+   * @function handleCancel
+   * @description Handles the cancel action. If unsaved changes exist, it shows a confirmation
+   *              modal. Otherwise, it navigates back to the event detail page.
+   */
   const handleCancel = () => {
     // If there are unsaved changes, show a confirmation modal before navigating
     if (hasUnsavedChanges()) {
@@ -194,15 +231,29 @@ export default function EditEventPage({ params }) {
     }
   };
 
+  /**
+   * @function confirmCancelAndRedirect
+   * @description Confirms cancellation and redirects to the event detail page after closing the modal.
+   */
   const confirmCancelAndRedirect = () => {
     setShowCancelConfirmModal(false);
     router.push(`/events-page/${eventId}`);
   };
 
+  /**
+   * @function cancelAndKeepEditing
+   * @description Closes the cancel confirmation modal, allowing the user to continue editing.
+   */
   const cancelAndKeepEditing = () => {
     setShowCancelConfirmModal(false);
   };
 
+  /**
+   * @function handleClear
+   * @description Clears all form fields (title, description, tags, location) and resets any
+   *              submission errors. Increments `locationKey` to force re-render of the
+   *              LocationAutocomplete component.
+   */
   const handleClear = () => {
     setTitle('');
     setDescription('');
@@ -214,6 +265,13 @@ export default function EditEventPage({ params }) {
     setLocationKey(prevKey => prevKey + 1); 
   };
 
+  /**
+   * @function handleSelectTag
+   * @description Toggles the selection of a tag. Adds a tag if not selected and under the
+   *              `MAX_TAGS` limit, or removes it if already selected. Updates submission
+   *              error if tag limit is reached.
+   * @param {string} tagValueFromButton - The value of the tag to be selected/deselected.
+   */
   const handleSelectTag = (tagValueFromButton) => {
     setSubmitError(null);
     setCurrentTags(prevLowercaseTags => {
@@ -233,6 +291,12 @@ export default function EditEventPage({ params }) {
     });
   };
 
+  /**
+   * @function handleSelectLocation
+   * @description Updates the selected location and location address based on the data from the
+   *              location autocomplete component. Resets submission error.
+   * @param {object|null} locationData - The location data object from autocomplete, or null.
+   */
   const handleSelectLocation = (locationData) => {
     setSubmitError(null);
     if (locationData) {
@@ -244,6 +308,15 @@ export default function EditEventPage({ params }) {
     }
   };
 
+  /**
+   * @function handleSubmit
+   * @description Handles form submission. Performs validation on title, description, and tags.
+   *              Checks user authorization. Prepares location data as a JSON string.
+   *              Attempts to update the event in the Supabase 'events' table. Navigates
+   *              to the event detail page on success or displays an error.
+   * @async
+   * @param {Event} e - The form submission event.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitError(null);
@@ -315,23 +388,33 @@ export default function EditEventPage({ params }) {
   };
 
   // -- Conditional Renders --
+  // Loading state while event data is being fetched and title is not yet set.
   if (isLoading && !title) {
     return <div className="max-w-md mx-auto p-6 text-center">Loading event editor...</div>;
   }
+  // Error state if data fetching failed.
   if (error) {
     return <div className="max-w-md mx-auto p-6 text-red-500 text-center">Error: {error}</div>;
   }
+  // Authorization check: if current user is not the event author.
   if (eventAuthorId && currentUserId !== eventAuthorId) {
     return <div className="max-w-md mx-auto p-6 text-red-500 text-center">You cannot edit this event.</div>;
   }
 
   return (
+    // Main container with bottom padding
     <div className="pb-6">
+      {/* Centered content container */}
       <div className="max-w-md mx-auto p-6 space-y-6">
+        {/* Sticky top navigation bar */}
         <StickyNavbar />
+        {/* Form container with styling */}
         <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30 pt-16">
+          {/* Header section for the form */}
           <div className="flex justify-between items-start mb-1">
+            {/* Form title */}
             <h1 className="text-2xl font-bold text-[#8B4C24]">Edit Event</h1>
+            {/* Clear Form button */}
             <button
               type="button"
               onClick={handleClear}
@@ -340,10 +423,12 @@ export default function EditEventPage({ params }) {
               Clear Form
             </button>
           </div>
+          {/* Helper text for required fields */}
           <p className="text-xs text-gray-600 mb-6">* Indicates a required field</p>
           
+          {/* Main form for editing event details */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Title */}
+            {/* Title input field */}
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-[#6A401F] mb-1">
                 Title*
@@ -359,7 +444,7 @@ export default function EditEventPage({ params }) {
               />
             </div>
 
-            {/* Description */}
+            {/* Description textarea field */}
             <div>
               <label htmlFor="description" className="block text-sm font-medium text-[#6A401F] mb-1">
                 Description*
@@ -375,7 +460,7 @@ export default function EditEventPage({ params }) {
               />
             </div>
 
-            {/* Location */}
+            {/* Location Autocomplete section */}
             <div>
               <label className="block text-sm font-medium text-[#6A401F] mb-1">
                 Location (Optional)
@@ -388,12 +473,14 @@ export default function EditEventPage({ params }) {
               />
             </div>
 
-            {/* Tags */}
+            {/* Tags selection section */}
             <div>
               <label className="block text-sm font-medium text-[#6A401F] mb-1">
                 Tags (select up to {MAX_TAGS})*
               </label>
+              {/* Container for tag buttons */}
               <div className="mt-1 flex flex-wrap gap-2 p-2.5 border border-[#D1905A] rounded-lg shadow-sm bg-white min-h-[40px]">
+                {/* Map through available tags to create buttons */}
                 {availableTags.map(tag => (
                   <button
                     key={tag}
@@ -410,10 +497,12 @@ export default function EditEventPage({ params }) {
               </div>
             </div>
 
+            {/* Display submission error message, if any */}
             {submitError && <p className="text-sm text-red-600 mt-2">{submitError}</p>}
 
-            {/* Actions */}
+            {/* Action buttons: Save Changes and Cancel */}
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-4">
+              {/* Submit button */}
               <button
                 type="submit"
                 disabled={isLoading}
@@ -421,6 +510,7 @@ export default function EditEventPage({ params }) {
               >
                 {isLoading ? 'Saving...' : 'Save Changes'}
               </button>
+              {/* Cancel button */}
               <button
                 type="button"
                 onClick={handleCancel}
@@ -433,9 +523,12 @@ export default function EditEventPage({ params }) {
           </form>
         </div>
 
+        {/* Page footer */}
         <Footer />
       </div>
+      {/* Bottom navigation bar for mobile */}
       <BottomNav />
+      {/* Confirmation modal for unsaved changes on cancel */}
       <ConfirmCancelModal
         isOpen={showCancelConfirmModal}
         onConfirm={confirmCancelAndRedirect}

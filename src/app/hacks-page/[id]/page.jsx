@@ -1,28 +1,15 @@
 /**
  * page.jsx (HackDetailPage)
- * Loaf Life – Displays details for a specific hack.
  *
- * This page fetches and displays comprehensive information about a
- * particular hack from the Supabase database, identified by its ID.
- * It presents the hack's title, description, associated tags,
- * location, author details, and creation timestamp.
- * Authenticated users who are authors of the hack can edit or
- * delete their posts. All users can engage by voting on or
- * bookmarking hacks.
+ * Loaf Life
+ *   Displays detailed information for a specific hack, including title, description,
+ *   tags, location, author, and creation timestamp. Allows authors to edit or delete
+ *   their posts. Users can vote on or bookmark hacks. Includes a comment section.
+ *   Utilizes Next.js for routing and React for UI. Interacts with Supabase for data.
  *
- * Features:
- * - Displays hack title, description, tags, location, author.
- * - Allows authors to edit or delete their hacks.
- * - Enables users to vote on hacks.
- * - Enables users to bookmark hacks.
- * - Integrates a comment section for user discussions.
- *
- * Portions of styling and logic assisted by Google Gemini 2.5 Flash.
- *
- * Modified with assistance from Google Gemini 2.5 Flash.
- *
- * @author Nathan Oloresisimo
- * @author https://gemini.google.com/app
+ * Authorship:
+ *   @author Nathan Oloresisimo
+ *   @author https://gemini.google.com/app (for portions of logic and structure)
  */
 
 'use client';
@@ -43,22 +30,43 @@ import  toTitleCase from '@/utils/toTitleCase';
 import ShowOnMapButton from '@/components/mapComponents/ShowOnMapButton';
 import { formatTimeAgo } from '@/utils/formatTimeAgo';
 
+/**
+ * @function HackDetailPage
+ * @description Main component for displaying the details of a specific hack.
+ *   It fetches and renders the hack's content, handles user interactions like voting
+ *   and bookmarking, and provides author-specific actions like editing or deleting.
+ * @param {object} params - Contains the route parameters, specifically the hack ID.
+ * @returns {JSX.Element} The UI for the hack detail page.
+ */
 export default function HackDetailPage({ params }) {
   // -- State & Hooks --
   const resolvedParams = use(params); 
   const hackId = resolvedParams.id;
+  // State for the hack data fetched from the database.
   const [hack, setHack] = useState(null);
+  // State to indicate if data is currently being loaded.
   const [isLoading, setIsLoading] = useState(true);
+  // State to store any error messages during data fetching.
   const [error, setError] = useState(null);
+  // State for the ID of the currently logged-in user.
   const [currentUserId, setCurrentUserId] = useState(null);
+  // State to control the visibility of the options menu (edit/delete).
   const [isOptionsMenuOpen, setIsOptionsMenuOpen] = useState(false);
+  // State to control the visibility of the delete confirmation modal.
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  // State for storing the latitude and longitude of the hack's location.
   const [locationCoords, setLocationCoords] = useState(null);
   const router = useRouter();
   const optionsMenuRef = useRef(null);
 
   // -- Effects --
-  // Fetch current user's ID on component mount
+  /**
+   * useEffect: Fetch Current User ID
+   * @description Fetches the current user's ID from the session on component mount.
+   *   This is used to determine if the user is the author of the hack for edit/delete
+   *   permissions and for voting/bookmarking functionality.
+   * @async
+   */
   useEffect(() => {
     const fetchCurrentUser = async () => {
       const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
@@ -73,7 +81,13 @@ export default function HackDetailPage({ params }) {
     fetchCurrentUser();
   }, []);
 
-  // Fetch hack details when hackId changes
+  /**
+   * useEffect: Fetch Hack Details
+   * @description Fetches the details of the specific hack from Supabase when the hackId
+   *   changes. It populates the `hack` state with the fetched data and extracts location
+   *   coordinates if available.
+   * @async
+   */
   useEffect(() => {
     if (!hackId) {
       setIsLoading(false);
@@ -152,7 +166,11 @@ export default function HackDetailPage({ params }) {
     fetchHackDetails();
   }, [hackId]);
 
-  // Effect to handle clicks outside the options menu to close it
+  /**
+   * useEffect: Handle Click Outside Options Menu
+   * @description Closes the options menu (edit/delete) if a click occurs outside of it.
+   *   This enhances user experience by providing an intuitive way to dismiss the menu.
+   */
   useEffect(() => {
     const handleClickOutside = (event) => {
       // If the click is outside the options menu, close it
@@ -183,11 +201,22 @@ export default function HackDetailPage({ params }) {
   }
 
   // -- Handlers --
+  /**
+   * @function handleDelete
+   * @description Initiates the hack deletion process by closing the options menu
+   *   and opening the delete confirmation modal.
+   */
   const handleDelete = async () => {
     setIsOptionsMenuOpen(false);
     setIsDeleteModalOpen(true);
   };
 
+  /**
+   * @function confirmDeleteHack
+   * @description Confirms and executes the deletion of the hack from Supabase.
+   *   Redirects to the main hacks page on successful deletion, or shows an alert on error.
+   * @async
+   */
   const confirmDeleteHack = async () => {
     setIsDeleteModalOpen(false);
     try {
@@ -210,8 +239,11 @@ export default function HackDetailPage({ params }) {
 
   return (
     <div className="pb-6">
+      {/* Main Content Area: Contains sticky navbar and hack details card */}
       <div className="max-w-md mx-auto px-4 py-6 space-y-6">
+        {/* Sticky top navigation bar */}
         <StickyNavbar />
+        {/* Hack Details Card: Contains all information about the hack */}
         <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30 pt-16">
           {/* Header: Back Button and Options Menu Button */}
           <div className="flex justify-between items-center mb-4">
@@ -234,12 +266,14 @@ export default function HackDetailPage({ params }) {
                 </button>
                 {isOptionsMenuOpen && (
                   <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+                    {/* Edit Hack Button */}
                     <button
                       onClick={() => { router.push(`/hacks-page/${hackId}/edit`); setIsOptionsMenuOpen(false); }}
                       className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                     >
                       <PencilIcon className="h-5 w-5 mr-2" /> Edit
                     </button>
+                    {/* Delete Hack Button */}
                     <button
                       onClick={handleDelete}
                       className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700"
@@ -258,6 +292,7 @@ export default function HackDetailPage({ params }) {
           {/* Tags Display */}
           {hack.tags && hack.tags.length > 0 && (
             <div className="mb-6 flex flex-wrap gap-2">
+              {/* Render each tag associated with the hack */}
               {hack.tags.map((tag, index) => (
                 <Tag key={index} label={toTitleCase(tag)} />
               ))}
@@ -292,32 +327,39 @@ export default function HackDetailPage({ params }) {
             <p className="text-[#8B4C24]">{hack.description}</p>
           </div>
 
-          {/* Author/Timestamp */}
+          {/* Author and Timestamp: Displays author name and time since creation */}
           <p className="text-sm text-[#8B4C24]/80 mb-8">
             By {hack.user_profiles && hack.user_profiles.name ? hack.user_profiles.name : 'Unknown'} - {formatTimeAgo(hack.created_at)}
           </p>
 
           {/* Vote and Bookmark Buttons Row */}
           <div className="flex items-center mb-6">
+            {/* Vote buttons component for upvoting/downvoting */}
             <VoteButtons
               itemId={hack.id}
               itemType="hacks"
               upvotes={hack.upvotes || 0}
               downvotes={hack.downvotes || 0}
               userId={currentUserId} />
+            {/* Show on Map button, visible if location coordinates are available */}
             {locationCoords && (
                           <ShowOnMapButton
                             id={hack.id}
                             children="Show on Map"
                           />
                         )}
+            {/* Bookmark button component */}
             <BookmarkButton hackId={hack.id} />
           </div>
         </div>
+        {/* Comment Section: For user discussions related to the hack */}
         <CommentSection entityId={hack.id} entityType="hack" />
+        {/* Page Footer */}
         <Footer />
       </div>
+      {/* Bottom Navigation Bar for mobile */}
       <BottomNav />
+      {/* Confirm Delete Modal: Asks for confirmation before deleting a hack */}
       <ConfirmDeleteModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}

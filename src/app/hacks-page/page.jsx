@@ -1,25 +1,15 @@
 /**
  * page.jsx (HacksPage)
- * Loaf Life – Displays a list of hacks from Supabase.
  *
- * This page fetches and displays a list of "hacks" from the Supabase
- * database. Users can filter the displayed hacks by selecting tags.
- * Each hack is presented in a card format. The page also features an
- * AI button that helps users discover hacks relevant to their stored
- * interests.
+ * Loaf Life
+ *   Displays a list of hacks from Supabase. Users can filter hacks by tags.
+ *   Each hack is presented in a card format. Features an AI button for personalized
+ *   hack discovery based on user interests.
+ *   Utilizes Next.js for routing and React for UI. Interacts with Supabase for data.
  *
- * Features:
- * - Fetches and lists hacks from the Supabase 'hacks' table.
- * - Allows users to filter hacks by tags.
- * - Displays hacks in a responsive card layout.
- * - Includes an AI button for personalized hack discovery.
- *
- * Portions of styling and logic assisted by Google Gemini 2.5 Flash.
- *
- * Modified with assistance from Google Gemini 2.5 Flash.
- *
- * @author Nathan Oloresisimo
- * @author https://gemini.google.com/app
+ * Authorship:
+ *   @author Nathan Oloresisimo
+ *   @author https://gemini.google.com/app (for portions of logic and structure)
  */
 
 'use client';
@@ -33,16 +23,35 @@ import { clientDB } from '@/supabaseClient';
 import AIbutton from '@/components/buttons/AIbutton';
 import { tags } from '@/lib/tags';
 
+/**
+ * @function HacksPage
+ * @description Main component for displaying a list of all hacks. It fetches hacks
+ *   from Supabase, allows filtering by tags, and renders each hack as a card.
+ *   Includes an AI button for discovering hacks based on user interests.
+ * @returns {JSX.Element} The UI for the hacks list page.
+ */
 export default function HacksPage() {
   // -- State --
+  // State for the currently selected filter tags.
   const [selectedTags, setSelectedTags] = useState([]);
+  // State for storing all hacks fetched from the database.
   const [allHacks, setAllHacks] = useState([]);
+  // State to indicate if data is currently being loaded.
   const [isLoading, setIsLoading] = useState(true);
+  // State to store any error messages during data fetching.
   const [error, setError] = useState(null);
+  // State for storing the interests of the current user.
   const [interests, setInterests] = useState([]);
+  // State for the ID of the currently logged-in user.
   const [currentUserId, setCurrentUserId] = useState(null);
 
   // -- Effects --
+  /**
+   * useEffect: Fetch User and Interests
+   * @description Fetches the current user's ID and their stored interests from Supabase
+   *   on component mount. This is used for the AI recommendation feature.
+   * @async
+   */
   useEffect(() => {
     const fetchUserAndInterests = async () => {
       const { data: { user } } = await clientDB.auth.getUser();
@@ -71,7 +80,12 @@ export default function HacksPage() {
     fetchUserAndInterests();
   }, []);
 
-  // Effect to fetch all hacks from the database when the component mounts
+  /**
+   * useEffect: Fetch All Hacks
+   * @description Fetches all hacks from the Supabase 'hacks' table on component mount.
+   *   Orders the hacks by creation date in descending order.
+   * @async
+   */
   useEffect(() => {
     const fetchHacks = async () => {
       setIsLoading(true);
@@ -107,6 +121,13 @@ export default function HacksPage() {
   console.log("[HacksPage] Current allHacks state:", allHacks);
 
   // -- Handlers --
+  /**
+   * @function handleTagToggle
+   * @description Handles the selection or deselection of a filter tag.
+   *   If "ALL" is selected, clears all filters. Otherwise, toggles the specified tag
+   *   in the `selectedTags` state.
+   * @param {string} tag - The tag to toggle.
+   */
   const handleTagToggle = (tag) => {
     if (tag === "ALL") {
       setSelectedTags([]);
@@ -133,22 +154,23 @@ export default function HacksPage() {
 
   return (
     <div className="bg-[#F5E3C6] pb-6">
-      {/* Main Feed Layout */}
+      {/* Main Feed Layout: Provides structure for title, tag filters, and content list */}
       <FeedLayout
         title="Hacks"
-        tagOptions={tags}
-        selectedTags={selectedTags}
-        onTagToggle={handleTagToggle}
+        tagOptions={tags} // Available tags for filtering
+        selectedTags={selectedTags} // Currently selected filter tags
+        onTagToggle={handleTagToggle} // Callback for tag selection changes
       >
-        {/* Conditional Hack Display */}
+        {/* Conditional Hack Display: Shows loading, error, or list of hack cards */}
         {isLoading && <p className="text-center text-gray-500 px-4">Loading hacks...</p>}
         {error && <p className="text-center text-red-500 px-4">Error: {error}</p>}
         {!isLoading && !error && filteredHacks.length > 0 ? (
+          // Render each filtered hack as a HackCard
           filteredHacks.map(hack => (
             <HackCard
               key={hack.id}
               id={hack.id}
-              href={`/hacks-page/${hack.id}`}
+              href={`/hacks-page/${hack.id}`} // Link to the hack detail page
               title={hack.title}
               upvotes={hack.upvotes}
               downvotes={hack.downvotes}
@@ -156,21 +178,22 @@ export default function HacksPage() {
               description={hack.description}
               location={hack.location}
               createdAt={hack.created_at}
-              userId={currentUserId}
+              userId={currentUserId} // Pass current user ID for interactions
             />
           ))
         ) : (
+          // Message displayed if no hacks are found after loading and no error
           !isLoading && !error && <p className="text-center text-gray-500 px-4">No hacks found, try adding one!</p>
         )}
 
-        {/* AI Button Section */}
+        {/* AI Button Section: Button for AI-powered hack recommendations */}
         <div className="px-4 py-2 max-w-md mx-auto w-full">
           <AIbutton interests={interests} />
         </div>
-        {/* Footer */}
+        {/* Page Footer */}
         <Footer />
       </FeedLayout>
-      {/* Bottom Navigation */}
+      {/* Bottom Navigation Bar for mobile */}
       <BottomNav />
     </div>
   )

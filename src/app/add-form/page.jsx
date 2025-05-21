@@ -1,23 +1,24 @@
 /**
- * page.jsx (AddFormPage)
- * Loaf Life – Provides a form for users to add new content.
+ * File: page.jsx (AddFormPage)
  *
- * This page allows authenticated users to contribute new posts such as
- * "hacks," "deals," or "events" to the Loaf Life platform. Submitted
- * information is then stored in the Supabase database.
+ * Overview:
+ *   Provides a form for users to add new content such as "hacks," "deals," or "events"
+ *   to the Loaf Life platform. Submitted information is stored in the Supabase database.
+ *   Utilizes Next.js for routing and React for UI components. Integrates with Supabase
+ *   for data persistence.
  *
- * Features:
- * - Allows submission of hacks, deals, and events.
- * - Saves submitted data to Supabase.
- * - Requires user authentication before submission.
+ * Authorship:
+ *   @author Nathan Oloresisimo
+ *   @author Conner Ponton
+ *   @author https://gemini.google.com/app
  *
- * Portions of styling and logic assisted by Google Gemini 2.5 Flash.
- *
- * Modified with assistance from Google Gemini 2.5 Flash.
- *
- * @author Nathan Oloresisimo
- * @author Conner Ponton
- * @author https://gemini.google.com/app
+ * Main Component:
+ *   @function AddFormPage
+ *   @description Renders the page for adding new posts. It includes a form component
+ *                (`AddPostForm`) and handles the submission logic for different post types
+ *                (hacks, deals, events), saving them to the Supabase database.
+ *                It also handles navigation for cancellation.
+ *   @returns {JSX.Element} The add form page component.
  */
 
 'use client';
@@ -34,7 +35,18 @@ import { tags } from '@/lib/tags.js'
 export default function AddFormPage() {
   const router = useRouter();
   
-  // ---- Form Submission Handlers ----
+  /**
+   * @function handleSubmitHack
+   * @description Handles the submission of the new post form. It determines the post type
+   *              (hack, deal, or event), retrieves the current user's session, prepares the data
+   *              for insertion, and saves it to the appropriate Supabase table. Redirects the user
+   *              to the relevant page upon successful submission or to the login page
+   *              if no user is authenticated.
+   * @async
+   * @param {Object} formData - The data collected from the `AddPostForm` component.
+   *                            Expected to contain `postType`, `title`, `description`, `tags`,
+   *                            `location`, and other fields specific to the post type.
+   */
   const handleSubmitHack = async (formData) => {
     // Retrieve the current user session
     const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
@@ -125,22 +137,31 @@ export default function AddFormPage() {
     }
   };
 
-  // ---- Navigation Handlers ----
+  /**
+   * @function handleCancel
+   * @description Handles the cancel action from the form. Navigates the user
+   *              to the previously visited page.
+   */
   const handleCancel = () => {
     router.back(); // Navigate to the previous page
   };
   
   return (
     <div className="bg-[#F5E3C6] min-h-screen flex flex-col">
+      {/* Sticky top navigation */}
       <StickyNavbar />
+      {/* Main content area for the form */}
       <div className="flex-grow container mx-auto pt-20 px-4 py-8">
+        {/* AddPostForm component for user input */}
         <AddPostForm
           tags={tags}
           onSubmit={handleSubmitHack}
           onClose={handleCancel}
         />
       </div>
+      {/* Page footer */}
       <Footer />
+      {/* Bottom navigation for mobile */}
       <BottomNav />
     </div>
   );

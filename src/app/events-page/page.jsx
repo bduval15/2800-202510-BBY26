@@ -1,23 +1,24 @@
 /**
  * page.jsx (EventsPage)
- * Loaf Life – Displays a list of events and allows filtering.
  *
- * This page fetches events from Supabase and presents them to the user.
- * Users can view event details, filter events using tags, and utilize an
- * AI button for event suggestions. Event information, including title,
- * location, and dates, is displayed on individual cards.
+ * Loaf Life
+ *   Displays a list of events and allows filtering. Fetches events from Supabase and presents
+ *   them to the user. Users can view event details, filter events using tags, and utilize
+ *   an AI button for event suggestions. Utilizes Next.js for routing and React for UI.
+ *   Integrates with Supabase for data fetching.
  *
- * Features:
- * - Fetches and displays a list of events from Supabase.
- * - Allows users to filter events based on selected tags.
- * - Integrates an AI button for event recommendations.
- * - Displays event details (title, location, dates) on cards.
+ * Authorship:
+ *   @author Nathan Oloresisimo
+ *   @author Conner Ponton
+ *   @author https://gemini.google.com/app (Assisted with code)
  *
- * Written with assistance from Google Gemini 2.5 Flash.
- *
- * @author Nathan Oloresisimo
- * @author Conner Ponton
- * @author https://gemini.google.com/app
+ * Main Component:
+ *   @function EventsPage
+ *   @description Renders a page displaying a list of events fetched from Supabase. Allows
+ *                users to filter events by tags and provides an AI button for event
+ *                recommendations. Event information (title, location, dates) is shown on
+ *                individual cards.
+ *   @returns {JSX.Element} The rendered events page.
  */
 
 'use client';
@@ -33,15 +34,26 @@ import { tags } from '@/lib/tags';
 
 export default function EventsPage() {
   // -- State & Hooks--
+  // State for currently selected filter tags.
   const [selectedTags, setSelectedTags] = useState([]);
+  // State for all events fetched from the database.
   const [allEvents, setAllEvents] = useState([]);
+  // State to manage loading indicator for events fetching.
   const [isLoading, setIsLoading] = useState(true);
+  // State for displaying errors during event fetching.
   const [error, setError] = useState(null);
+  // State for user interests, fetched for AI button suggestions.
   const [interests, setInterests] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // State to manage loading indicator for interests fetching.
+  const [loading, setLoading] = useState(true); // Note: `loading` seems specific to interests
+  // State for the current authenticated user's ID.
   const [currentUserId, setCurrentUserId] = useState(null);
 
-  // Fetch current user ID
+  /**
+   * useEffect: Fetch Current User ID
+   * @description Fetches the current user's session from Supabase to get their ID.
+   *              Sets `currentUserId` state. Runs once on component mount.
+   */
   useEffect(() => {
     const fetchCurrentUser = async () => {
       const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
@@ -58,7 +70,13 @@ export default function EventsPage() {
     fetchCurrentUser();
   }, []);
 
-  // Fetch user interests
+  /**
+   * useEffect: Fetch User Interests
+   * @description Fetches the current user's interests from the 'user_profiles' table in
+   *              Supabase. Sets the `interests` state and updates `loading` state for interests.
+   *              Runs once on component mount.
+   * @async
+   */
   useEffect(() => {
     const fetchInterests = async () => {
       const { data: { user } } = await clientDB.auth.getUser();
@@ -92,7 +110,13 @@ export default function EventsPage() {
     fetchInterests();
   }, []);
 
-  // Fetch events from Supabase
+  /**
+   * useEffect: Fetch Events
+   * @description Fetches all events from the 'events' table in Supabase. Populates the
+   *              `allEvents` state. Manages `isLoading` and `error` states for event fetching.
+   *              Runs once on component mount.
+   * @async
+   */
   useEffect(() => {
     const fetchEvents = async () => {
       setIsLoading(true);
@@ -118,6 +142,12 @@ export default function EventsPage() {
   }, []);
 
   // -- Handlers --
+  /**
+   * @function handleTagToggle
+   * @description Toggles the selection of a filter tag. If "ALL" is selected, clears all
+   *              filters. Otherwise, adds or removes the tag from `selectedTags`.
+   * @param {string} tag - The tag to toggle.
+   */
   const handleTagToggle = (tag) => {
     if (tag === "ALL") {
       setSelectedTags([]);
@@ -131,8 +161,13 @@ export default function EventsPage() {
     }
   };
 
-  // Filter events based on selected tags.
-  // If no tags are selected, all events are shown.
+  /**
+   * memoizedComputation: filteredEvents
+   * @description Filters the `allEvents` array based on `selectedTags`. If no tags are
+   *              selected, all events are returned. Otherwise, events that include any of
+   *              the selected tags are returned.
+   * @returns {Array} The array of events filtered by selected tags.
+   */
   const filteredEvents = selectedTags.length === 0
     ? allEvents
     : allEvents.filter(evt =>
@@ -141,38 +176,39 @@ export default function EventsPage() {
   return (
     // Main Page Container
     <div className="bg-[#F5E3C6] pb-6">
-      {/* Feed Layout Section */}
+      {/* Feed Layout Section: organizes main content, title, and tag filters */}
       <FeedLayout
         title="Events"
-        tagOptions={tags}
-        selectedTags={selectedTags}
-        onTagToggle={handleTagToggle}
+        tagOptions={tags} // Available tags for filtering
+        selectedTags={selectedTags} // Currently selected filter tags
+        onTagToggle={handleTagToggle} // Handler for tag selection changes
       >  
-        {/* Loading and Error States */}
+        {/* Loading and Error States for event fetching */}
         {isLoading && <p className="text-center text-gray-500 px-4">Loading events...</p>}
         {error && <p className="text-center text-red-500 px-4">Error: {error}</p>}
 
-        {/* Event Cards Display */}
+        {/* Event Cards Display: Renders if not loading, no errors, and events exist */}
         {!isLoading && !error && filteredEvents.length > 0 ? (
+          // Map through filtered events to render EventCard for each
           filteredEvents.map(event => (
             <EventCard
               key={event.id}
               id={event.id}
-              href={`/events-page/${event.id}`}
+              href={`/events-page/${event.id}`} // Link to individual event page
               title={event.title}
               location={event.location}
               upvotes={event.upvotes}
               downvotes={event.downvotes}
               tags={event.tags}
               description={event.description}
-              userId={currentUserId}
+              userId={currentUserId} // Pass current user ID for interactions
               createdAt={event.created_at}
               startDate={event.start_date}
               endDate={event.end_date}
             />
           ))
         ) : (
-          // No Events Found Message
+          // No Events Found Message: Renders if not loading, no errors, but no events
           !isLoading && !error && (
             <p className="text-center text-gray-500 px-4">
               No events found, try adding one!
@@ -180,7 +216,7 @@ export default function EventsPage() {
           )
         )}
 
-        {/* AI Button Section */}
+        {/* AI Button Section: Provides AI-based event suggestions */}
         <div className="px-4 py-2 max-w-md mx-auto w-full">
           <AIbutton interests={interests} />
         </div>
@@ -189,7 +225,7 @@ export default function EventsPage() {
         <Footer />
       </FeedLayout>
 
-      {/* Bottom Navigation Bar */}
+      {/* Bottom Navigation Bar for mobile */}
       <BottomNav />
     </div>
   );

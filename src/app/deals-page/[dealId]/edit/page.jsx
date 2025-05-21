@@ -1,3 +1,16 @@
+/**
+ * File: src/app/deals-page/[dealId]/edit/page.jsx
+ *
+ * Loaf Life
+ *   Allows authenticated users to edit details of their previously created deals.
+ *   It fetches existing deal data, populates a form, and handles updates.
+ *   Utilizes Next.js for routing and React for UI components.
+ *   Integrates with Supabase for data fetching and updates.
+ *
+ * Authorship:
+ *   @author Nathan O
+ *   @author https://gemini.google.com/app (Assisted with code)
+ */
 'use client';
 
 import React, { useState, useEffect, use } from 'react';
@@ -10,54 +23,77 @@ import LocationAutoComplete from '@/components/mapComponents/LocationAutoComplet
 import { tags as availableTags } from '@/lib/tags';
 import ConfirmCancelModal from '@/components/ConfirmCancelModal';
 
-/**
- * EditDealPage.jsx
- * Loaf Life - Edit Deal Page
- * 
- * This page allows authenticated users to edit the details of a deal they
- * previously created. It fetches existing deal data, populates a form,
- * and allows updates to fields like title, description, price, location,
- * and tags. Includes input validation and a confirmation modal for
- * unsaved changes if the user attempts to cancel.
- * 
- * Adapted from 'Edit Hack Page'
- *
- * Written with assistance from Google Gemini 2.5
- * 
- * @author: Nathan O
- * @author: https://gemini.google.com/app
- */
 
+// Maximum number of tags a user can select for a deal.
 const MAX_TAGS = 5;
 
+/**
+ * @function EditDealPage
+ * @description This page component allows users to edit an existing deal.
+ *   It fetches the deal's current data, populates a form with this data,
+ *   and allows the user to modify fields like title, description, price,
+ *   location, and tags. It includes input validation and a confirmation
+ *   modal for unsaved changes if the user attempts to navigate away or cancel.
+ * @param {{ params: { dealId: string } }} props - The component props,
+ *   containing the dealId from the route.
+ * @returns {JSX.Element} The JSX for the edit deal page.
+ */
 export default function EditDealPage({ params }) {
   // -- State Management & Hooks --
+  // Resolved route parameters, primarily used to get `dealId`.
   const resolvedParams = use(params);
+  // The ID of the deal being edited.
   const dealId = resolvedParams.dealId;
+  // Next.js router instance for navigation.
   const router = useRouter();
+  // Supabase client instance for database interactions.
   const supabase = clientDB; 
 
+  // State for the deal's title.
   const [title, setTitle] = useState('');
+  // State for the deal's description.
   const [description, setDescription] = useState('');
+  // State for the deal's price.
   const [price, setPrice] = useState('');
+  // State for the deal's location (address string).
   const [location, setLocation] = useState('');
+  // State for the currently selected tags for the deal.
   const [currentTags, setCurrentTags] = useState([]);
+  // State to indicate if data is currently being loaded.
   const [isLoading, setIsLoading] = useState(true);
+  // State for storing any general error messages during data fetching.
   const [error, setError] = useState(null);
+  // State for storing form submission-specific error messages.
   const [submitError, setSubmitError] = useState(null);
+  // State for storing the ID of the currently authenticated user.
   const [currentUserId, setCurrentUserId] = useState(null);
+  // State for storing the ID of the author of the deal.
   const [dealAuthorId, setDealAuthorId] = useState(null);
+  // State to force re-render of LocationAutoComplete component.
   const [locationKey, setLocationKey] = useState(0);
+  // State to control the visibility of the cancel confirmation modal.
   const [showCancelConfirmModal, setShowCancelConfirmModal] = useState(false);
 
-  // Initial state for unsaved changes detection
+  // Initial state for detecting unsaved changes: Title.
   const [initialTitle, setInitialTitle] = useState('');
+  // Initial state for detecting unsaved changes: Description.
   const [initialDescription, setInitialDescription] = useState('');
+  // Initial state for detecting unsaved changes: Price.
   const [initialPrice, setInitialPrice] = useState('');
+  // Initial state for detecting unsaved changes: Location.
   const [initialLocation, setInitialLocation] = useState('');
+  // Initial state for detecting unsaved changes: Tags.
   const [initialTags, setInitialTags] = useState([]);
 
   // -- Effects --
+  /**
+   * useEffect: Fetch Current User and Deal Data
+   * @description Fetches the current authenticated user's session and the details
+   *   of the deal to be edited. It performs authorization checks to ensure
+   *   the current user is the author of the deal. Populates form fields
+   *   with existing deal data and sets initial values for unsaved changes detection.
+   *   Redirects to login if user is not authenticated. Sets loading and error states.
+   */
   useEffect(() => {
     const fetchCurrentUserAndDeal = async () => {
       setIsLoading(true);
@@ -155,6 +191,12 @@ export default function EditDealPage({ params }) {
   }, [dealId, router, supabase]);
 
   // -- Helper Functions --
+  /**
+   * @function hasUnsavedChanges
+   * @description Checks if any of the form fields (title, description, price,
+   *   location, tags) have been modified from their initial values.
+   * @returns {boolean} True if there are unsaved changes, false otherwise.
+   */
   const hasUnsavedChanges = () => {
     if (title !== initialTitle) return true;
     if (description !== initialDescription) return true;
@@ -165,6 +207,12 @@ export default function EditDealPage({ params }) {
   };
 
   // -- Event Handlers --
+  /**
+   * @function handleCancel
+   * @description Handles the cancel button click. If there are unsaved changes,
+   *   it shows a confirmation modal. Otherwise, it navigates back to the deal
+   *   detail page.
+   */
   const handleCancel = () => {
     if (hasUnsavedChanges()) {
       setShowCancelConfirmModal(true);
@@ -173,15 +221,30 @@ export default function EditDealPage({ params }) {
     }
   };
 
+  /**
+   * @function confirmCancelAndRedirect
+   * @description Confirms the cancellation of edits (when unsaved changes exist)
+   *   and redirects the user to the deal detail page. Hides the confirmation modal.
+   */
   const confirmCancelAndRedirect = () => {
     setShowCancelConfirmModal(false);
     router.push(`/deals-page/${dealId}`);
   };
 
+  /**
+   * @function cancelAndKeepEditing
+   * @description Dismisses the cancel confirmation modal, allowing the user
+   *   to continue editing the deal.
+   */
   const cancelAndKeepEditing = () => {
     setShowCancelConfirmModal(false);
   };
 
+  /**
+   * @function handleClear
+   * @description Resets all form fields to their empty/default states, clears
+   *   any submission errors, and forces a re-render of the location input.
+   */
   const handleClear = () => {
     setTitle('');
     setDescription('');
@@ -192,6 +255,13 @@ export default function EditDealPage({ params }) {
     setLocationKey(prevKey => prevKey + 1);
   };
 
+  /**
+   * @function handleSelectTag
+   * @description Toggles the selection of a tag. If the tag is already selected,
+   *   it's removed. If not, it's added, provided the maximum tag limit (MAX_TAGS)
+   *   is not exceeded. Clears submission errors.
+   * @param {string} tagValueFromButton - The value of the tag to be toggled.
+   */
   const handleSelectTag = (tagValueFromButton) => {
     setSubmitError(null);
     setCurrentTags(prevLowercaseTags => {
@@ -209,6 +279,16 @@ export default function EditDealPage({ params }) {
     });
   };
 
+  /**
+   * @function handleSubmit
+   * @description Handles the form submission for updating the deal.
+   *   Performs input validation for required fields (title, description, tags, price, location).
+   *   Double-checks user authorization. On successful validation, it prepares the data
+   *   (e.g., trimming title, parsing price, stringifying location) and sends an update
+   *   request to Supabase. Navigates to the deal detail page on success or displays an error.
+   * @async
+   * @param {React.FormEvent<HTMLFormElement>} e - The form submission event.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitError(null);
@@ -284,15 +364,18 @@ export default function EditDealPage({ params }) {
     return <div className="max-w-md mx-auto px-4 py-6 space-y-6 text-center">Loading deal editor...</div>;
   }
 
-  // Error display
+  // Error display if initial data fetching failed
   if (error) {
     return (
       <div className="max-w-md mx-auto px-4 py-6 space-y-6 text-center text-red-500">
+        {/* Sticky navigation bar */}
         <StickyNavbar />
         <div className="pt-16">
           Error: {error}
         </div>
+        {/* Page footer */}
         <Footer />
+        {/* Bottom navigation bar for mobile */}
         <BottomNav />
       </div>
     );
@@ -302,24 +385,31 @@ export default function EditDealPage({ params }) {
   if (dealAuthorId && currentUserId !== dealAuthorId) {
     return (
       <div className="max-w-md mx-auto px-4 py-6 space-y-6 text-center text-red-500">
+        {/* Sticky navigation bar */}
         <StickyNavbar />
         <div className="pt-16">
           Error: You are not authorized to edit this deal.
         </div>
+        {/* Page footer */}
         <Footer />
+        {/* Bottom navigation bar for mobile */}
         <BottomNav />
       </div>
     );
   }
 
-  
+  // Main page structure
   return (
     <div className="pb-6">
       <div className="max-w-md mx-auto px-4 py-6 space-y-6">
+        {/* Sticky navigation bar */}
         <StickyNavbar />
+        {/* Form container with custom styling */}
         <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30 pt-16">
+          {/* Header section for the form */}
           <div className="flex justify-between items-start mb-1">
             <h1 className="text-2xl font-bold text-[#8B4C24]">Edit Deal</h1>
+            {/* Button to clear all form fields */}
             <button
               type="button"
               onClick={handleClear}
@@ -328,8 +418,10 @@ export default function EditDealPage({ params }) {
               Clear Form
             </button>
           </div>
+          {/* Subtext indicating required fields */}
           <p className="text-xs text-gray-600 mb-6">* Indicates a required field</p>
 
+          {/* Edit Deal Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title Field */}
             <div>
@@ -388,6 +480,7 @@ export default function EditDealPage({ params }) {
               <label htmlFor="location" className="block text-sm font-medium text-[#6A401F] mb-1">
                 Location*
               </label>
+              {/* Autocomplete component for location input */}
               <LocationAutoComplete
                 key={locationKey}
                 initialValue={location}
@@ -401,7 +494,9 @@ export default function EditDealPage({ params }) {
               <label className="block text-sm font-medium text-[#6A401F] mb-1">
                 Tags (select up to {MAX_TAGS})*
               </label>
+              {/* Container for tag selection buttons */}
               <div className="mt-1 flex flex-wrap gap-2 p-2.5 border border-[#D1905A] rounded-lg shadow-sm bg-white min-h-[40px]">
+                {/* Iterate over available tags to create selection buttons */}
                 {availableTags.map(tag => (
                   <button
                     type="button"
@@ -418,12 +513,14 @@ export default function EditDealPage({ params }) {
               </div>
             </div>
 
+            {/* Display submission error messages, if any */}
             {submitError && (
               <p className="text-sm text-red-600">Error: {submitError}</p>
             )}
 
             {/* Submit and Cancel Buttons */}
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-2">
+              {/* Submit button */}
               <button
                 type="submit"
                 disabled={isLoading}
@@ -431,6 +528,7 @@ export default function EditDealPage({ params }) {
               >
                 {isLoading ? 'Saving...' : 'Save Changes'}
               </button>
+              {/* Cancel button */}
               <button
                 type="button"
                 onClick={handleCancel}
@@ -441,9 +539,12 @@ export default function EditDealPage({ params }) {
             </div>
           </form>
         </div>
+        {/* Page footer */}
         <Footer />
       </div>
+      {/* Bottom navigation bar for mobile */}
       <BottomNav />
+      {/* Modal to confirm cancellation if there are unsaved changes */}
       <ConfirmCancelModal
         isOpen={showCancelConfirmModal}
         onConfirm={confirmCancelAndRedirect}

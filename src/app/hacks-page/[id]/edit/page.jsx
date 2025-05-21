@@ -1,25 +1,15 @@
 /**
  * page.jsx (EditHackPage)
- * Loaf Life – Enables users to edit their created hacks.
  *
- * This page allows authenticated authors to modify their existing hacks.
- * It fetches hack data (title, description, tags, location), populates an
- * editable form, and handles updates. Integrates with Supabase for data
- * and Google Maps for location autocomplete.
+ * Loaf Life
+ *   Enables authenticated authors to edit their created hacks.
+ *   Fetches hack data (title, description, tags, location), populates an editable form,
+ *   and handles updates. Integrates with Supabase for data and Google Maps for location
+ *   autocomplete.
  *
- * Features:
- * - Fetches and displays existing hack details for editing.
- * - Allows modification of title, description, tags, and location.
- * - Validates user input before submission.
- * - Provides unsaved changes confirmation.
- * - Utilizes location autocomplete for address input.
- * - Restricts editing access to the hack's author.
- *
- * Portions of logic and component structure assisted by Google Gemini 2.5 Flash.
- * Modified with assistance from Google Gemini 2.5 Flash.
- *
- * @author Nathan Oloresisimo
- * @author https://gemini.google.com/app
+ * Authorship:
+ *   @author Nathan Oloresisimo
+ *   @author https://gemini.google.com/app (for portions of logic and structure)
  */
 
 'use client';
@@ -34,35 +24,65 @@ import LocationAutocomplete from '@/components/mapComponents/LocationAutoComplet
 import { tags } from '@/lib/tags';
 import ConfirmCancelModal from '@/components/ConfirmCancelModal';
 
-const MAX_TAGS = 5; 
+// Maximum number of tags a user can select for a hack.
+const MAX_TAGS = 5;
 
+/**
+ * @function EditHackPage
+ * @description Main component for editing an existing hack.
+ *   It fetches the hack's current details, populates a form, allows modification of
+ *   title, description, tags, and location. It handles input validation, unsaved changes
+ *   confirmation, location autocomplete via Google Maps, and restricts editing access
+ *   to the hack's original author.
+ * @param {object} params - Contains the route parameters, specifically the hack ID.
+ * @returns {JSX.Element} The UI for the hack editing page.
+ */
 export default function EditHackPage({ params }) {
   // -- State & Hooks --
   const resolvedParams = use(params);
   const hackId = resolvedParams.id;
   const router = useRouter();
 
+  // State for the hack title.
   const [title, setTitle] = useState('');
+  // State for the hack description.
   const [description, setDescription] = useState('');
+  // State for the currently selected tags for the hack.
   const [currentTags, setCurrentTags] = useState([]);
+  // State for the hack's location address string.
   const [locationAddress, setLocationAddress] = useState('');
+  // State for the selected location object (includes address, lat, lng).
   const [selectedLocation, setSelectedLocation] = useState(null);
+  // State to indicate if data is currently being loaded.
   const [isLoading, setIsLoading] = useState(true);
+  // State to store any error messages during data fetching.
   const [error, setError] = useState(null);
+  // State to store any error messages during form submission.
   const [submitError, setSubmitError] = useState(null);
+  // State for the ID of the currently logged-in user.
   const [currentUserId, setCurrentUserId] = useState(null);
+  // State for the ID of the author of the hack being edited.
   const [hackAuthorId, setHackAuthorId] = useState(null);
+  // State to manage re-rendering of the LocationAutocomplete component.
   const [locationKey, setLocationKey] = useState(0);
+  // State to control the visibility of the cancel confirmation modal.
   const [showCancelConfirmModal, setShowCancelConfirmModal] = useState(false);
 
-  // State to store initial values for comparison
+  // State to store initial hack values for detecting unsaved changes.
   const [initialTitle, setInitialTitle] = useState('');
   const [initialDescription, setInitialDescription] = useState('');
   const [initialTags, setInitialTags] = useState([]);
   const [initialLocationAddress, setInitialLocationAddress] = useState('');
   const [initialSelectedLocation, setInitialSelectedLocation] = useState(null);
 
-  // -- Effects --
+  /**
+   * useEffect: Fetch Current User and Hack Details
+   * @description Fetches the current user's session and the details of the hack to be
+   *   edited. It populates the form fields with existing data and sets initial values
+   *   for unsaved changes detection. It also handles authorization, ensuring only the
+   *   hack author can edit.
+   * @async
+   */
   useEffect(() => {
     const fetchCurrentUserAndHack = async () => {
       setIsLoading(true);
@@ -174,7 +194,12 @@ export default function EditHackPage({ params }) {
     fetchCurrentUserAndHack();
   }, [hackId, router]);
 
-  // -- Helper Functions --
+  /**
+   * @function hasUnsavedChanges
+   * @description Checks if any of the form fields have been modified from their initial
+   *   values. This is used to prompt the user before discarding changes.
+   * @returns {boolean} True if there are unsaved changes, false otherwise.
+   */
   const hasUnsavedChanges = () => {
     if (title !== initialTitle) return true;
     if (description !== initialDescription) return true;
@@ -186,6 +211,12 @@ export default function EditHackPage({ params }) {
   };
 
   // -- Event Handlers --
+  /**
+   * @function handleCancel
+   * @description Handles the click event for the 'Cancel' button. If there are unsaved
+   *   changes, it shows a confirmation modal. Otherwise, it navigates back to the
+   *   hack detail page.
+   */
   const handleCancel = () => {
     // If there are unsaved changes, show a confirmation modal
     if (hasUnsavedChanges()) {
@@ -195,15 +226,31 @@ export default function EditHackPage({ params }) {
     }
   };
 
+  /**
+   * @function confirmCancelAndRedirect
+   * @description Confirms the cancellation of edits and redirects the user to the hack
+   *   detail page. Hides the confirmation modal.
+   */
   const confirmCancelAndRedirect = () => {
     setShowCancelConfirmModal(false);
     router.push(`/hacks-page/${hackId}`);
   };
 
+  /**
+   * @function cancelAndKeepEditing
+   * @description Hides the cancel confirmation modal, allowing the user to continue
+   *   editing.
+   */
   const cancelAndKeepEditing = () => {
     setShowCancelConfirmModal(false);
   };
 
+  /**
+   * @function handleClear
+   * @description Clears all form fields (title, description, tags, location) and resets
+   *   any submission errors. It also forces a re-render of the LocationAutocomplete
+   *   component if necessary.
+   */
   const handleClear = () => {
     setTitle('');
     setDescription('');
@@ -215,6 +262,13 @@ export default function EditHackPage({ params }) {
     setLocationKey(prevKey => prevKey + 1);
   };
 
+  /**
+   * @function handleSelectTag
+   * @description Handles the selection or deselection of a tag. Adds the tag to the
+   *   `currentTags` array if not present and under the `MAX_TAGS` limit, or removes it
+   *   if already present.
+   * @param {string} tagValueFromButton - The value of the tag selected/deselected.
+   */
   const handleSelectTag = (tagValueFromButton) => {
     setSubmitError(null);
     setCurrentTags(prevLowercaseTags => {
@@ -234,6 +288,13 @@ export default function EditHackPage({ params }) {
     });
   };
   
+  /**
+   * @function handleSelectLocation
+   * @description Callback for the LocationAutocomplete component. Updates the
+   *   `selectedLocation` and `locationAddress` states based on the user's selection.
+   * @param {object|null} locationData - The location object from the autocomplete
+   *   (containing address, lat, lng) or null if cleared.
+   */
   const handleSelectLocation = (locationData) => {
     setSubmitError(null);
     if (locationData) {
@@ -246,6 +307,14 @@ export default function EditHackPage({ params }) {
     }
   };
 
+  /**
+   * @function handleSubmit
+   * @description Handles the form submission for editing the hack. It performs
+   *   validation, prepares the data (including location JSON), and makes an API call
+   *   to Supabase to update the hack. Redirects to the hack detail page on success.
+   * @async
+   * @param {Event} e - The form submission event.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitError(null);
@@ -320,26 +389,30 @@ export default function EditHackPage({ params }) {
   };
 
   // -- Conditional Renders --
+  // Display loading message if data is being fetched and title is not yet set.
   if (isLoading && !title) { 
     return <div className="max-w-md mx-auto px-4 py-6 space-y-6 text-center">Loading hack editor...</div>;
   }
 
+  // Display error message if an error occurred during data fetching.
   if (error) {
     return <div className="max-w-md mx-auto px-4 py-6 space-y-6 text-center text-red-500">Error: {error}</div>;
   }
   
+  // Display authorization error if the current user is not the hack author.
   if (hackAuthorId && currentUserId !== hackAuthorId) {
     return <div className="max-w-md mx-auto px-4 py-6 space-y-6 text-center text-red-500">Error: You are not authorized to edit this hack.</div>;
   }
 
   return (
     <div className="pb-6">
-      {/* Main Content Area */}
+      {/* Main Content Area: Contains the sticky navbar and the form container */}
       <div className="max-w-md mx-auto px-4 py-6 space-y-6">
+        {/* Sticky top navigation bar */}
         <StickyNavbar />
-        {/* Form Container */}
+        {/* Form Container: Houses the entire edit form */}
         <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30 pt-16">
-          {/* Form Header */}
+          {/* Form Header: Title and Clear Form button */}
           <div className="flex justify-between items-start mb-1">
             <h1 className="text-2xl font-bold text-[#8B4C24]">Edit Hack</h1>
             <button
@@ -352,9 +425,9 @@ export default function EditHackPage({ params }) {
           </div>
           <p className="text-xs text-gray-600 mb-6">* Indicates a required field</p>
           
-          {/* Edit Form */}
+          {/* Edit Form: Main form element for hack details */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Title Input */}
+            {/* Title Input Section */}
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-[#6A401F] mb-1">
                 Title*
@@ -370,7 +443,7 @@ export default function EditHackPage({ params }) {
               />
             </div>
 
-            {/* Description Input */}
+            {/* Description Input Section */}
             <div>
               <label htmlFor="description" className="block text-sm font-medium text-[#6A401F] mb-1">
                 Description*
@@ -386,25 +459,27 @@ export default function EditHackPage({ params }) {
               />
             </div>
 
-            {/* Location Input */}
+            {/* Location Input Section with Autocomplete */}
             <div>
               <label className="block text-sm font-medium text-[#6A401F] mb-1">
                 Location (Optional)
               </label>
               <LocationAutocomplete
-                key={locationKey}
+                key={locationKey} // Key to re-mount component for clearing
                 initialValue={locationAddress}
                 onSelect={handleSelectLocation}
                 placeholder="e.g., Library, Room SE06"
               />
             </div>
 
-            {/* Tags Input */}
+            {/* Tags Input Section */}
             <div>
               <label className="block text-sm font-medium text-[#6A401F] mb-1">
                 Tags (select up to {MAX_TAGS})*
               </label>
+              {/* Container for tag buttons */}
               <div className="mt-1 flex flex-wrap gap-2 p-2.5 border border-[#D1905A] rounded-lg shadow-sm bg-white min-h-[40px]">
+                {/* Map through available tags to create buttons */}
                 {tags.map(tag => (
                   <button
                     type="button"
@@ -414,17 +489,17 @@ export default function EditHackPage({ params }) {
                         ? 'bg-[#8B4C24] text-white hover:bg-[#7a421f]'
                         : 'bg-white text-[#8B4C24] hover:bg-gray-100 ring-1 ring-inset ring-[#D1905A]'}`}
                   >
-                    {tag}
+                    {tag} {/* Display tag name */}
                   </button>
                 ))}
               </div>
             </div>
           
            
-            {/* Submit Error Display */}
+            {/* Submit Error Display: Shows errors from form submission */}
             {submitError && <p className="text-sm text-red-600 mt-2">{submitError}</p>}
 
-            {/* Action Buttons */}
+            {/* Action Buttons: Save Changes and Cancel */}
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-4">
               <button
                 type="submit"
@@ -444,10 +519,12 @@ export default function EditHackPage({ params }) {
             </div>
           </form>
         </div>
+        {/* Page footer */}
         <Footer />
       </div>
+      {/* Bottom navigation bar for mobile */}
       <BottomNav />
-      {/* Confirmation Modal */}
+      {/* Confirmation Modal for unsaved changes when cancelling */}
       <ConfirmCancelModal
         isOpen={showCancelConfirmModal}
         onConfirm={confirmCancelAndRedirect}
