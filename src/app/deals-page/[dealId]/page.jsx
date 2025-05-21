@@ -321,7 +321,7 @@ export default function DealDetailPage() {
           )}
 
           <p className="text-sm text-[#8B4C24]/80 mb-8">
-            Posted by {deal.user_profiles && deal.user_profiles.name ? deal.user_profiles.name : (deal.user_id ? `User ${deal.user_id.substring(0, 8)}...` : 'Unknown')} - {formatTimeAgo(deal.created_at)}
+            By {deal.user_profiles && deal.user_profiles.name ? deal.user_profiles.name : (deal.user_id ? `User ${deal.user_id.substring(0, 8)}...` : 'Unknown')} - {formatTimeAgo(deal.created_at)}
           </p>
 
           <div className="flex items-center mb-6">
