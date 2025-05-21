@@ -41,7 +41,7 @@ import { clientDB } from '@/supabaseClient';
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
 import  toTitleCase from '@/utils/toTitleCase';
 import ShowOnMapButton from '@/components/mapComponents/ShowOnMapButton';
-
+import { formatTimeAgo } from '@/utils/formatTimeAgo';
 
 export default function HackDetailPage({ params }) {
   // -- State & Hooks --
@@ -177,33 +177,6 @@ export default function HackDetailPage({ params }) {
   if (!hack) {
     return <div className="max-w-md mx-auto px-4 py-6 space-y-6 text-center">Hack not found.</div>;
   }
-
-  // -- Helper Functions --
-  // Helper function to format time ago
-  const formatTimeAgo = (timestamp) => {
-    if (!timestamp) return 'N/A';
-    const now = new Date();
-    const past = new Date(timestamp);
-    const diffInSeconds = Math.floor((now - past) / 1000);
-
-    if (diffInSeconds < 60) {
-      return `${diffInSeconds} seconds ago`;
-    }
-    const diffInMinutes = Math.floor(diffInSeconds / 60);
-    if (diffInMinutes < 60) {
-      return `${diffInMinutes} minutes ago`;
-    }
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) {
-      return `${diffInHours} hours ago`;
-    }
-    const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) {
-      return `${diffInDays} days ago`;
-    }
-    const diffInWeeks = Math.floor(diffInDays / 7);
-    return `${diffInWeeks} weeks ago`;
-  };
 
   // -- Handlers --
   const handleDelete = async () => {
