@@ -39,7 +39,8 @@ import CommentSection from '@/components/sections/CommentSection';
 import StickyNavbar from '@/components/StickyNavbar';
 import { clientDB } from '@/supabaseClient';
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
-import { toTitleCase } from '@/lib/utils';
+import  toTitleCase from '@/utils/toTitleCase';
+import ShowOnMapButton from '@/components/mapComponents/ShowOnMapButton';
 
 
 export default function HackDetailPage({ params }) {
@@ -101,7 +102,40 @@ export default function HackDetailPage({ params }) {
         } else if (!hackData) {
           setError("Hack not found.");
         } else {
-          setHack(hackData);
+          setHack(hackData);          
+          let parsedLat = null;
+          let parsedLng = null;
+          if (hackData.location) {
+            let tempCoords = null;
+            if (typeof hackData.location === 'string') {
+              try {
+                const parsedJson = JSON.parse(hackData.location);
+                if (parsedJson) {
+                  // We don't setDisplayLocation here as hacks page already handles it.
+                  if (typeof parsedJson.lat === 'number' && typeof parsedJson.lng === 'number') {
+                    tempCoords = { lat: parsedJson.lat, lng: parsedJson.lng };
+                  }
+                }
+              } catch (e) {
+                console.warn("Failed to parse location JSON for hack detail:", hackData.location, e);
+              }
+            } else if (typeof hackData.location === 'object' && hackData.location.address) {
+              // We don't setDisplayLocation here as hacks page already handles it.
+              if (typeof hackData.location.lat === 'number' && typeof hackData.location.lng === 'number') {
+                tempCoords = { lat: hackData.location.lat, lng: hackData.location.lng };
+              }
+            }
+            if (tempCoords) {
+              parsedLat = tempCoords.lat;
+              parsedLng = tempCoords.lng;
+            }
+          }
+
+          if (parsedLat !== null && parsedLng !== null) {
+            setLocationCoords({ lat: parsedLat, lng: parsedLng });
+          } else {
+            setLocationCoords(null);
+          }
         }
       } catch (err) {
         setError(err.message);
