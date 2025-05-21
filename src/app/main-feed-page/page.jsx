@@ -33,7 +33,6 @@
  *              them based on the active filter ('Popular' or 'Recent').
  */
 
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
