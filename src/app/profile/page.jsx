@@ -1,6 +1,7 @@
 /**
  * page.jsx
- * Loaf Life – user profile page displaying avatar, name, bio, interests, and saved hacks.
+ * 
+ * Loaf Life – user profile page displaying avatar, name, bio, interests, and saved posts.
  *
  * Refactored using modular components: ProfileCard, BioSection, InterestsSection, SavedHacksSection,
  * AvatarModal, and EditProfileModal.
@@ -11,6 +12,26 @@
  * @author Aleen Dawood
  * @author Natalia Arseniuk
  * @author https://chatgpt.com/*
+ * 
+ * @function ProfilePage
+ * @description Displays and allows editing of the user profile. Loads user data from Supabase,
+ *              handles modals, toasts, and saves profile changes.
+ *
+ * @function loadProfile
+ * @description Loads user profile info (avatar, name, school, bio, interests) from Supabase
+ *              and formats it for UI display.
+ *
+ * @function handleSaveProfile
+ * @description Validates and saves updated profile data (name, school, bio, interests) to Supabase.
+ *
+ * @function handleSaveAvatar
+ * @description Saves selected avatar to Supabase and updates the UI.
+ *
+ * @function handleSaveInterests
+ * @description Saves selected interests to Supabase and updates the UI.
+ *
+ * @function loadSavedPosts
+ * @description Loads saved items (hacks, deals, events) and formats them for display.
  */
 
 "use client";
@@ -28,23 +49,31 @@ import AvatarModal from "@/components/profile/AvatarModal";
 import EditProfileModal from "@/components/profile/EditProfileModal";
 import SkeletonLoaf from "@/components/profile/SkeletonLoaf";
 import Toast from "@/components/profile/Toast";
-import { motion } from 'framer-motion';
 
-
+/**
+ * ProfilePage
+ *
+ * @function ProfilePage
+ * @description Displays the user's profile page including avatar, name, school, bio,
+ *              interests, and saved posts. Allows editing and saves changes to Supabase.
+ * @returns {JSX.Element} The complete profile page component.
+ */
 export default function ProfilePage() {
-  // Modal states
+  // -------------------- STATE MANAGEMENT --------------------
+
+  // Modals visibility
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showEditInterests, setShowEditInterests] = useState(false);
 
-  // Profile data states
+  // Profile data
   const [selectedAvatar, setSelectedAvatar] = useState("/images/avatars/avatar1.png");
   const [isLoading, setIsLoading] = useState(true);
   const [name, setName] = useState("");
   const [school, setSchool] = useState("");
   const [bio, setBio] = useState("");
 
-  // Edit form states
+  // Edit form
   const [editName, setEditName] = useState("");
   const [editSchool, setEditSchool] = useState("");
   const [editBio, setEditBio] = useState("");
@@ -54,24 +83,18 @@ export default function ProfilePage() {
   const [interests, setInterests] = useState([]);
   const [editInterests, setEditInterests] = useState([]);
 
-  // Saved content
+  // Saved hacks, deals, events
   const [savedPosts, setSavedPosts] = useState([]);
 
-  // Toast state
+  // Toast UI
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState('success');
 
-  useEffect(() => {
-    if (toastVisible) {
-      const timeout = setTimeout(() => setToastVisible(false), 3000);
-      return () => clearTimeout(timeout);
-    }
-  }, [toastVisible]);
-
+  // Max tag selection limit
   const MAX_SELECTION = 5;
 
-  // Interests list (emojis + labels)
+  // Predefined tags with emoji
   const PREDEFINED_INTERESTS = [
     { emoji: "🎮", label: "Gaming" },
     { emoji: "👨‍🍳", label: "Cooking" },
@@ -99,7 +122,26 @@ export default function ProfilePage() {
     { emoji: "🕹️", label: "Esports" },
   ];
 
-  // Load profile info from Supabase
+  /**
+   * Toast Auto-dismiss
+   *
+   * @description Closes the toast after 3 seconds when visible.
+   */
+  useEffect(() => {
+    if (toastVisible) {
+      const timeout = setTimeout(() => setToastVisible(false), 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [toastVisible]);
+
+  /**
+   * loadProfile
+   *
+   * @function loadProfile
+   * @description Loads the current user's profile from Supabase, including avatar,
+   *              name, school, bio, and interest tags.
+   *              Converts stored interest strings into emoji-tag objects for UI display.
+   */
   const loadProfile = async (session) => {
     setIsLoading(true);
 
@@ -121,7 +163,7 @@ export default function ProfilePage() {
       setBio(data.bio || "");
       setSelectedAvatar(data.avatar_url || "/images/avatars/avatar1.png");
 
-      // Convert stored labels back to emoji-tag objects
+      // Populate interest objects with emoji-tag format
       const interestObjs = (data.interests || [])
         .map(label => PREDEFINED_INTERESTS.find(i => i.label === label))
         .filter(Boolean);
@@ -133,57 +175,13 @@ export default function ProfilePage() {
     setIsLoading(false);
   };
 
-  // Validation logic for edit form
-  const isFormValid =
-    editName.trim() &&
-    editSchool.trim() &&
-    editBio.trim() &&
-    editName.length <= 50 &&
-    editSchool.length <= 100 &&
-    editBio.length <= 200;
-
-  // Save profile data to Supabase
-  const handleSaveProfile = async () => {
-    const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
-    if (sessionError || !session?.user) return console.error("No session, cannot save.");
-
-    const { error } = await clientDB.from("user_profiles").upsert({
-      id: session.user.id,
-      name: editName.trim(),
-      school: editSchool.trim(),
-      bio: editBio.trim(),
-      avatar_url: selectedAvatar,
-      interests: editInterests.map(i => i.label),
-    });
-
-    if (error) return console.error("Error saving profile:", error);
-
-    // Sync local UI with updated values
-    setName(editName);
-    setSchool(editSchool);
-    setBio(editBio);
-    setShowEditModal(false);
-    setToastMessage("Profile updated!");
-    setToastType("success");
-    setToastVisible(true);
-  };
-
-  // Save updated interests
-  const handleSaveInterests = async () => {
-    const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
-    if (sessionError || !session?.user) return console.error("No session, cannot save interests.");
-
-    const { error } = await clientDB.from("user_profiles").update({ interests: editInterests.map(i => i.label) }).eq("id", session.user.id);
-    if (error) return console.error("Error saving interests:", error);
-
-    setInterests(editInterests);
-    setShowEditInterests(false);
-    setToastMessage("Interests updated!");
-    setToastType("success");
-    setToastVisible(true);
-  };
-
-  // Load saved hacks and deals
+  /**
+   * loadSavedPosts
+   *
+   * @function loadSavedPosts
+   * @description Retrieves saved post IDs (hacks, deals, events) from Supabase,
+   *              fetches their full data, and formats it for display.
+   */
   const loadSavedPosts = async (session) => {
     try {
       const { data: saved } = await clientDB
@@ -219,7 +217,73 @@ export default function ProfilePage() {
     }
   };
 
-  // Save avatar selection to Supabase
+  // Validate all fields before saving profile
+  const isFormValid =
+    editName.trim() &&
+    editSchool.trim() &&
+    editBio.trim() &&
+    editName.length <= 50 &&
+    editSchool.length <= 100 &&
+    editBio.length <= 200;
+
+  /**
+   * handleSaveProfile
+   *
+   * @function handleSaveProfile
+   * @description Validates and saves edited profile data (name, school, bio, interests)
+   *              back to Supabase, and updates the local UI state accordingly.
+   */
+  const handleSaveProfile = async () => {
+    const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
+    if (sessionError || !session?.user) return console.error("No session, cannot save.");
+
+    const { error } = await clientDB.from("user_profiles").upsert({
+      id: session.user.id,
+      name: editName.trim(),
+      school: editSchool.trim(),
+      bio: editBio.trim(),
+      avatar_url: selectedAvatar,
+      interests: editInterests.map(i => i.label),
+    });
+
+    if (error) return console.error("Error saving profile:", error);
+
+    // Sync local UI with updated values
+    setName(editName);
+    setSchool(editSchool);
+    setBio(editBio);
+    setShowEditModal(false);
+    setToastMessage("Profile updated!");
+    setToastType("success");
+    setToastVisible(true);
+  };
+
+  /**
+   * handleSaveInterests
+   *
+   * @function handleSaveInterests
+   * @description Updates the user's selected interests in Supabase and refreshes the view.
+   */
+  const handleSaveInterests = async () => {
+    const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
+    if (sessionError || !session?.user) return console.error("No session, cannot save interests.");
+
+    const { error } = await clientDB.from("user_profiles").update({ interests: editInterests.map(i => i.label) }).eq("id", session.user.id);
+    if (error) return console.error("Error saving interests:", error);
+
+    setInterests(editInterests);
+    setShowEditInterests(false);
+    setToastMessage("Interests updated!");
+    setToastType("success");
+    setToastVisible(true);
+  };
+
+  /**
+   * handleSaveAvatar
+   *
+   * @function handleSaveAvatar
+   * @description Saves the selected avatar to Supabase and shows a success toast.
+   */
   const handleSaveAvatar = async (avatarUrl) => {
     setSelectedAvatar(avatarUrl);
 
@@ -240,7 +304,13 @@ export default function ProfilePage() {
     }
   };
 
-  // On first load, get session and load profile & saved posts
+  /**
+   * initSession
+   *
+   * @function initSession
+   * @description On mount, retrieves the current session and triggers the
+   *              loading of profile and saved posts.
+   */
   useEffect(() => {
     const initSession = async () => {
       const { data: { session } } = await clientDB.auth.getSession();
@@ -253,6 +323,7 @@ export default function ProfilePage() {
     initSession();
   }, []);
 
+  // Build and return UI layout
   return (
     <>
       <StickyNavBar />
@@ -268,6 +339,7 @@ export default function ProfilePage() {
       )}
 
       <main className="min-h-screen bg-[#F5E3C6] text-[#8B4C24] px-6 py-10 font-sans">
+        {/* Display loading animation until profile is ready */}
         {isLoading ? (
           <SkeletonLoaf />
         ) : (
@@ -277,7 +349,7 @@ export default function ProfilePage() {
               name={name}
               school={school}
               onEditClick={() => {
-                // Populate edit fields before showing modal
+                // Open modal with pre-filled edit values
                 setEditName(name);
                 setEditSchool(school);
                 setEditBio(bio);
