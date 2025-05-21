@@ -1,4 +1,29 @@
-'use client'
+/**
+ * DealCard.jsx
+ * Loaf Life – Displays a single deal card with its details.
+ *
+ * This component renders an individual card for a deal, showcasing
+ * its title, location, price, and when it was created. Users can
+ * click the card to navigate to a more detailed page for that deal.
+ * It also integrates interactive elements like voting and comment counts.
+ *
+ * Features:
+ * - Renders deal title, location, price, and creation timestamp.
+ * - Displays relevant tags associated with the deal.
+ * - Links to the detailed page for the specific deal.
+ * - Integrates VoteButtons for user upvotes and downvotes.
+ * - Shows CommentCount for the deal's discussion.
+ * - Utilizes BaseCard for a consistent visual structure.
+ *
+ * Portions of styling and logic assisted by Google Gemini 2.5 Pro.
+ *
+ * Modified with assistance from Google Gemini 2.5 Pro.
+ *
+ * @author Nathan Oloresisimo
+ * @author https://gemini.google.com/app
+ */
+
+'use client';
 
 import React from 'react';
 import BaseCard from './BaseCard';
@@ -11,17 +36,6 @@ import PropTypes from 'prop-types';
 import { formatTimeAgo } from '../../utils/formatTimeAgo';
 import toTitleCase from '../../utils/toTitleCase';
 
-/**
- * DealCard.jsx
- * Loaf Life - Deal Card Component
- *
- * Displays a single deal with its details.
- *
- * Modified with assistance from Google Gemini 2.5 Pro
- * 
- * @author: Nathan O
- * @author: https://gemini.google.com/app
- */
 
 const DealCard = ({ id, title, location, price, tags, expirationDate, upvotes = 0, downvotes = 0, createdAt, userId }) => {
 
