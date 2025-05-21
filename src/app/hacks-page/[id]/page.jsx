@@ -147,9 +147,18 @@ export default function HackDetailPage({ params }) {
     return `${diffInWeeks} weeks ago`;
   };
 
-  const capitalizeFirstLetter = (string) => {
-    if (!string) return '';
-    return string.charAt(0).toUpperCase() + string.slice(1);
+  const toTitleCase = (str) => {
+    if (!str) return '';
+    const minorWords = new Set([
+      "a", "an", "the", "and", "but", "or", "for", "nor", "on", "at", "to", "from", "by", "of", "in", "into", "near", "over", "past", "through", "up", "upon", "with", "without"
+    ]);
+    const words = String(str).toLowerCase().split(' ');
+    return words.map((word, index) => {
+      if (index === 0 || index === words.length - 1 || !minorWords.has(word)) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      }
+      return word;
+    }).join(' ');
   };
 
   const handleDelete = async () => {
@@ -222,13 +231,13 @@ export default function HackDetailPage({ params }) {
           </div>
 
           {/* Hack Title */}
-          <h1 className="text-3xl font-bold mb-2 text-[#8B4C24]">{capitalizeFirstLetter(hack.title)}</h1>
+          <h1 className="text-3xl font-bold mb-2 text-[#8B4C24]">{toTitleCase(hack.title)}</h1>
 
           {/* Tags Display */}
           {hack.tags && hack.tags.length > 0 && (
             <div className="mb-6 flex flex-wrap gap-2">
               {hack.tags.map((tag, index) => (
-                <Tag key={index} label={capitalizeFirstLetter(tag)} />
+                <Tag key={index} label={toTitleCase(tag)} />
               ))}
             </div>
           )}
