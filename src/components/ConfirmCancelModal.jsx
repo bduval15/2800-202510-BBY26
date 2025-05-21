@@ -6,7 +6,7 @@ export default function ConfirmCancelModal({ isOpen, onConfirm, onCancel }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="fixed inset-0 bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-50 p-4">
       <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
         <h3 className="text-lg font-semibold text-[#6A401F] mb-4">Discard Changes?</h3>
         <p className="text-sm text-gray-700 mb-6">
