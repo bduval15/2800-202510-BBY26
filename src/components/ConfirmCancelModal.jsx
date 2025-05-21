@@ -1,21 +1,28 @@
 /**
- * ConfirmCancelModal.jsx
- * Loaf Life – Modal for confirming cancellation of an action.
+ * File: ConfirmCancelModal.jsx
  *
- * This component displays a modal dialog that prompts the user to confirm if
- * they want to discard unsaved changes or cancel an ongoing action, such as
- * editing a form. It provides options to confirm the cancellation or to
- * continue with the current task.
+ * Loaf Life
+ *   Modal for confirming cancellation of an action. This component displays a modal
+ *   dialog that prompts the user to confirm if they want to discard unsaved changes
+ *   or cancel an ongoing action, such as editing a form. It provides options to
+ *   confirm the cancellation or to continue with the current task.
+ *   Utilizes React for UI components.
  *
- * Features:
- * - Displays a confirmation message for discarding changes.
- * - Provides "Keep Editing" and "Discard" action buttons.
- * - Controlled by an `isOpen` prop to show/hide the modal.
+ * Authorship:
+ *   @author Nathan Oloresisimo
+ *   @author https://gemini.google.com/app
  *
- * Modified with assistance from Google Gemini 2.5 Pro.
- *
- * @author Nathan Oloresisimo
- * @author https://gemini.google.com/app
+ * Main Component:
+ *   @function ConfirmCancelModal
+ *   @description Displays a modal dialog to confirm cancellation. It prompts the user
+ *                to confirm discarding unsaved changes or canceling an action.
+ *                Provides "Keep Editing" and "Discard" actions. Visibility is
+ *                controlled by the `isOpen` prop.
+ *   @param {object} props - The component's props.
+ *   @param {boolean} props.isOpen - Controls the visibility of the modal.
+ *   @param {function} props.onConfirm - Function to call when cancellation is confirmed (Discard).
+ *   @param {function} props.onCancel - Function to call to cancel the cancellation (Keep Editing).
+ *   @returns {JSX.Element | null} The modal component or null if not open.
  */
 'use client'
 

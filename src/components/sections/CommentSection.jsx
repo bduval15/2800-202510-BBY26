@@ -1,27 +1,41 @@
 /**
- * CommentSection.jsx
- * Loaf Life – Displays comments for a specific post.
+ * File: CommentSection.jsx
  *
- * This component is responsible for fetching and displaying a list of comments
- * associated with a particular entity (hack, deal, or event). It also
- * integrates the AddCommentForm to allow users to submit new comments. The
- * section shows a loading state while comments are being fetched and an error
- * message if the fetch fails. It also displays the count of comments.
+ * Loaf Life
+ *   Displays comments for a specific post and allows users to add new comments.
+ *   It fetches comments from Supabase, shows loading/error states, and updates dynamically.
+ *   Integrates with Supabase for data fetching and user authentication.
  *
- * Features:
- * - Fetches comments from Supabase based on entity ID and type.
- * - Displays a list of `CommentCard` components.
- * - Integrates `AddCommentForm` for adding new comments.
- * - Shows loading skeletons while comments are loading.
- * - Handles and displays error states for comment fetching.
- * - Updates comment list when a new comment is added or an existing one is updated.
- * - Displays the total number of comments.
+ * Authorship:
+ *   @author Nathan Oloresisimo
+ *   @author https://gemini.google.com/app
  *
- * Modified with assistance from Google Gemini 2.5 Flash.
+ * Main Component:
+ *   @function CommentSection
+ *   @description Renders a section for displaying and adding comments related to an entity.
+ *                It handles fetching, displaying, and updating comments.
+ *   @param {object} props - The component's props.
+ *   @param {string} props.entityId - The ID of the entity (e.g., post, deal) to fetch comments for.
+ *   @param {string} props.entityType - The type of the entity (e.g., 'hack', 'deal').
+ *   @returns {JSX.Element} The comment section UI.
  *
- * @author Nathan Oloresisimo
- * @author https://gemini.google.com/app
+ * Helper Functions / Hooks / Logic Blocks:
+ *
+ *   @function fetchUser
+ *   @description Fetches the current authenticated user's ID from Supabase.
+ *                Sets the `currentUserId` state.
+ *   @async
+ *
+ *   @function fetchComments
+ *   @description Fetches comments for the specified `entityId` and `entityType` from Supabase.
+ *                It handles loading states and errors, and updates the `comments` state.
+ *   @async
+ *
+ *   @function handleCommentAddedOrUpdated
+ *   @description Callback function to refresh the comments list, typically after a new comment
+ *                is added or an existing one is updated. It calls `fetchComments`.
  */
+
 
 'use client';
 
@@ -32,16 +46,19 @@ import { clientDB } from '@/supabaseClient';
 import { formatTimeAgo } from '@/utils/formatTimeAgo';
 import CommentSkeleton from '@/components/skeletons/CommentSkeleton';
 
-
 export default function CommentSection({ entityId, entityType }) {
   // Log props on component mount or when they change (for debugging)
   useEffect(() => {
     console.log('[CommentSection] Received props:', { entityId, entityType });
   }, [entityId, entityType]);
 
+  // State for storing the array of comments fetched from the database.
   const [comments, setComments] = useState([]);
+  // State for indicating whether comments are currently being loaded.
   const [isLoading, setIsLoading] = useState(false);
+  // State for storing any error message that occurs during comment fetching.
   const [error, setError] = useState(null);
+  // State for storing the ID of the currently authenticated user.
   const [currentUserId, setCurrentUserId] = useState(null);
 
   // Fetch the current authenticated user's ID on component mount
@@ -116,17 +133,20 @@ export default function CommentSection({ entityId, entityType }) {
 
   return (
     <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30 mt-4">
+      {/* Section: Header displaying "Comments" and count */}
       <div className="w-full flex justify-between items-center text-xl font-semibold text-[#8B4C24] mb-4">
         <span>
           Comments
+          {/* Display comment count if not loading and no error */}
           {!isLoading && !error && (
             <span className="text-sm font-normal ml-1">({comments.length})</span>
           )}
         </span>
       </div>
 
-      {/* Comments List - always visible, scrollable */}
-      <div className="space-y-3 max-h-[23rem] overflow-y-auto pr-2 mb-4" id="comments-list-container"> {/* Adjusted from 9rem to 6.5rem per card */}
+      {/* Section: Comments List - always visible, scrollable */}
+      <div className="space-y-3 max-h-[23rem] overflow-y-auto pr-2 mb-4" id="comments-list-container">
+        {/* Conditional Rendering: Loading Skeletons */}
         {isLoading ? (
           <>
             <CommentSkeleton />
@@ -136,10 +156,13 @@ export default function CommentSection({ entityId, entityType }) {
             <CommentSkeleton />
           </>
         ) : error ? (
+          // Conditional Rendering: Error Message
           <p className="text-red-500">Error: {error}</p>
         ) : comments.length === 0 ? (
+          // Conditional Rendering: No Comments Message
           <p className="text-[#8B4C24]/70">No comments yet. Be the first to comment!</p>
         ) : (
+          // Render each comment using CommentCard
           comments.map((comment) => (
             <CommentCard
               key={comment.id}
@@ -152,7 +175,7 @@ export default function CommentSection({ entityId, entityType }) {
         )}
       </div>
 
-      {/* Add Comment Form - always visible if entityId and entityType are present */}
+      {/* Section: Add Comment Form - visible if entityId and entityType are present */}
       {entityId && entityType && (
         <AddCommentForm
           entityId={entityId}

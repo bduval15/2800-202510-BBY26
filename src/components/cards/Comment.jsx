@@ -1,25 +1,53 @@
 /**
- * Comment.jsx
- * Loaf Life – Displays a single comment.
+ * File: Comment.jsx
  *
- * This component renders an individual comment, showing the user's
- * avatar, username, the time it was posted, and the comment content.
- * If the current user is the author of the comment, they are
- * provided with an option to edit their message.
+ * Loaf Life
+ *   Displays a single comment, including user avatar, username, timestamp, and content.
+ *   Provides edit functionality for the comment author, allowing them to update or cancel
+ *   their changes. Interacts with Supabase to persist comment updates.
+ *   Utilizes Next.js Image component and Heroicons.
  *
- * Features:
- * - Renders comment details: avatar, username, timestamp, text.
- * - Provides edit functionality for the comment author.
- * - Allows saving or canceling of comment edits.
- * - Interacts with Supabase to update comments.
+ * Authorship:
+ *   @author Nathan Oloresisimo
+ *   @author https://gemini.google.com/app
  *
- * Portions of styling and logic assisted by Google Gemini 2.5 Flash.
+ * Main Component:
+ *   @function Comment
+ *   @description Renders an individual comment. It shows the author's avatar and username,
+ *                the time the comment was posted, and the comment text. If the current user
+ *                is the author, an edit button is shown. When editing, the user can save
+ *                or cancel their changes. Saving updates the comment in Supabase.
+ *   @param {object} props - The component's props.
+ *   @param {object} props.comment - The comment object. (Required)
+ *   @param {string} props.comment.id - The unique ID of the comment.
+ *   @param {string} props.comment.message - The text content of the comment.
+ *   @param {string} props.comment.user_id - The ID of the user who authored the comment.
+ *   @param {object} [props.comment.user_profiles] - Profile information of the comment author.
+ *   @param {string} [props.comment.user_profiles.username] - The username of the author.
+ *   @param {string} [props.comment.user_profiles.avatar_url] - URL of the author's avatar.
+ *   @param {string} props.currentUserId - The ID of the currently logged-in user. (Required)
+ *   @param {function} [props.onCommentUpdated] - Callback invoked after a comment is saved.
+ *   @param {string} props.timestampFormated - Pre-formatted timestamp string. (Required)
+ *   @returns {JSX.Element} A div element representing the comment.
  *
- * Modified with assistance from Google Gemini 2.5 Flash.
+ * Helper Functions / Hooks / Logic Blocks:
  *
- * @author Nathan Oloresisimo
- * @author https://gemini.google.com/app
+ *   @function handleEdit
+ *   @description Sets the component to edit mode. It initializes the `editedText` state
+ *                with the current comment message and clears any previous edit errors.
+ *
+ *   @function handleCancel
+ *   @description Exits edit mode. It resets `editedText` to the original message and clears
+ *                any edit errors.
+ *
+ *   @function handleSave
+ *   @description Saves the edited comment. If the text is unchanged or empty, it handles
+ *                these cases appropriately. Otherwise, it attempts to update the comment
+ *                in the Supabase 'comment' table. On success, it exits edit mode and calls
+ *                `onCommentUpdated`. Errors are caught and displayed.
+ *   @async
  */
+
 
 import React, { useState } from 'react';
 import Image from 'next/image';

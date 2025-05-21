@@ -1,24 +1,21 @@
 /**
- * Bookmark.jsx
- * Loaf Life – Bookmark button component.
+ * File: Bookmark.jsx
  *
- * This component provides a button for users to bookmark or unbookmark
- * various items (hacks, deals, events). It visually reflects the current
- * bookmark status and updates it in the Supabase 'saved_items' table
- * when clicked.
+ * Loaf Life
+ *   Provides a button for users to bookmark or unbookmark items (hacks, deals, events).
+ *   It visually reflects the bookmark status and updates the Supabase 'saved_items' table.
+ *   Utilizes React for UI and Supabase for data persistence.
  *
- * Features:
- * - Displays a bookmark icon (solid or outline) based on status.
- * - Fetches the current user's ID and initial bookmark state.
- * - Toggles bookmark status on user click.
- * - Updates the 'saved_items' table in Supabase for persistence.
+ * Authorship:
+ *   @author Nathan Oloresisimo
+ *   @author https://gemini.google.com/app (Portions of styling and logic)
  *
- * Portions of styling and logic assisted by Google Gemini 2.5 Pro.
- *
- * Modified with assistance from Google Gemini 2.5 Flash.
- *
- * @author Nathan Oloresisimo
- * @author https://gemini.google.com/app
+ * Main Component:
+ *   @function BookmarkButton
+ *   @description Renders a bookmark button that allows users to save or unsave items.
+ *                It fetches the user's ID and the item's initial bookmark status.
+ *                Clicking toggles status and updates the backend.
+ *   @returns {JSX.Element} A button element for bookmarking.
  */
 
 'use client';
@@ -29,19 +26,39 @@ import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid';
 import { clientDB } from '@/supabaseClient';
 import PropTypes from 'prop-types';
 
+/**
+ * @function BookmarkButton
+ * @description A button component that allows users to bookmark or unbookmark an item.
+ *   It handles fetching the current bookmark status and updating it in the Supabase
+ *   'saved_items' table upon user interaction.
+ * @param {object} props - The component's props.
+ * @param {string|number} [props.hackId] - The ID of the hack to bookmark.
+ * @param {string|number} [props.dealId] - The ID of the deal to bookmark.
+ * @param {string|number} [props.eventId] - The ID of the event to bookmark.
+ * @returns {JSX.Element} The bookmark button UI.
+ */
 const BookmarkButton = ({ hackId, dealId, eventId }) => {
+  // State for whether the item is currently bookmarked by the user.
   const [isBookmarked, setIsBookmarked] = useState(false);
+  // State to indicate if a bookmark operation is in progress.
   const [isLoading, setIsLoading] = useState(false);
+  // State for the current user's ID.
   const [userId, setUserId] = useState(null);
+  // State to store any error messages related to bookmarking.
   const [error, setError] = useState(null);
 
-  // Derive itemId and itemType from new props
+  // Determine itemId and itemType based on which prop (hackId, dealId, eventId) is provided.
   const itemId = hackId || dealId || eventId;
   const itemType = hackId ? 'hack' : (dealId ? 'deal' : (eventId ? 'event' : null));
 
+  /**
+   * useEffect: Fetch Current User Session.
+   * @description Fetches the current user's session data on component mount to get the user ID.
+   *              This is necessary to check and manage user-specific bookmarks.
+   */
   useEffect(() => {
     const fetchCurrentUser = async () => {
-      setIsLoading(true); // Set loading true at the start of user fetch
+      setIsLoading(true);
       setError(null);
       try {
         const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
@@ -58,24 +75,33 @@ const BookmarkButton = ({ hackId, dealId, eventId }) => {
         setError('Could not fetch user session.');
         setUserId(null);
       } finally {
-        // If no itemId, stop loading as bookmark status cannot be determined without an item.
-        // The loading state will be handled by the checkIfBookmarked effect if itemId is present.
-        if (!itemId) setIsLoading(false); 
+        if (!itemId) setIsLoading(false);
       }
     };
     fetchCurrentUser();
-  }, []); // Runs once to get user
+  }, []);
 
+  /**
+   * useEffect: Check Initial Bookmark Status.
+   * @description Fetches the initial bookmark status of the item for the current user once
+   *              the user ID, item ID, and item type are available. It queries the
+   *              'saved_items' table in Supabase.
+   */
   useEffect(() => {
     if (!userId || !itemId || !itemType) {
       setIsBookmarked(false);
-      // If user is loaded but no item, ensure loading is false
       if (userId && !itemId) setIsLoading(false);
       return;
     }
 
+    /**
+     * @function checkIfBookmarked
+     * @description Queries Supabase to determine if the current item is bookmarked by the user.
+     *              Updates `isBookmarked` state based on the query result.
+     * @async
+     */
     const checkIfBookmarked = async () => {
-      setIsLoading(true); // Ensure loading is true before the check
+      setIsLoading(true);
       setError(null);
       try {
         let query = clientDB
@@ -83,7 +109,6 @@ const BookmarkButton = ({ hackId, dealId, eventId }) => {
           .select('id')
           .eq('user_id', userId);
 
-        // Add item-specific filter to the bookmark check query.
         if (itemType === 'hack') {
           query = query.eq('hack_id', itemId);
         } else if (itemType === 'deal') {
@@ -91,7 +116,6 @@ const BookmarkButton = ({ hackId, dealId, eventId }) => {
         } else if (itemType === 'event') {
           query = query.eq('event_id', itemId);
         } else {
-          // Should not happen if itemId and itemType are derived correctly
           console.error('Bookmark check: Invalid item type derived.');
           setIsLoading(false);
           return;
@@ -114,14 +138,23 @@ const BookmarkButton = ({ hackId, dealId, eventId }) => {
     checkIfBookmarked();
   }, [userId, itemId, itemType]);
 
+  /**
+   * @function handleBookmarkClick
+   * @description Toggles the bookmark status of the item. If the item is bookmarked,
+   *              it unbookmarks it (deletes from 'saved_items'). If not bookmarked,
+   *              it bookmarks it (inserts into 'saved_items'). Handles loading states
+   *              and errors during the Supabase operations.
+   * @async
+   * @param {Event} e - The click event object.
+   */
   const handleBookmarkClick = async (e) => {
     e.preventDefault();
-    e.stopPropagation();
+    e.stopPropagation(); // Prevents event bubbling, useful if button is inside other clickable elements.
     if (!userId) {
       setError("You must be logged in to bookmark items.");
       return;
     }
-    if (!itemId || !itemType) { // Should be caught by button disabled state
+    if (!itemId || !itemType) {
       setError("Cannot bookmark item: ID or type is missing.");
       return;
     }
@@ -131,13 +164,12 @@ const BookmarkButton = ({ hackId, dealId, eventId }) => {
 
     try {
       if (isBookmarked) {
-        // Remove bookmark
+        // If already bookmarked, delete the entry from 'saved_items'.
         let deleteQuery = clientDB
           .from('saved_items')
           .delete()
           .eq('user_id', userId);
 
-        // Add item-specific filter to the delete query.
         if (itemType === 'hack') {
           deleteQuery = deleteQuery.eq('hack_id', itemId);
         } else if (itemType === 'deal') {
@@ -158,13 +190,12 @@ const BookmarkButton = ({ hackId, dealId, eventId }) => {
         }
         setIsBookmarked(false);
       } else {
-        // Add bookmark
+        // If not bookmarked, insert a new entry into 'saved_items'.
         const itemToInsert = {
           user_id: userId,
-          created_at: new Date().toISOString(),
+          created_at: new Date().toISOString(), // Record the time of bookmarking.
         };
 
-        // Add type-specific ID field to the item being saved.
         if (itemType === 'hack') {
           itemToInsert.hack_id = itemId;
         } else if (itemType === 'deal') {
@@ -189,7 +220,6 @@ const BookmarkButton = ({ hackId, dealId, eventId }) => {
       }
     } catch (err) {
       console.error(`Error updating bookmark for item ${itemId}. Raw error:`, JSON.stringify(err, null, 2));
-      // Construct a more user-friendly error message from the raw error object.
       let displayErrorMessage = 'Failed to update bookmark.';
       if (err && typeof err === 'object') {
         if (err.message) {
@@ -213,16 +243,18 @@ const BookmarkButton = ({ hackId, dealId, eventId }) => {
     }
   };
 
-  // Disable if loading or if no valid item id is derived (neither hackId, dealId, nor eventId provided)
+  // Disable the button if loading, or if there's no valid item ID.
   const isDisabled = isLoading || !itemId;
 
   return (
+    // Bookmark button element
     <button
       onClick={handleBookmarkClick}
-      disabled={isDisabled} 
+      disabled={isDisabled}
       aria-label={isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
       className="p-1 rounded-lg bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] shadow-md ml-auto disabled:opacity-50 disabled:cursor-not-allowed"
     >
+      {/* Conditionally render solid or outline icon based on bookmark status */}
       {isBookmarked ? (
         <BookmarkSolidIcon className="h-6 w-6" />
       ) : (
@@ -233,8 +265,11 @@ const BookmarkButton = ({ hackId, dealId, eventId }) => {
 };
 
 BookmarkButton.propTypes = {
+  /** The ID of the hack item, if applicable. */
   hackId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  /** The ID of the deal item, if applicable. */
   dealId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  /** The ID of the event item, if applicable. */
   eventId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 

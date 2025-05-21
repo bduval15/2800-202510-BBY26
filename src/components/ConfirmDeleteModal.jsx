@@ -1,28 +1,35 @@
 /**
- * ConfirmDeleteModal.jsx
- * Loaf Life – Modal for confirming the deletion of an item.
+ * File: ConfirmDeleteModal.jsx
  *
- * This component presents a modal dialog to the user, asking for confirmation
- * before proceeding with a delete operation. It is designed to prevent
- * accidental deletions by requiring an explicit confirmation. The modal
- * displays the name of the item to be deleted if provided.
+ * Loaf Life
+ *   Modal for confirming the deletion of an item. This component presents a modal
+ *   dialog to the user, asking for confirmation before proceeding with a delete
+ *   operation. It is designed to prevent accidental deletions by requiring an
+ *   explicit confirmation. The modal displays the name of the item to be deleted
+ *   if provided.
+ *   Utilizes React for UI components.
  *
- * Features:
- * - Displays a confirmation message for deletion.
- * - Shows the name of the item being deleted (optional).
- * - Provides "Cancel" and "Delete" action buttons.
- * - Controlled by an `isOpen` prop to show/hide the modal.
+ * Authorship:
+ *   @author Nathan Oloresisimo
+ *   @author https://gemini.google.com/app
  *
- * Modified with assistance from Google Gemini 2.5 Flash.
- *
- * @author Nathan Oloresisimo
- * @author https://gemini.google.com/app
+ * Main Component:
+ *   @function ConfirmDeleteModal
+ *   @description Displays a modal dialog to confirm item deletion. It shows a
+ *                confirmation message and, optionally, the item's name.
+ *                Provides "Cancel" and "Delete" actions. Visibility is
+ *                controlled by the `isOpen` prop.
+ *   @param {object} props - The component's props.
+ *   @param {boolean} props.isOpen - Controls the visibility of the modal.
+ *   @param {function} props.onClose - Function to call when the modal is closed (Cancel).
+ *   @param {function} props.onConfirm - Function to call when deletion is confirmed.
+ *   @param {string} [props.itemName] - The name of the item to be deleted.
+ *   @returns {JSX.Element | null} The modal component or null if not open.
  */
 
 'use client';
 
 import React from 'react';
-
 
 export default function ConfirmDeleteModal({ isOpen, onClose, onConfirm, itemName }) {
   if (!isOpen) {

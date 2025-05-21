@@ -1,29 +1,34 @@
 /**
- * HackCard.jsx
- * Loaf Life – Displays a single hack card with its details.
+ * File: HackCard.jsx
  *
- * This component renders an individual card for a hack. It showcases
- * the hack's title and when it was created. Users can click the card
- * to navigate to a more detailed page for that hack. It also
- * integrates interactive elements like voting, bookmarking, and
- * comment counts.
+ * Loaf Life
+ *   Displays a single hack card, showcasing its title and creation timestamp.
+ *   Integrates interactive elements like voting, bookmarking, and comment counts.
+ *   Utilizes Next.js for routing, React for UI, and `BaseCard` for consistent styling.
  *
- * Features:
- * - Renders hack title and creation timestamp.
- * - Displays relevant tags associated with the hack.
- * - Links to the detailed page for the specific hack.
- * - Integrates VoteButtons for user upvotes and downvotes.
- * - Integrates BookmarkButton for saving hacks.
- * - Shows CommentCount for the hack's discussion.
- * - Utilizes BaseCard for a consistent visual structure.
+ * Authorship:
+ *   @author Nathan Oloresisimo
+ *   @author https://gemini.google.com/app
  *
- * Portions of styling and logic assisted by Google Gemini 2.5 Pro.
- *
- * Modified with assistance from Google Gemini 2.5 Pro.
- *
- * @author Nathan Oloresisimo
- * @author https://gemini.google.com/app
+ * Main Component:
+ *   @function HackCard
+ *   @description Renders an individual card for a hack. It primarily displays the hack's title
+ *                and when it was created. The card links to a detailed page for the specific
+ *                hack. It includes `VoteButtons`, `CommentCount`, and `BookmarkButton` for
+ *                user interactions. `BaseCard` provides the foundational visual structure.
+ *   @param {object} props - The component's props.
+ *   @param {string|number} props.id - Unique ID of the hack. (Required)
+ *   @param {string} [props.href] - Optional custom link for the card.
+ *   @param {string} props.title - Title of the hack. (Required)
+ *   @param {number} props.upvotes - Number of upvotes for the hack. (Required)
+ *   @param {number} props.downvotes - Number of downvotes for the hack. (Required)
+ *   @param {string[]} [props.tags=[]] - Array of tags associated with the hack.
+ *   @param {string} [props.className=''] - Optional additional CSS classes for the `BaseCard`.
+ *   @param {string} [props.createdAt] - ISO string timestamp of when the hack was created.
+ *   @param {string|number} [props.userId] - ID of the current user (for voting/bookmarking).
+ *   @returns {JSX.Element} A Next.js Link component wrapping a `BaseCard` displaying hack info.
  */
+
 
 import React from 'react';
 import PropTypes from 'prop-types';

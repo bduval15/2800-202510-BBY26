@@ -1,31 +1,52 @@
 /**
- * EventCard.jsx
- * Loaf Life – Displays a single event card with its details.
+ * File: EventCard.jsx
  *
- * This component renders an individual card for an event. It showcases
- * the event's title, location, price, start and end dates, and when it
- * was created. Users can click the card to navigate to a more detailed
- * page for that event. It also integrates interactive elements like
- * voting, bookmarking, and comment counts. This component was
- * converted from HackCard, adapting it for 'events' data.
+ * Loaf Life
+ *   Displays a single event card with details like title, location, price, dates, and creation time.
+ *   It integrates voting, bookmarking, and comment counts. Originally adapted from HackCard.
+ *   Uses Next.js for routing, React for UI, and `BaseCard` for styling.
  *
- * Features:
- * - Renders event title, location, price, dates, and creation timestamp.
- * - Displays relevant tags associated with the event.
- * - Links to the detailed page for the specific event.
- * - Integrates VoteButtons for user upvotes and downvotes.
- * - Integrates BookmarkButton for saving events.
- * - Shows CommentCount for the event's discussion.
- * - Utilizes BaseCard for a consistent visual structure.
+ * Authorship:
+ *   @author Nathan Oloresisimo
+ *   @author Conner Ponton
+ *   @author https://gemini.google.com/app
  *
- * Portions of styling and logic assisted by Google Gemini 2.5 Pro.
+ * Main Component:
+ *   @function EventCard
+ *   @description Renders an individual card for an event. It shows event title, location, price,
+ *                start/end dates, and creation timestamp. The card links to a detailed event page.
+ *                Interactive elements include `VoteButtons`, `BookmarkButton`, and `CommentCount`.
+ *                It uses `BaseCard` for its base styling and structure.
+ *   @param {object} props - The component's props.
+ *   @param {string|number} props.id - Unique ID of the event. (Required)
+ *   @param {string} [props.href] - Optional custom link for the card.
+ *   @param {string} props.title - Title of the event. (Required)
+ *   @param {string|object} [props.location] - Location of the event (string or object with address).
+ *   @param {number} [props.price] - Price of the event.
+ *   @param {number} props.upvotes - Number of upvotes. (Required)
+ *   @param {number} props.downvotes - Number of downvotes. (Required)
+ *   @param {string[]} [props.tags=[]] - Array of tags associated with the event.
+ *   @param {string} [props.className=''] - Optional additional CSS classes.
+ *   @param {string|number} [props.userId] - ID of the current user.
+ *   @param {string} [props.createdAt] - ISO string timestamp of event creation.
+ *   @param {string} [props.startDate] - Start date of the event (YYYY-MM-DD).
+ *   @param {string} [props.endDate] - End date of the event (YYYY-MM-DD).
+ *   @returns {JSX.Element} A Next.js Link component wrapping a `BaseCard` for the event.
  *
- * Modified with assistance from Google Gemini 2.5 Pro.
+ * Helper Functions / Hooks / Logic Blocks:
  *
- * @author Nathan Oloresisimo
- * @author Conner Ponton
- * @author https://gemini.google.com/app
+ *   @function formatDate
+ *   @description Formats a date string (YYYY-MM-DD) into MM/DD/YYYY format.
+ *                Appends 'T00:00:00' to ensure local timezone interpretation.
+ *   @param {string} dateString - The date string to format.
+ *   @returns {string|null} Formatted date string or null if input is invalid.
+ *
+ *   @function handleButtonClick
+ *   @description Prevents click event propagation to the parent `Link` component when
+ *                interacting with buttons inside the card (e.g., `VoteButtons`).
+ *   @param {React.MouseEvent} e - The click event object.
  */
+ 
 
 import React from 'react';
 import PropTypes from 'prop-types';

@@ -1,20 +1,49 @@
 /**
- * BaseCard.jsx
- * Loaf Life – A reusable base card component.
+ * File: BaseCard.jsx
  *
- * This component provides a consistent visual foundation for displaying
- * content in cards. It includes common styling such as rounded corners,
- * padding, and a shadow. It uses a flex layout to align content items.
+ * Loaf Life
+ *   A reusable base card component. It provides a consistent visual foundation for displaying
+ *   content in cards, including common styling like rounded corners, padding, and a shadow.
+ *   Uses flex layout for content alignment.
  *
- * Features:
- * - Provides reusable base styling for cards.
- * - Implements rounded corners and a shadow effect.
- * - Uses flex layout for easy content alignment.
+ * Authorship:
+ *   @author Nathan Oloresisimo
+ *   @author https://gemini.google.com/app
  *
- * Written with assistance from Google Gemini 2.5 Pro.
+ * Main Component:
+ *   @function BaseCard
+ *   @description This component serves as a foundational UI element for card-based content.
+ *                It applies common styling (rounded corners, padding, shadow) and uses
+ *                a flex layout to align its children. It accepts children and an optional
+ *                className for further customization.
+ *   @param {object} props - The component's props.
+ *   @param {React.ReactNode} props.children - Content to render inside the card. (Required)
+ *   @param {string} [props.className=''] - Optional CSS classes for custom styling.
+ *   @returns {JSX.Element} A styled div element wrapping the children.
  *
- * @author Nathan Oloresisimo
- * @author https://gemini.google.com/app
+ * Helper Functions / Hooks / Logic Blocks:
+ *   N/A
+ *
+ * State Variables (Within Components):
+ *   N/A
+ *
+ * useEffect Hooks (Within Components):
+ *   N/A
+ *
+ * Constants and Static Data:
+ *   N/A
+ *
+ * JSX Structure:
+ *   The component renders a single div element.
+ *   - This div acts as the card container.
+ *   - It applies Tailwind CSS classes for background, rounded corners, shadow, padding, margin,
+ *     and flexbox alignment (items-center).
+ *   - Any additional classes passed via the `className` prop are appended.
+ *   - The `children` prop is rendered directly within this div.
+ *
+ * General Notes:
+ *  - This component is designed for reusability across different card types.
+ *  - Styling is primarily managed through Tailwind CSS.
  */
 
 import React from 'react';
@@ -35,6 +64,5 @@ BaseCard.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
 };
-
 
 export default BaseCard;
