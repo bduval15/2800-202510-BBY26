@@ -1,3 +1,22 @@
+/**
+ * login-page.jsx
+ * 
+ * Loaf Life - Authentication Gateway
+ * 
+ * Handles user authentication flows including:
+ * - Login with email/password
+ * - New account registration
+ * - Password visibility toggle
+ * - Session redirection handling
+ * 
+ * Modified with assistance from ChatGPT o4-mini-high for:
+ * - Auth logic implementation
+ * - Form validation patterns
+ * 
+ * @author Conner Ponton
+ * @author https://chatgpt.com/ (Auth flow assistance)
+ */
+
 'use client';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -7,21 +26,21 @@ import isEmail from 'validator/lib/isEmail';
 import { Eye, EyeOff } from 'lucide-react';
 
 /**
- * login-page.jsx
- * Loaf Life – login page where users can enter credentials.
+ * Authentication Form Component
  * 
- * Modified with assistance from ChatGPT o4-mini-high.
- * Further assistance in sign up logic
+ * @function LoginPage
+ * @description Primary authentication component handling:
+ * - Login/signup state toggling
+ * - Credential validation
+ * - Supabase auth integration
+ * - User redirection flows
  * 
- * @author Conner Ponton
- * 
- * @author https://chatgpt.com/*
+ * @returns {JSX.Element} Interactive authentication form UI
  */
-
 export default function LoginPage() {
+  // Form state management
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
-  const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,}$/;
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
@@ -29,9 +48,25 @@ export default function LoginPage() {
   const [message, setMessage] = useState({ text: '', type: '' });
   const router = useRouter();
 
+  // Email validation pattern
+  const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+  /**
+   * Form Submission Handler
+   * 
+   * @async
+   * @function handleSubmit
+   * @description Processes authentication form submission:
+   * - Validates email format
+   * - Handles login/signup Supabase operations
+   * - Manages user redirection & profile creation
+   * 
+   * @param {Event} e - Form submission event
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Email validation check
     if (!emailRegex.test(email) || !isEmail(email)) {
       setMessage({ text: 'Please enter a valid email address.', type: 'error' });
       return;
@@ -41,12 +76,12 @@ export default function LoginPage() {
 
     try {
       if (isLogin) {
-        // Login flow
+        // Existing user login flow
         const { error } = await clientDB.auth.signInWithPassword({ email, password });
         if (error) throw error;
 
+        // Force session refresh before redirect
         await clientDB.auth.getSession();
-
         window.location.href = '/main-feed-page';
         setMessage({
           text: 'Logged in successfully!',
@@ -68,6 +103,7 @@ export default function LoginPage() {
         });
         if (signUpError) throw signUpError;
 
+        // Auto-login after successful signup
         const { error: signInError } = await clientDB.auth.signInWithPassword({ email, password });
         if (signInError) throw signInError;
 
@@ -80,10 +116,16 @@ export default function LoginPage() {
         await clientDB
           .from('user_profiles')
           .upsert([
-            { id: user.id, name: username, school: '', bio: '', avatar_url: '', interests: [] }
+            { id: user.id, 
+              name: username, 
+              school: '', 
+              bio: '', 
+              avatar_url: '', 
+              interests: [] }
           ])
           .select();
 
+        // Redirect to onboarding process
         window.location.href = '/onboarding';
       }
     } catch (error) {
@@ -93,6 +135,14 @@ export default function LoginPage() {
     }
   };
 
+  /**
+   * Navigation Handler
+   * 
+   * @function handleBack
+   * @description Manages backward navigation with fallback to home:
+   * - Uses browser history when available
+   * - Defaults to root route when no history
+   */
   const handleBack = () => {
     if (typeof window !== "undefined" && window.history.length > 1) {
       router.back();
@@ -142,10 +192,12 @@ export default function LoginPage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
+
           <h1 className="text-2xl font-bold mb-4 text-center">
             {isLogin ? 'Log In' : 'Sign Up'}
           </h1>
 
+          {/* System message display */}
           {message.text && (
             <div className={`mb-4 p-2 rounded text-center text-sm ${message.type === 'error'
               ? 'bg-red-100 text-red-700'
@@ -155,6 +207,7 @@ export default function LoginPage() {
             </div>
           )}
 
+          {/* Conditional username field */}
           {!isLogin && (
             <label className="block mb-2">
               <span className="text-sm font-medium">Username</span>
@@ -169,6 +222,7 @@ export default function LoginPage() {
             </label>
           )}
 
+          {/* Email input field */}
           <label className="block mb-2">
             <span className="text-sm font-medium">Email</span>
             <input
@@ -181,6 +235,7 @@ export default function LoginPage() {
             />
           </label>
 
+          {/* Password input with visibility toggle */}
           <label className="block mb-4 relative">
             <span className="text-sm font-medium">Password</span>
             <input
@@ -202,6 +257,8 @@ export default function LoginPage() {
             </button>
             <a href="not-found" className="text-xs text-gray-500 hover:underline mt-2 inline-block">Forgot password?</a>
           </label>
+
+          {/* Primary action button */}
           <button
             type="submit"
             disabled={loading}
@@ -214,6 +271,7 @@ export default function LoginPage() {
             )}
           </button>
 
+          {/* Auth mode toggle */}
           <div className="mt-4 text-center text-sm">
             <button
               type="button"
