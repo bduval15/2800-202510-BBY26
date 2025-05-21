@@ -46,7 +46,7 @@ const EventCard = ({
   tags = [],
   className = '',
   userId,
-  createdAt
+  createdAt 
 }) => {
   let parsedLocation = {};
   try {
@@ -60,52 +60,60 @@ const EventCard = ({
     parsedLocation = { address: "Invalid location" };
   }
 
+  const handleButtonClick = (e) => {
+    e.stopPropagation();
+  };
+
   return (
-    <BaseCard className={`flex-col items-start bg-[#F5E3C6] border border-[#D1905A] ${className}`}>
-      <div className="w-full mb-2 flex justify-between items-center">
-        <Link href={href || `/events-page/${id}`} passHref>
-          <h3 className="text-lg font-semibold text-[#8B4C24] hover:underline cursor-pointer mr-2">
+    <Link href={href || `/events-page/${id}`} passHref>
+      <BaseCard className={`flex-col items-start bg-[#F5E3C6] border border-[#D1905A] hover:shadow-lg transition-shadow duration-200 ease-in-out cursor-pointer ${className}`}>
+        <div className="w-full mb-2 flex justify-between items-center">
+          <h3 className="text-lg font-semibold text-[#8B4C24] group-hover:underline mr-2">
             {toTitleCase(title)}
           </h3>
-        </Link>
-        {createdAt && (
-            <span className="text-xs text-gray-500 whitespace-nowrap">{formatTimeAgo(createdAt)}</span>
-        )}
-      </div>
-
-      {/* Location & Price */}
-      <div className="w-full mb-2 text-sm text-[#8B4C24]/80">
-        {parsedLocation.address && <span>📍 {parsedLocation.address}</span>}
-        {price != null && (
-          <span className="ml-4">💵 {typeof price === 'number' ? price.toFixed(2) : price}</span>
-        )}
-      </div>
-
-       {/* Tags */}
-       {tags && tags.length > 0 && (
-        <div className="w-full mb-2 flex flex-wrap">
-          {tags.slice(0, 3).map((tag, index) => (
-            <Tag key={index} label={toTitleCase(tag)} />
-          ))}
+          {createdAt && (
+              <span className="text-xs text-gray-500 whitespace-nowrap">{formatTimeAgo(createdAt)}</span>
+          )}
         </div>
-      )}
 
-      {/* Interactions */}
-      <div className="flex items-center space-x-2 text-xs w-full mt-2">
-        <VoteButtons 
-            itemId={id}
-            itemType="events" 
-            upvotes={upvotes} 
-            downvotes={downvotes} 
-            userId={userId} 
-        />
-        <CommentCount 
-            entityId={id} 
-            entityType="event" 
-        />
-        <BookmarkButton eventId={id} userId={userId} />
-      </div>
-    </BaseCard>
+        {/* Location & Price */}
+        <div className="w-full mb-2 text-sm text-[#8B4C24]/80">
+          {parsedLocation.address && <span>📍 {parsedLocation.address}</span>}
+          {price != null && (
+            <span className="ml-4">💵 {typeof price === 'number' ? price.toFixed(2) : price}</span>
+          )}
+        </div>
+
+         {/* Tags */}
+         {tags && tags.length > 0 && (
+          <div className="w-full mb-2 flex flex-wrap">
+            {tags.slice(0, 3).map((tag, index) => (
+              <Tag key={index} label={toTitleCase(tag)} />
+            ))}
+          </div>
+        )}
+
+        {/* Interactions */}
+        <div className="flex items-center space-x-2 text-xs w-full mt-2">
+          <div onClick={handleButtonClick}>
+            <VoteButtons
+                itemId={id}
+                itemType="events"
+                upvotes={upvotes}
+                downvotes={downvotes}
+                userId={userId}
+            />
+          </div>
+          <CommentCount
+              entityId={id}
+              entityType="event"
+          />
+          <div onClick={handleButtonClick}>
+            <BookmarkButton eventId={id} userId={userId} />
+          </div>
+        </div>
+      </BaseCard>
+    </Link>
   );
 };
 
