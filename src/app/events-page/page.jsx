@@ -34,7 +34,7 @@ export default function EventsPage() {
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState(null);
 
-  // -- Effects --
+  // Fetch current user ID
   useEffect(() => {
     const fetchCurrentUser = async () => {
       const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
@@ -51,6 +51,7 @@ export default function EventsPage() {
     fetchCurrentUser();
   }, []);
 
+  // Fetch user interests
   useEffect(() => {
     const fetchInterests = async () => {
       const { data: { user } } = await clientDB.auth.getUser();
@@ -76,6 +77,7 @@ export default function EventsPage() {
     fetchInterests();
   }, []);
 
+  // Fetch events from Supabase
   useEffect(() => {
     const fetchEvents = async () => {
       setIsLoading(true);
@@ -96,7 +98,7 @@ export default function EventsPage() {
         setIsLoading(false);
       }
     };
-
+    
     fetchEvents();
   }, []);
 
@@ -113,7 +115,6 @@ export default function EventsPage() {
     }
   };
 
-  // -- Data Filtering --
   // Filter by tag
   const filteredEvents = selectedTags.length === 0
     ? allEvents
@@ -121,16 +122,20 @@ export default function EventsPage() {
       evt.tags && selectedTags.some(selTag => evt.tags.includes(selTag.toLowerCase())));
 
   return (
+    // Main Page Container
     <div className="bg-[#F5E3C6] pb-6">
+      {/* Feed Layout Section */}
       <FeedLayout
         title="Events"
         tagOptions={tags}
         selectedTags={selectedTags}
         onTagToggle={handleTagToggle}
       >  
+        {/* Loading and Error States */}
         {isLoading && <p className="text-center text-gray-500 px-4">Loading events...</p>}
         {error && <p className="text-center text-red-500 px-4">Error: {error}</p>}
 
+        {/* Event Cards Display */}
         {!isLoading && !error && filteredEvents.length > 0 ? (
           filteredEvents.map(event => (
             <EventCard
@@ -150,6 +155,7 @@ export default function EventsPage() {
             />
           ))
         ) : (
+          // No Events Found Message
           !isLoading && !error && (
             <p className="text-center text-gray-500 px-4">
               No events found, try adding one!
@@ -157,13 +163,16 @@ export default function EventsPage() {
           )
         )}
 
+        {/* AI Button Section */}
         <div className="px-4 py-2 max-w-md mx-auto w-full">
           <AIbutton interests={interests} />
         </div>
 
+        {/* Footer Section */}
         <Footer />
       </FeedLayout>
 
+      {/* Bottom Navigation Bar */}
       <BottomNav />
     </div>
   );

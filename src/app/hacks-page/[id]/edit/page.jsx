@@ -24,7 +24,7 @@
 
 'use client';
 
-import React, { useState, useEffect, use, useRef } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { clientDB } from '@/supabaseClient';
 import Footer from '@/components/Footer';
@@ -68,6 +68,7 @@ export default function EditHackPage({ params }) {
       setIsLoading(true);
       setError(null);
 
+      // Fetch current user session
       const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
       if (sessionError) {
         setError('Error fetching user session.');
@@ -75,6 +76,7 @@ export default function EditHackPage({ params }) {
         setIsLoading(false);
         return;
       }
+      // Redirect to login if no active session
       if (session && session.user) {
         setCurrentUserId(session.user.id);
       } else {
@@ -89,6 +91,7 @@ export default function EditHackPage({ params }) {
       }
 
       try {
+        // Fetch hack details from the database
         const { data: hackData, error: fetchError } = await clientDB
           .from('hacks')
           .select('title, description, tags, user_id, location')
@@ -96,10 +99,11 @@ export default function EditHackPage({ params }) {
           .single();
 
         if (fetchError) {
+          // Handle specific Supabase error for 'item not found'
           if (fetchError.code === 'PGRST116') {
             setError("Hack not found or you don't have permission to edit it.");
           } else {
-            throw fetchError;
+            throw fetchError; // Rethrow other errors
           }
           setIsLoading(false);
           return;
@@ -111,6 +115,7 @@ export default function EditHackPage({ params }) {
           return;
         }
 
+        // Authorization check: ensure current user is the hack author
         if (hackData.user_id !== session.user.id) {
             setError("You are not authorized to edit this hack.");
             setIsLoading(false);
@@ -118,15 +123,17 @@ export default function EditHackPage({ params }) {
         }
         
         setHackAuthorId(hackData.user_id);
+        // Populate form fields with fetched hack data
         setTitle(hackData.title ? hackData.title.trim() : '');
         setDescription(hackData.description || '');
         setCurrentTags(hackData.tags ? hackData.tags.map(t => String(t).toLowerCase()) : []);
 
-        // Store initial values
+        // Store initial values for detecting unsaved changes
         setInitialTitle(hackData.title ? hackData.title.trim() : '');
         setInitialDescription(hackData.description || '');
         setInitialTags(hackData.tags ? hackData.tags.map(t => String(t).toLowerCase()) : []);
 
+        // Parse location data if it exists (it's stored as a JSON string)
         if (hackData.location) {
           try {
             const parsedLocation = JSON.parse(hackData.location);
@@ -136,17 +143,20 @@ export default function EditHackPage({ params }) {
               setSelectedLocation(parsedLocation);
               setInitialSelectedLocation(parsedLocation);
             } else {
+              // Handle cases where location might only have an address
               setSelectedLocation({ address: parsedLocation.address || '', lat: null, lng: null });
               setInitialSelectedLocation({ address: parsedLocation.address || '', lat: null, lng: null });
             }
           } catch (e) {
             console.error("Error parsing location JSON from DB:", e);
+            // Reset location fields if parsing fails
             setLocationAddress('');
             setInitialLocationAddress('');
             setSelectedLocation(null);
             setInitialSelectedLocation(null);
           }
         } else {
+          // Reset location fields if no location data
           setLocationAddress('');
           setInitialLocationAddress('');
           setSelectedLocation(null);
@@ -177,6 +187,7 @@ export default function EditHackPage({ params }) {
 
   // -- Event Handlers --
   const handleCancel = () => {
+    // If there are unsaved changes, show a confirmation modal
     if (hasUnsavedChanges()) {
       setShowCancelConfirmModal(true);
     } else {
@@ -200,6 +211,7 @@ export default function EditHackPage({ params }) {
     setLocationAddress('');
     setSelectedLocation(null);
     setSubmitError(null);
+    // Increment key to force re-render of LocationAutocomplete component if needed
     setLocationKey(prevKey => prevKey + 1);
   };
 
@@ -207,9 +219,11 @@ export default function EditHackPage({ params }) {
     setSubmitError(null);
     setCurrentTags(prevLowercaseTags => {
       const lowerTagValue = String(tagValueFromButton).toLowerCase();
+      // Toggle tag selection
       if (prevLowercaseTags.includes(lowerTagValue)) {
         return prevLowercaseTags.filter(t => t !== lowerTagValue);
       } else {
+        // Add tag if under max limit
         if (prevLowercaseTags.length < MAX_TAGS) {
           return [...prevLowercaseTags, lowerTagValue];
         } else {
@@ -226,6 +240,7 @@ export default function EditHackPage({ params }) {
       setSelectedLocation(locationData);
       setLocationAddress(locationData.address || '');
     } else {
+      // Clear location if no data is provided (e.g., user clears the input)
       setSelectedLocation(null);
       setLocationAddress('');
     }
@@ -237,6 +252,7 @@ export default function EditHackPage({ params }) {
     setIsLoading(true);
 
     const trimmedTitle = title.trim();
+    // Basic form validation
     if (!trimmedTitle) {
         setSubmitError("Title cannot be empty.");
         setIsLoading(false);
@@ -253,6 +269,7 @@ export default function EditHackPage({ params }) {
         return;
     }
 
+    // Authorization check: ensure current user is the hack author
     if (currentUserId !== hackAuthorId) {
         setSubmitError("Authorization error. You cannot edit this hack.");
         setIsLoading(false);
@@ -260,29 +277,34 @@ export default function EditHackPage({ params }) {
     }
 
     let updatedLocationJson = null;
+    // Prepare location data for Supabase
+    // Case 1: Full location data (address, lat, lng) is available
     if (selectedLocation && selectedLocation.address && selectedLocation.lat !== null && selectedLocation.lng !== null) {
       updatedLocationJson = JSON.stringify({
         address: selectedLocation.address,
         lat: selectedLocation.lat,
         lng: selectedLocation.lng
       });
+    // Case 2: Only address is available from selectedLocation (lat/lng might be missing)
     } else if (selectedLocation && selectedLocation.address && (!selectedLocation.lat || !selectedLocation.lng)) {
       updatedLocationJson = JSON.stringify({ address: selectedLocation.address, lat: null, lng: null });
+    // Case 3: No selectedLocation object, but there's a manually typed address
     } else if (!selectedLocation && locationAddress.trim()) {
         updatedLocationJson = JSON.stringify({ address: locationAddress.trim(), lat: null, lng: null });
     }
 
     try {
+      // Update hack in Supabase
       const { data, error: updateError } = await clientDB
         .from('hacks')
         .update({ 
             title: trimmedTitle, 
-            description,
+            description, // Using original description as trim is handled by validation
             tags: currentTags,
             location: updatedLocationJson,
         })
         .eq('id', hackId)
-        .eq('user_id', currentUserId);
+        .eq('user_id', currentUserId); // Ensure only the author can update
 
       if (updateError) {
         throw updateError;
@@ -312,9 +334,12 @@ export default function EditHackPage({ params }) {
 
   return (
     <div className="pb-6">
+      {/* Main Content Area */}
       <div className="max-w-md mx-auto px-4 py-6 space-y-6">
         <StickyNavbar />
+        {/* Form Container */}
         <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30 pt-16">
+          {/* Form Header */}
           <div className="flex justify-between items-start mb-1">
             <h1 className="text-2xl font-bold text-[#8B4C24]">Edit Hack</h1>
             <button
@@ -327,7 +352,9 @@ export default function EditHackPage({ params }) {
           </div>
           <p className="text-xs text-gray-600 mb-6">* Indicates a required field</p>
           
+          {/* Edit Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Title Input */}
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-[#6A401F] mb-1">
                 Title*
@@ -343,6 +370,7 @@ export default function EditHackPage({ params }) {
               />
             </div>
 
+            {/* Description Input */}
             <div>
               <label htmlFor="description" className="block text-sm font-medium text-[#6A401F] mb-1">
                 Description*
@@ -358,6 +386,7 @@ export default function EditHackPage({ params }) {
               />
             </div>
 
+            {/* Location Input */}
             <div>
               <label className="block text-sm font-medium text-[#6A401F] mb-1">
                 Location (Optional)
@@ -370,6 +399,7 @@ export default function EditHackPage({ params }) {
               />
             </div>
 
+            {/* Tags Input */}
             <div>
               <label className="block text-sm font-medium text-[#6A401F] mb-1">
                 Tags (select up to {MAX_TAGS})*
@@ -391,9 +421,10 @@ export default function EditHackPage({ params }) {
             </div>
           
            
-
+            {/* Submit Error Display */}
             {submitError && <p className="text-sm text-red-600 mt-2">{submitError}</p>}
 
+            {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-4">
               <button
                 type="submit"
@@ -416,6 +447,7 @@ export default function EditHackPage({ params }) {
         <Footer />
       </div>
       <BottomNav />
+      {/* Confirmation Modal */}
       <ConfirmCancelModal
         isOpen={showCancelConfirmModal}
         onConfirm={confirmCancelAndRedirect}

@@ -33,7 +33,6 @@ import { clientDB } from '@/supabaseClient';
 import AIbutton from '@/components/buttons/AIbutton';
 import { tags } from '@/lib/tags';
 
-
 export default function HacksPage() {
   // -- State --
   const [selectedTags, setSelectedTags] = useState([]);
