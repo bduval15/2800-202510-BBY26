@@ -1,23 +1,21 @@
 /**
- * toTitleCase.js
- * Loaf Life – Converts a string to title case.
+ * File: toTitleCase.js
  *
- * This utility function transforms a given string into title case, where the
- * first letter of each significant word is capitalized. It intelligently
- * handles minor words (e.g., "a", "an", "the") by keeping them in lowercase
- * unless they are the first or last word of the string.
+ * Loaf Life
+ *   Converts a string to title case, capitalizing the first letter of significant words.
+ *   Minor words (e.g., "a", "the") are kept lowercase unless they are the first or last word.
+ *   Handles empty or null input strings gracefully.
  *
- * Features:
- * - Capitalizes the first letter of each word in a string.
- * - Excludes common minor words from capitalization (unless first/last word).
- * - Handles empty or null input strings gracefully.
+ * Authorship:
+ *   @author Nathan Oloresisimo
+ *   @author https://gemini.google.com/app (Portions of logic and modifications)
  *
- * Portions of logic assisted by Google Gemini 2.5 Flash.
- *
- * Modified with assistance from Google Gemini 2.5 Flash.
- *
- * @author Nathan Oloresisimo
- * @author https://gemini.google.com/app
+ * Main Function:
+ *   @function toTitleCase
+ *   @description Transforms a string into title case. The first letter of each significant word
+ *                is capitalized. Common minor words are excluded from capitalization unless they
+ *                are the first or last word of the string.
+ *                Handles empty or null strings by returning an empty string.
  */
 
 const toTitleCase = (str) => {
