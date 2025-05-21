@@ -108,7 +108,7 @@ const EventCard = ({
               entityId={id}
               entityType="event"
           />
-          <div onClick={handleButtonClick}>
+          <div onClick={handleButtonClick} className="ml-auto">
             <BookmarkButton eventId={id} userId={userId} />
           </div>
         </div>
