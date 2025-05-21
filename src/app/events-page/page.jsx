@@ -147,11 +147,7 @@ export default function EventsPage() {
         tagOptions={tags}
         selectedTags={selectedTags}
         onTagToggle={handleTagToggle}
-      >
-        <div className="text-left text-2xl font-bold text-[#8B4C24] pl-4 mb-4 mt-4">
-          Events
-        </div>
-
+      >       
         {isLoading && <p className="text-center text-gray-500 px-4">Loading events...</p>}
         {error && <p className="text-center text-red-500 px-4">Error: {error}</p>}
 
