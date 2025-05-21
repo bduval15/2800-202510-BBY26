@@ -1,24 +1,35 @@
+/**
+ * Comment.jsx
+ * Loaf Life – Displays a single comment.
+ *
+ * This component renders an individual comment, showing the user's
+ * avatar, username, the time it was posted, and the comment content.
+ * If the current user is the author of the comment, they are
+ * provided with an option to edit their message.
+ *
+ * Features:
+ * - Renders comment details: avatar, username, timestamp, text.
+ * - Provides edit functionality for the comment author.
+ * - Allows saving or canceling of comment edits.
+ * - Interacts with Supabase to update comments.
+ *
+ * Portions of styling and logic assisted by Google Gemini 2.5 Flash.
+ *
+ * Modified with assistance from Google Gemini 2.5 Flash.
+ *
+ * @author Nathan Oloresisimo
+ * @author https://gemini.google.com/app
+ */
+
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { PencilIcon, XMarkIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { clientDB } from '@/supabaseClient';
 
-/**
- * Comment.jsx
- * Loaf Life - Comment Card Component
- *
- * This component displays a comment with a user avatar, username,
- * timestamp, and comment text. It includes an edit functionality
- * for the comment author to update the message.
- *
- * Modified with assistance from Google Gemini 2.5 Flash
- *
- * @author: Nathan O
- * @author: https://gemini.google.com/app
- */
 
 const Comment = ({ comment, currentUserId, onCommentUpdated, timestampFormated }) => {
   const { id: commentId, message, user_id: commentAuthorId, user_profiles } = comment;
+  // Safely destructure user_profiles, defaulting to an empty object if undefined
   const { username, avatar_url } = user_profiles || {};
 
   const [isEditing, setIsEditing] = useState(false);
@@ -26,25 +37,28 @@ const Comment = ({ comment, currentUserId, onCommentUpdated, timestampFormated }
   const [isSaving, setIsSaving] = useState(false);
   const [editError, setEditError] = useState(null);
 
+  // Determine if the current user is the author of the comment
   const canEdit = currentUserId && currentUserId === commentAuthorId;
 
   const handleEdit = () => {
-    setEditedText(message);
-    setEditError(null);
+    setEditedText(message); // Reset text to original message
+    setEditError(null); // Clear any previous errors
     setIsEditing(true);
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-    setEditedText(message);
-    setEditError(null);
+    setEditedText(message); // Revert to original message
+    setEditError(null); // Clear any previous errors
   };
 
   const handleSave = async () => {
+    // If the message hasn't changed, just exit edit mode
     if (editedText.trim() === message) {
       setIsEditing(false);
       return;
     }
+    // Prevent saving an empty comment
     if (!editedText.trim()) {
         setEditError("Comment cannot be empty.");
         return;
@@ -53,17 +67,19 @@ const Comment = ({ comment, currentUserId, onCommentUpdated, timestampFormated }
     setIsSaving(true);
     setEditError(null);
     try {
+      // Update the comment in the database
       const { error } = await clientDB
         .from('comment')
         .update({ message: editedText.trim() })
         .eq('id', commentId)
-        .eq('user_id', currentUserId);
+        .eq('user_id', currentUserId); // Ensure only the author can update
 
       if (error) {
         console.error("Error updating comment:", error);
         throw new Error(error.message || 'Failed to save comment.');
       }
       setIsEditing(false);
+      // Notify parent component that the comment has been updated
       if (onCommentUpdated) {
         onCommentUpdated();
       }
@@ -71,13 +87,14 @@ const Comment = ({ comment, currentUserId, onCommentUpdated, timestampFormated }
       setEditError(err.message);
       console.error('Save error:', err);
     } finally {
-      setIsSaving(false);
+      setIsSaving(false); // Ensure loading state is reset
     }
   };
 
   return (
     <div className="bg-[#FDFAF5] p-2 rounded-lg border border-[#8B4C24]/30 shadow-md mb-2">
       <div className="flex items-start space-x-1">
+        {/* Avatar Section */}
         {avatar_url ? (
           <Image
             src={avatar_url}
@@ -92,13 +109,16 @@ const Comment = ({ comment, currentUserId, onCommentUpdated, timestampFormated }
           </div>
         )}
 
+        {/* Comment Content Section */}
         <div className="flex-1">
+          {/* Comment Header: Username, Timestamp, Edit Button */}
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center space-x-2">
               <span className="font-semibold text-[#8B4C24] text-sm">{username || 'Anonymous'}</span>
               <span className="text-xs text-[#8B4C24]/70">•</span>
               <span className="text-xs text-[#8B4C24]/70">{timestampFormated}</span>
             </div>
+            {/* Edit Button (visible if user can edit and not currently editing) */}
             {canEdit && !isEditing && (
               <button
                 onClick={handleEdit}
@@ -110,7 +130,9 @@ const Comment = ({ comment, currentUserId, onCommentUpdated, timestampFormated }
             )}
           </div>
 
+          {/* Conditional Rendering: Edit Mode or Display Mode */}
           {isEditing ? (
+            // Edit Mode
             <div className="space-y-2">
               <textarea
                 value={editedText}
@@ -120,6 +142,7 @@ const Comment = ({ comment, currentUserId, onCommentUpdated, timestampFormated }
                 disabled={isSaving}
               />
               {editError && <p className="text-xs text-red-500">{editError}</p>}
+              {/* Edit Actions: Cancel and Save Buttons */}
               <div className="flex items-center justify-end space-x-2">
                 <button
                   onClick={handleCancel}
@@ -148,6 +171,7 @@ const Comment = ({ comment, currentUserId, onCommentUpdated, timestampFormated }
               </div>
             </div>
           ) : (
+            // Display Mode
             <p className="text-[#8B4C24]/90 text-sm whitespace-pre-wrap break-words">
               {message}
             </p>
