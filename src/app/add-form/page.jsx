@@ -12,7 +12,12 @@ import { tags } from '@/lib/tags.js'
  * AddFormPage.jsx
  * Loaf Life - Add Form Page
  * 
- * This page allows users to add a new hack or deal to the database.
+ * This page provides a form for authenticated users to contribute new content 
+ * to the Loaf Life platform. Users can submit various types of posts, including 
+ * "hacks" (useful tips or tricks), "deals" (information about sales or 
+ * discounts), and "events" (details about upcoming occurrences).
+ * The submitted data is then saved to the corresponding table in the Supabase 
+ * database.
  * 
  * Modified with assistance from Google Gemini 2.5 Flash
  * 
@@ -24,7 +29,7 @@ import { tags } from '@/lib/tags.js'
 export default function AddFormPage() {
   const router = useRouter();
   
-
+  // ---- Form Submission Handlers ----
   const handleSubmitHack = async (formData) => {
     const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
 
@@ -101,20 +106,21 @@ export default function AddFormPage() {
     if (formData.postType === 'hack') {
       router.push('/hacks-page');
     } else if (formData.postType === 'deal') {
-      router.push('/deals-page'); // Assuming this is the correct route for deals
+      router.push('/deals-page'); 
     } else if (formData.postType === 'event') {
       router.push('/events-page');
     } else {
       // Fallback redirection if postType is somehow unknown at this point
       console.warn('Unknown post type for redirection:', formData.postType);
-      router.push('/'); // Or a more appropriate default page
+      router.push('/main-feed-page'); 
     }
   };
 
+  // ---- Navigation Handlers ----
   const handleCancel = () => {
     router.back();
   };
-
+  
   return (
     <div className="bg-[#F5E3C6] min-h-screen flex flex-col">
       <StickyNavbar />
