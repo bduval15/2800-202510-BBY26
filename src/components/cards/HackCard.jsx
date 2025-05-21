@@ -1,3 +1,30 @@
+/**
+ * HackCard.jsx
+ * Loaf Life – Displays a single hack card with its details.
+ *
+ * This component renders an individual card for a hack. It showcases
+ * the hack's title and when it was created. Users can click the card
+ * to navigate to a more detailed page for that hack. It also
+ * integrates interactive elements like voting, bookmarking, and
+ * comment counts.
+ *
+ * Features:
+ * - Renders hack title and creation timestamp.
+ * - Displays relevant tags associated with the hack.
+ * - Links to the detailed page for the specific hack.
+ * - Integrates VoteButtons for user upvotes and downvotes.
+ * - Integrates BookmarkButton for saving hacks.
+ * - Shows CommentCount for the hack's discussion.
+ * - Utilizes BaseCard for a consistent visual structure.
+ *
+ * Portions of styling and logic assisted by Google Gemini 2.5 Pro.
+ *
+ * Modified with assistance from Google Gemini 2.5 Pro.
+ *
+ * @author Nathan Oloresisimo
+ * @author https://gemini.google.com/app
+ */
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
@@ -9,17 +36,6 @@ import Tag from '../Tag';
 import { formatTimeAgo } from '../../utils/formatTimeAgo';
 import toTitleCase from '../../utils/toTitleCase';
 
-/**
- * HackCard.jsx
- * Loaf Life - Hack Card
- * 
- * This component displays a hack card. 
- * 
- * Written with assistance from Google Gemini 2.5 Pro
- * 
- * @author: Nathan O
- * @author: https://gemini.google.com/app
- */
 
 const HackCard = ({ id, href, title, upvotes, downvotes, tags = [], className = '', createdAt, userId }) => {
   return (
