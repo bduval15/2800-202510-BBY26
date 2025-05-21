@@ -2,14 +2,18 @@
  * EventDetails.jsx
  * Loaf Life - Event Details Page
  *
- * This page displays the details of a specific event.
- * Fetches data from Supabase based on event ID.
- * It includes the event title, description, hack details, author, timestamp, and location.
- * It also includes a button to save the event.
+ * This page displays the details of a specific event, fetched from Supabase
+ * based on the event ID. It includes event title, description, location,
+ * dates, tags, author, and timestamp. Authenticated authors can edit or
+ * delete their events. Users can also vote and bookmark events.
  *
- * Converted from HackPage with table changes for 'events'
+ * Converted from 'Hack Details Page' with table changes for 'events'
+ *
+ * Modified with assistance from Google Gemini 2.5 Flash
+ *
  * @author: Nathan O
  * @author: Conner P
+ * @author: https://gemini.google.com/app
  * @author: ChatGPT used to simplify conversion 
  */
 
@@ -30,6 +34,7 @@ import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
 import ShowOnMapButton from '@/components/mapComponents/ShowOnMapButton';
 
 export default function EventDetailPage({ params }) {
+  // -- State & Hooks --
   const resolvedParams = use(params);
   const eventId = resolvedParams.eventId;
   const [event, setEvent] = useState(null);
@@ -42,6 +47,7 @@ export default function EventDetailPage({ params }) {
   const router = useRouter();
   const optionsMenuRef = useRef(null);
 
+  // -- Effects --
   // Fetch current user session
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -132,6 +138,7 @@ export default function EventDetailPage({ params }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOptionsMenuOpen]);
 
+  // -- Conditional Renders --
   if (isLoading) {
     return <div className="max-w-md mx-auto px-4 py-8 text-center text-lg">Loading event details...</div>;
   }
@@ -144,6 +151,7 @@ export default function EventDetailPage({ params }) {
     return <div className="max-w-md mx-auto px-4 py-8 text-center text-lg">Event not found.</div>;
   }
 
+  // -- Helper Functions --
   const formatTimeAgo = (timestamp) => {
     if (!timestamp) return 'N/A';
     const now = new Date();
@@ -189,6 +197,7 @@ export default function EventDetailPage({ params }) {
     }).join(' ');
   };
 
+  // -- Handlers --
   const handleDelete = () => {
     setIsOptionsMenuOpen(false);
     setIsDeleteModalOpen(true);

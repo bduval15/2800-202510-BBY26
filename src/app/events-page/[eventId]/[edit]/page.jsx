@@ -14,9 +14,13 @@ import ConfirmCancelModal from '@/components/ConfirmCancelModal';
  * EditEventPage.jsx
  * Loaf Life - Edit Event Page
  * 
- * This page allows users to edit an event.
+ * This page allows authenticated users to edit the details of an event they
+ * previously created. It fetches existing event data (title, description,
+ * tags, location), populates a form, and allows updates. Includes input
+ * validation, unsaved changes confirmation, and location autocomplete.
  * 
- * Converted from EditHackPage with table changes for 'events'
+ * Converted from 'Edit Hack Page' with table changes for 'events'
+ * 
  * @author: Nathan O
  * @author: Conner P
  * @author: ChatGPT used to simplify conversion 
@@ -25,6 +29,7 @@ import ConfirmCancelModal from '@/components/ConfirmCancelModal';
 const MAX_TAGS = 5;
 
 export default function EditEventPage({ params }) {
+  // -- State Management & Hooks --
   const resolvedParams = use(params);
   const eventId = resolvedParams.eventId;
   const router = useRouter();
@@ -49,6 +54,7 @@ export default function EditEventPage({ params }) {
   const [initialLocationAddress, setInitialLocationAddress] = useState('');
   const [initialSelectedLocation, setInitialSelectedLocation] = useState(null);
 
+  // -- Effects --
   useEffect(() => {
     const fetchCurrentUserAndEvent = async () => {
       setIsLoading(true);
@@ -150,6 +156,7 @@ export default function EditEventPage({ params }) {
     fetchCurrentUserAndEvent();
   }, [eventId, router]);
 
+  // -- Helper Functions --
   const hasUnsavedChanges = () => {
     if (title !== initialTitle) return true;
     if (description !== initialDescription) return true;
@@ -159,6 +166,7 @@ export default function EditEventPage({ params }) {
     return false;
   };
 
+  // -- Event Handlers --
   const handleCancel = () => {
     if (hasUnsavedChanges()) {
       setShowCancelConfirmModal(true);
@@ -281,7 +289,7 @@ export default function EditEventPage({ params }) {
     }
   };
 
-  // loading / error guards unchanged:
+  // -- Conditional Renders --
   if (isLoading && !title) {
     return <div className="max-w-md mx-auto p-6 text-center">Loading event editor...</div>;
   }

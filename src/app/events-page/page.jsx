@@ -13,17 +13,19 @@ import { tags } from '@/lib/tags';
  * EventPage.jsx
  * Loaf Life - Events Page
  * 
- * This page lists the hacks that have been posted.
- * Fetches data from Supabase.
+ * This page lists events fetched from Supabase. Users can view events,
+ * filter them by tags, and interact with an AI button for suggestions.
+ * It displays event cards with details like title, location, and dates.
+ * 
+ * Written with assistance from Google Gemini 2.5 Flash
  * 
  * @author: Nathan O
  * @author: Conner P
- * 
- * Written with assistance from Google Gemini 2.5 Flash
  * @author https://gemini.google.com/app
  */
 
 export default function EventsPage() {
+  // -- State --
   const [selectedTags, setSelectedTags] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -32,6 +34,7 @@ export default function EventsPage() {
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState(null);
 
+  // -- Effects --
   useEffect(() => {
     const fetchCurrentUser = async () => {
       const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
@@ -97,6 +100,7 @@ export default function EventsPage() {
     fetchEvents();
   }, []);
 
+  // -- Handlers --
   const handleTagToggle = (tag) => {
     if (tag === "ALL") {
       setSelectedTags([]);
@@ -109,6 +113,7 @@ export default function EventsPage() {
     }
   };
 
+  // -- Data Filtering --
   // Filter by tag
   const filteredEvents = selectedTags.length === 0
     ? allEvents
