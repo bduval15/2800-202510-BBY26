@@ -1,3 +1,32 @@
+/**
+ * EventCard.jsx
+ * Loaf Life – Displays a single event card with its details.
+ *
+ * This component renders an individual card for an event. It showcases
+ * the event's title, location, price, start and end dates, and when it
+ * was created. Users can click the card to navigate to a more detailed
+ * page for that event. It also integrates interactive elements like
+ * voting, bookmarking, and comment counts. This component was
+ * converted from HackCard, adapting it for 'events' data.
+ *
+ * Features:
+ * - Renders event title, location, price, dates, and creation timestamp.
+ * - Displays relevant tags associated with the event.
+ * - Links to the detailed page for the specific event.
+ * - Integrates VoteButtons for user upvotes and downvotes.
+ * - Integrates BookmarkButton for saving events.
+ * - Shows CommentCount for the event's discussion.
+ * - Utilizes BaseCard for a consistent visual structure.
+ *
+ * Portions of styling and logic assisted by Google Gemini 2.5 Pro.
+ *
+ * Modified with assistance from Google Gemini 2.5 Pro.
+ *
+ * @author Nathan Oloresisimo
+ * @author Conner Ponton
+ * @author https://gemini.google.com/app
+ */
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
@@ -9,19 +38,6 @@ import Tag from '../Tag';
 import { formatTimeAgo } from '../../utils/formatTimeAgo';
 import toTitleCase from '../../utils/toTitleCase';
 
-/**
- * EventCard.jsx
- * Loaf Life - Event Card
- * 
- * This component displays an event card. 
- * 
- * @author: Nathan O
- * @author: Conner P
- * 
- * Converted from HackCard with table changes for 'events'
- * Written with assistance from Google Gemini 2.5 Pro
- * @author: https://gemini.google.com/app
- */
 
 const EventCard = ({
   id,
