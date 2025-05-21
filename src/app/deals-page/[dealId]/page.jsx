@@ -298,7 +298,7 @@ export default function DealDetailPage() {
 
           {deal.price !== null && deal.price !== undefined && (
             <div className="mb-4 text-base text-[#8B4C24]">
-              <p><span className="font-bold">Price:</span> ${typeof deal.price === 'number' ? deal.price.toFixed(2) : deal.price}</p>
+              <p><span className="font-bold">💲 Price:</span> ${typeof deal.price === 'number' ? deal.price.toFixed(2) : deal.price}</p>
             </div>
           )}
 

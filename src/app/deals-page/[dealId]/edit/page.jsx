@@ -170,7 +170,7 @@ export default function EditDealPage({ params }) {
       if (prevLowercaseTags.includes(lowerTagValue)) {
         return prevLowercaseTags.filter(t => t !== lowerTagValue);
       } else {
-        if (prevLowercaseTags.length < MAX_TAGS) { // Corrected MAX_TAGS check
+        if (prevLowercaseTags.length < MAX_TAGS) { 
           return [...prevLowercaseTags, lowerTagValue];
         } else {
           setSubmitError(`You can select up to ${MAX_TAGS} tags.`);
