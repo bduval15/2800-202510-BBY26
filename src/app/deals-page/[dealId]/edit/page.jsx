@@ -14,16 +14,24 @@ import ConfirmCancelModal from '@/components/ConfirmCancelModal';
  * EditDealPage.jsx
  * Loaf Life - Edit Deal Page
  * 
- * This page allows users to edit a deal.
- * Adapted from EditHackPage.jsx
+ * This page allows authenticated users to edit the details of a deal they
+ * previously created. It fetches existing deal data, populates a form,
+ * and allows updates to fields like title, description, price, location,
+ * and tags. Includes input validation and a confirmation modal for
+ * unsaved changes if the user attempts to cancel.
+ * 
+ * Adapted from 'Edit Hack Page'
  *
+ * Written with assistance from Google Gemini 2.5
+ * 
  * @author: Nathan O
- * @author https://gemini.google.com/app
+ * @author: https://gemini.google.com/app
  */
 
 const MAX_TAGS = 5;
 
 export default function EditDealPage({ params }) {
+  // -- State Management & Hooks --
   const resolvedParams = use(params);
   const dealId = resolvedParams.dealId;
   const router = useRouter();
@@ -49,6 +57,7 @@ export default function EditDealPage({ params }) {
   const [initialLocation, setInitialLocation] = useState('');
   const [initialTags, setInitialTags] = useState([]);
 
+  // -- Effects --
   useEffect(() => {
     const fetchCurrentUserAndDeal = async () => {
       setIsLoading(true);
@@ -145,6 +154,7 @@ export default function EditDealPage({ params }) {
     fetchCurrentUserAndDeal();
   }, [dealId, router, supabase]);
 
+  // -- Helper Functions --
   const hasUnsavedChanges = () => {
     if (title !== initialTitle) return true;
     if (description !== initialDescription) return true;
@@ -154,6 +164,7 @@ export default function EditDealPage({ params }) {
     return false;
   };
 
+  // -- Event Handlers --
   const handleCancel = () => {
     if (hasUnsavedChanges()) {
       setShowCancelConfirmModal(true);
@@ -268,7 +279,7 @@ export default function EditDealPage({ params }) {
     }
   };
 
-  // Initial loading state before data is fetched
+  // -- Conditional Rendering: Loading and Error States --
   if (isLoading && !title && !error) {
     return <div className="max-w-md mx-auto px-4 py-6 space-y-6 text-center">Loading deal editor...</div>;
   }
@@ -301,6 +312,7 @@ export default function EditDealPage({ params }) {
     );
   }
 
+  
   return (
     <div className="pb-6">
       <div className="max-w-md mx-auto px-4 py-6 space-y-6">

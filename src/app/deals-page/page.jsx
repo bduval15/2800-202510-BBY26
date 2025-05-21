@@ -13,16 +13,17 @@ import { tags } from '@/lib/tags';
  * DealsPage.jsx
  * Loaf Life - Deals Page
  *
- * This page lists the deals that have been posted.
- * It fetches data from the Supabase 'deals' table.
+ * This page displays a list of deals fetched from the Supabase 'deals'
+ * table. Users can filter deals by tags and view deal details. 
  *
  * Modified with assistance from Google Gemini 2.5 Flash
- * @author Nate O
- * @author https://gemini.google.com/app
  * 
+ * @author: Nathan O
+ * @author: https://gemini.google.com/app
  */
 
 export default function DealsPage() {
+  // -- State --
   const [selectedTags, setSelectedTags] = useState([]);
   const [allDeals, setAllDeals] = useState([]);
   const [interests, setInterests] = useState([]);
@@ -30,6 +31,7 @@ export default function DealsPage() {
   const [currentUserId, setCurrentUserId] = useState(null);
   const supabase = clientDB;
 
+  // -- Effects --
   useEffect(() => {
     const fetchUserAndInterests = async () => {
       setLoading(true);
@@ -81,6 +83,7 @@ export default function DealsPage() {
     fetchDeals();
   }, [supabase]);
 
+  // -- Handlers --
   const handleTagToggle = (tag) => {
     if (tag === "ALL") {
       setSelectedTags([]);
@@ -93,6 +96,7 @@ export default function DealsPage() {
     }
   };
 
+  // -- Data Filtering --
   const dealsToDisplay = selectedTags.length === 0
     ? allDeals
     : allDeals.filter(deal => 

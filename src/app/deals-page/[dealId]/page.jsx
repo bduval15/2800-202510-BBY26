@@ -13,7 +13,7 @@ import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
 import CommentSection from '@/components/sections/CommentSection';
 import ShowOnMapButton from '@/components/mapComponents/ShowOnMapButton';
 
-import { ArrowLeftIcon, MapPinIcon, PencilIcon, TrashIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, PencilIcon, TrashIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { clientDB } from '@/supabaseClient.js';
 
 /**
@@ -21,14 +21,19 @@ import { clientDB } from '@/supabaseClient.js';
  * Loaf Life - Deal Detail Page
  *
  * Displays the details of a specific deal fetched from Supabase.
- * Structure and styling adapted from HackDetailPage.
- * 
+ * Users can view deal information, including title, tags, price, location,
+ * and description. Authenticated authors can edit or delete their deals.
+ *
+ * Structure and styling adapted from 'Hack Detail Page'
+ *
  * Modified with assistance from Google Gemini 2.5 Flash
- * @author https://gemini.google.com/app
- * @author Nate O
+ *
+ * @author: Nathan O
+ * @author: https://gemini.google.com/app
  */
 
 export default function DealDetailPage() {
+  // -- State & Hooks --
   const params = useParams();
   const dealId = params.dealId;
   const supabase = clientDB;
@@ -44,6 +49,7 @@ export default function DealDetailPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [locationCoords, setLocationCoords] = useState(null);
 
+  // -- Effects --
   useEffect(() => {
     const fetchCurrentUser = async () => {
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
@@ -98,6 +104,7 @@ export default function DealDetailPage() {
     return `${diffInWeeks} week${diffInWeeks === 1 ? '' : 's'} ago`;
   };
 
+  // Helper function to format text to title case
   const toTitleCase = (str) => {
     if (!str) return '';
     const minorWords = new Set([
@@ -112,6 +119,7 @@ export default function DealDetailPage() {
     }).join(' ');
   };
 
+  // Effect to fetch deal details
   useEffect(() => {
     if (dealId && supabase) {
       const fetchDealDetails = async () => {
@@ -179,6 +187,7 @@ export default function DealDetailPage() {
     }
   }, [dealId, supabase]);
 
+  // -- Handlers --
   const handleDelete = async () => {
     setIsOptionsMenuOpen(false);
     setIsDeleteModalOpen(true);
@@ -208,6 +217,7 @@ export default function DealDetailPage() {
     }
   };
 
+  // -- Conditional Renders --
   if (loading) {
     return (
       <div className="bg-[#F5E3C6] min-h-screen flex items-center justify-center">
