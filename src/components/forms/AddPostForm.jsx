@@ -1,22 +1,36 @@
-'use client'
+/**
+ * AddPostForm.jsx
+ * Loaf Life – Enables users to create new posts (hacks, deals, or events).
+ *
+ * This form allows authenticated users to contribute new content to the
+ * platform. It dynamically adjusts input fields based on the selected post
+ * type (hack, deal, or event), including fields for title, description,
+ * tags, location (with autocomplete), price (for deals), and event dates.
+ * It handles form submission, data validation, and geocoding of addresses.
+ *
+ * Features:
+ * - Dynamic form fields based on post type (hack, deal, event).
+ * - Tag selection with a limit of 5 tags.
+ * - Location input with Google Maps Autocomplete.
+ * - Date pickers for event start and end dates with validation.
+ * - Price input for deals.
+ * - Client-side validation for required fields and data formats.
+ * - Confirmation modal for canceling post creation.
+ *
+ * Written with assistance from Google Gemini 2.5 Pro.
+ *
+ * @author Nathan Oloresisimo
+ * @author Conner Ponton
+ * @author Brady Duval
+ * @author https://gemini.google.com/app
+ */
+
+'use client';
 
 import { useState } from 'react';
 import LocationAutoComplete from '@/components/mapComponents/LocationAutoComplete';
 import ConfirmCancelModal from '@/components/ConfirmCancelModal';
 
-/**
- * AddHackForm.jsx
- * Loaf Life - Add Hack Form
- * 
- * This form allows users to add a new deal, hack, or event to the database.
- * 
- * Written with assistance from Google Gemini 2.5 Pro
- * 
- * @author Nathan O
- * @author Conner P
- * @author Brady D
- * @author https://gemini.google.com/app
- */
 
 export default function AddPostForm({ tags, onSubmit, onClose }) {
   const [title, setTitle] = useState('');
@@ -77,7 +91,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
 
     if (selectedTags.length === 0) {
       setShowTagError(true);
-      return; 
+      return;
     }
     setShowTagError(false);
 
@@ -93,7 +107,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
       // Check if dates are within the defined MIN_DATE and MAX_DATE range
       if (startDate < new Date(MIN_DATE) || startDate > new Date(MAX_DATE) || endDate < new Date(MIN_DATE) || endDate > new Date(MAX_DATE)) {
         setShowDateRangeError(true);
-        setShowDateOrderError(false); 
+        setShowDateOrderError(false);
         return;
       }
       setShowDateRangeError(false);
@@ -101,8 +115,8 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
       // Check if end date is before start date
       if (endDate < startDate) {
         setShowDateOrderError(true);
-        setShowDateRangeError(false); 
-        return; 
+        setShowDateRangeError(false);
+        return;
       }
       setShowDateOrderError(false);
     }
@@ -122,7 +136,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
           // Fetch geocoding data from OpenStreetMap Nominatim
           const res = await fetch(
             `https://nominatim.openstreetmap.org/search?${params}`,
-            { headers: { 'Accept-Language': 'en' } } 
+            { headers: { 'Accept-Language': 'en' } }
           );
           const data = await res.json();
           if (data && data[0]) { // If geocoding is successful
@@ -143,7 +157,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
         resolvedLocation = { address: 'Not Specified', lat: null, lng: null };
       }
 
-      setLocation(resolvedLocation); 
+      setLocation(resolvedLocation);
       setCoords(resolvedLocation.lat != null ? [resolvedLocation.lat, resolvedLocation.lng] : null);
     }
 
@@ -199,17 +213,17 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
     setSelectedTags(prevSelectedTags => {
       if (prevSelectedTags.includes(tagValue)) {
         // If tag is already selected, remove it
-        setShowTagLimitError(false); 
+        setShowTagLimitError(false);
         return prevSelectedTags.filter(t => t !== tagValue);
       } else {
         // If tag is not selected, add it if under the 5 tag limit
         if (prevSelectedTags.length < 5) {
-          setShowTagLimitError(false); 
+          setShowTagLimitError(false);
           return [...prevSelectedTags, tagValue];
         } else {
           // If tag limit is reached, show error and don't add the tag
           setShowTagLimitError(true);
-          return prevSelectedTags; 
+          return prevSelectedTags;
         }
       }
     });
