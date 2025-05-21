@@ -1,9 +1,18 @@
 /**
- * Locale-aware date/time formatting
- * @param {Date|string|number} input     A Date, timestamp or parsable date string
- * @param {string|string[]}    locales   BCP 47 language tag(s), e.g. 'en-CA', 'fr'
- * @param {Object}             options   Intl.DateTimeFormat options
- * @returns {string}
+ * formatDate.js
+ * Loaf Life – Provides locale-aware date and time formatting.
+ *
+ * This utility function, `formatLocaleDate`, takes a date input (Date object,
+ * timestamp, or parsable date string) and formats it into a human-readable
+ * string based on specified locales and formatting options. It leverages the
+ * `Intl.DateTimeFormat` API for robust internationalization.
+ *
+ * Features:
+ * - Formats dates and times according to BCP 47 language tags.
+ * - Customizable formatting options via `Intl.DateTimeFormat`.
+ * - Handles various date input types.
+ *
+ * @author Nathan Oloresisimo
  */
 function formatLocaleDate(input, locales = undefined, options = {}) {
     const date = input instanceof Date ? input : new Date(input);

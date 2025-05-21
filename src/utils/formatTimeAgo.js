@@ -1,3 +1,19 @@
+/**
+ * formatTimeAgo.js
+ * Loaf Life – Formats a timestamp into a human-readable "time ago" string.
+ *
+ * This utility function takes a date/timestamp as input and returns a string
+ * representing how long ago that time was from the present (e.g., "5m ago",
+ * "3h ago", "2d ago"). It handles various time units from seconds to years.
+ *
+ * Features:
+ * - Converts timestamps to relative time strings (e.g., "10m ago").
+ * - Supports various time units: seconds, minutes, hours, days, weeks,
+ *   months, and years.
+ * - Returns "N/A" for invalid or missing timestamps.
+ *
+ * @author Nathan Oloresisimo
+ */
 export const formatTimeAgo = (timestamp) => {
   if (!timestamp) return 'N/A';
   const now = new Date();
