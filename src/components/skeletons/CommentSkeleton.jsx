@@ -1,3 +1,21 @@
+/**
+ * CommentSkeleton.jsx
+ * Loaf Life – Placeholder UI for a comment card during loading.
+ *
+ * This component renders a skeleton (placeholder) view that mimics the
+ * structure of a `CommentCard`. It is used to indicate that comment data is
+ * being loaded, providing a better user experience by showing a visual
+ * representation of where content will appear.
+ *
+ * Features:
+ * - Animated pulse effect to indicate loading.
+ * - Mimics the layout of a `CommentCard` (avatar, username, timestamp, message lines).
+ *
+ * Modified with assistance from Google Gemini 2.5 Pro.
+ * 
+ * @author Nathan Oloresisimo
+ * @author https://gemini.google.com/app
+ */
 import React from 'react';
 
 const CommentSkeleton = () => {

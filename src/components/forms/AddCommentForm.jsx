@@ -1,19 +1,30 @@
+/**
+ * AddCommentForm.jsx
+ * Loaf Life – Allows users to add comments to posts.
+ *
+ * This component provides a form for users to submit comments on various
+ * entities within the application, such as hacks, deals, or events. It
+ * handles user input, submission state, and communicates with the Supabase
+ * backend to store the comment. It also fetches the current user's ID to
+ * associate with the comment.
+ *
+ * Features:
+ * - Text input for comment message.
+ * - Submission handling with loading and error states.
+ * - User authentication check before allowing comments.
+ * - Dynamic association with different entity types (hack, deal, event).
+ * - Callback function execution upon successful comment addition.
+ *
+ * Modified with assistance from Google Gemini 2.5 Pro.
+ *
+ * @author Nathan Oloresisimo
+ * @author https://gemini.google.com/app
+ */
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import { clientDB } from '@/supabaseClient'; // Import Supabase client
 
-/**
- * AddCommentForm.jsx
- * Loaf Life - Add Comment Form
- *
- * This component allows users to add a comment to an entity (hack, deal, or event).
- *
- * Modified with assistance from Google Gemini 2.5 Pro
- *
- * @author: Nathan O
- * @author https://gemini.google.com/app
- */
 
 export default function AddCommentForm({ entityId, entityType, onCommentAdded }) {
   const [commentText, setCommentText] = useState('');
