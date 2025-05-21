@@ -1,12 +1,12 @@
 
 /**
- * Home.jsx
  * Loaf Life – landing page with logo, main heading, CTA button, and how-it-works section.
  *
  * Portions of styling and layout were assisted by ChatGPT for educational purposes (e.g., Tailwind class structuring, semantic HTML structure).
  *
  * Modified with assistance from ChatGPT o4-mini-high.
  * 
+ * @author Natalia Arseniuk
  * @author https://chatgpt.com/*
  */
 import Link from 'next/link';
