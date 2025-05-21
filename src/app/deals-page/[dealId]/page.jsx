@@ -12,6 +12,8 @@ import Tag from '@/components/Tag';
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
 import CommentSection from '@/components/sections/CommentSection';
 import ShowOnMapButton from '@/components/mapComponents/ShowOnMapButton';
+import toTitleCase  from '@/utils/toTitleCase';
+import { formatTimeAgo } from '@/utils/formatTimeAgo';
 
 import { ArrowLeftIcon, PencilIcon, TrashIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { clientDB } from '@/supabaseClient.js';
@@ -50,6 +52,7 @@ export default function DealDetailPage() {
   const [locationCoords, setLocationCoords] = useState(null);
 
   // -- Effects --
+  // Fetch current user ID
   useEffect(() => {
     const fetchCurrentUser = async () => {
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
@@ -64,6 +67,7 @@ export default function DealDetailPage() {
     fetchCurrentUser();
   }, [supabase]);
 
+  // Handle click outside options menu
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (optionsMenuRef.current && !optionsMenuRef.current.contains(event.target)) {
@@ -78,53 +82,13 @@ export default function DealDetailPage() {
     };
   }, [isOptionsMenuOpen]);
 
-  // Helper function to format time ago
-  const formatTimeAgo = (timestamp) => {
-    if (!timestamp) return 'N/A';
-    const now = new Date();
-    const past = new Date(timestamp);
-    const diffInSeconds = Math.floor((now - past) / 1000);
-
-    if (diffInSeconds < 60) {
-      return `${diffInSeconds} second${diffInSeconds === 1 ? '' : 's'} ago`;
-    }
-    const diffInMinutes = Math.floor(diffInSeconds / 60);
-    if (diffInMinutes < 60) {
-      return `${diffInMinutes} minute${diffInMinutes === 1 ? '' : 's'} ago`;
-    }
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) {
-      return `${diffInHours} hour${diffInHours === 1 ? '' : 's'} ago`;
-    }
-    const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) {
-      return `${diffInDays} day${diffInDays === 1 ? '' : 's'} ago`;
-    }
-    const diffInWeeks = Math.floor(diffInDays / 7);
-    return `${diffInWeeks} week${diffInWeeks === 1 ? '' : 's'} ago`;
-  };
-
-  // Helper function to format text to title case
-  const toTitleCase = (str) => {
-    if (!str) return '';
-    const minorWords = new Set([
-      "a", "an", "the", "and", "but", "or", "for", "nor", "on", "at", "to", "from", "by", "of", "in", "into", "near", "over", "past", "through", "up", "upon", "with", "without"
-    ]);
-    const words = String(str).toLowerCase().split(' ');
-    return words.map((word, index) => {
-      if (index === 0 || index === words.length - 1 || !minorWords.has(word)) {
-        return word.charAt(0).toUpperCase() + word.slice(1);
-      }
-      return word;
-    }).join(' ');
-  };
-
   // Effect to fetch deal details
   useEffect(() => {
     if (dealId && supabase) {
       const fetchDealDetails = async () => {
         setLoading(true);
         setError(null);
+        // Fetch deal details including user profile, tags, and description
         const { data, error: fetchError } = await supabase
           .from('deals')
           .select('*, user_profiles(name), tags, description')
@@ -133,6 +97,7 @@ export default function DealDetailPage() {
 
         if (fetchError) {
           console.error('Error fetching deal details:', fetchError);
+          // Handle specific Supabase error for 'item not found'
           if (fetchError.code === 'PGRST116') {
             setError('Deal not found.');
           } else {
@@ -141,43 +106,52 @@ export default function DealDetailPage() {
           setDeal(null);
         } else if (data) {
           setDeal(data);
-          let loc = data.location;
+          let loc = data.location; // Default location to the raw data
           let parsedLat = null;
           let parsedLng = null;
 
+          // Process location data, which might be a stringified JSON or an object
           if (data.location) {
             let tempCoords = null;
+            // Check if location is a string (potentially JSON)
             if (typeof data.location === 'string') {
               try {
                 const parsedJson = JSON.parse(data.location);
                 if (parsedJson) {
-                  loc = parsedJson.address || loc;
+                  loc = parsedJson.address || loc; // Use parsed address if available
+                  // Check for valid latitude and longitude
                   if (typeof parsedJson.lat === 'number' && typeof parsedJson.lng === 'number') {
                     tempCoords = { lat: parsedJson.lat, lng: parsedJson.lng };
                   }
                 }
               } catch (e) {
+                // Log a warning if JSON parsing fails
                 console.warn("Failed to parse location JSON for deal detail:", data.location, e);
               }
+            // Check if location is an object with an address property
             } else if (typeof data.location === 'object' && data.location.address) {
               loc = data.location.address;
+              // Check for valid latitude and longitude
               if (typeof data.location.lat === 'number' && typeof data.location.lng === 'number') {
                 tempCoords = { lat: data.location.lat, lng: data.location.lng };
               }
             }
+            // If valid coordinates were extracted, update parsedLat and parsedLng
             if (tempCoords) {
               parsedLat = tempCoords.lat;
               parsedLng = tempCoords.lng;
             }
           }
-          setDisplayLocation(loc);
+          setDisplayLocation(loc); // Set the displayable location string
 
+          // Set location coordinates if both latitude and longitude are valid
           if (parsedLat !== null && parsedLng !== null) {
             setLocationCoords({ lat: parsedLat, lng: parsedLng });
           } else {
             setLocationCoords(null);
           }
         } else {
+          // Handle case where no data is returned (should be caught by fetchError PGRST116 ideally)
           setError('Deal not found.');
           setDeal(null);
         }
@@ -218,6 +192,8 @@ export default function DealDetailPage() {
   };
 
   // -- Conditional Renders --
+
+  // Display loading state while fetching deal details
   if (loading) {
     return (
       <div className="bg-[#F5E3C6] min-h-screen flex items-center justify-center">
@@ -228,6 +204,7 @@ export default function DealDetailPage() {
     );
   }
 
+  // Display error message if fetching fails
   if (error) {
     return (
       <div className="bg-[#F5E3C6] min-h-screen flex flex-col items-center justify-center">
@@ -243,6 +220,7 @@ export default function DealDetailPage() {
     );
   }
 
+  // Display message if deal data is not available (e.g., deal not found)
   if (!deal) {
     return (
       <div className="bg-[#F5E3C6] min-h-screen flex items-center justify-center">
@@ -254,11 +232,15 @@ export default function DealDetailPage() {
   }
 
   return (
+    // Main container for the deal detail page
     <div className="bg-[#F5E3C6] min-h-screen pb-6">
       <StickyNavbar />
+      {/* Main content area */}
       <div className="max-w-md mx-auto px-4 py-6 space-y-6 pt-20">
 
+        {/* Deal details card */}
         <div className="bg-[#FDFAF5] p-4 rounded-lg border border-[#8B4C24]/30">
+          {/* Card header: Back button and options menu */}
           <div className="flex justify-between items-center mb-4">
             <button
               onClick={() => router.back()}
@@ -267,6 +249,7 @@ export default function DealDetailPage() {
               <ArrowLeftIcon className="h-5 w-5" />
             </button>
 
+            {/* Options menu for deal author */}
             {deal && currentUserId && deal.user_id === currentUserId && (
               <div className="relative" ref={optionsMenuRef}>
                 <button
@@ -276,6 +259,7 @@ export default function DealDetailPage() {
                 >
                   <EllipsisVerticalIcon className="h-5 w-5" />
                 </button>
+                {/* Dropdown for edit/delete */}
                 {isOptionsMenuOpen && (
                   <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-10">
                     <button
@@ -296,8 +280,10 @@ export default function DealDetailPage() {
             )}
           </div>
 
+          {/* Deal title */}
           <h1 className="text-3xl font-bold mb-2 text-[#8B4C24]">{toTitleCase(deal.title)}</h1>
 
+          {/* Deal tags section */}
           {deal.tags && deal.tags.length > 0 && (
             <div className="mb-6 flex flex-wrap gap-2">
               {deal.tags.map((tag, index) => (
@@ -306,12 +292,14 @@ export default function DealDetailPage() {
             </div>
           )}
 
+          {/* Deal price section */}
           {deal.price !== null && deal.price !== undefined && (
             <div className="mb-4 text-base text-[#8B4C24]">
               <p><span className="font-bold">💲 Price:</span> ${typeof deal.price === 'number' ? deal.price.toFixed(2) : deal.price}</p>
             </div>
           )}
 
+          {/* Deal location section */}
           {displayLocation && (
             <div className="mb-4 text-base text-[#8B4C24]">
               <p><span className="font-bold">📍 Location:</span> {displayLocation}
@@ -324,16 +312,19 @@ export default function DealDetailPage() {
             </div>
           )}
 
+          {/* Deal description section */}
           {deal.description && (
             <div className="mb-6">
               <p className="text-[#8B4C24] whitespace-pre-wrap">{deal.description || "No description provided"}</p>
             </div>
           )}
 
+          {/* Deal author and timestamp */}
           <p className="text-sm text-[#8B4C24]/80 mb-8">
             By {deal.user_profiles && deal.user_profiles.name ? deal.user_profiles.name : (deal.user_id ? `User ${deal.user_id.substring(0, 8)}...` : 'Unknown')} - {formatTimeAgo(deal.created_at)}
           </p>
 
+          {/* Action buttons section (Vote, Map, Bookmark) */}
           <div className="flex items-center mb-6">
             <VoteButtons
               itemId={deal.id}
@@ -353,10 +344,12 @@ export default function DealDetailPage() {
           </div>
         </div>
 
+        {/* Comment section component */}
         <CommentSection entityId={deal.id} entityType="deal" />
         <Footer />
       </div>
       <BottomNav />
+      {/* Modal for confirming deal deletion */}
       <ConfirmDeleteModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
