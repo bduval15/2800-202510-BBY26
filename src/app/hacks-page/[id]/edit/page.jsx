@@ -8,6 +8,7 @@ import BottomNav from '@/components/BottomNav';
 import StickyNavbar from '@/components/StickyNavbar';
 import LocationAutocomplete from '@/components/mapComponents/LocationAutoComplete';
 import { tags } from '@/lib/tags';
+import ConfirmCancelModal from '@/components/ConfirmCancelModal';
 
 /**
  * EditHackPage.jsx
@@ -39,6 +40,14 @@ export default function EditHackPage({ params }) {
   const [currentUserId, setCurrentUserId] = useState(null);
   const [hackAuthorId, setHackAuthorId] = useState(null);
   const [locationKey, setLocationKey] = useState(0);
+  const [showCancelConfirmModal, setShowCancelConfirmModal] = useState(false);
+
+  // State to store initial values for comparison
+  const [initialTitle, setInitialTitle] = useState('');
+  const [initialDescription, setInitialDescription] = useState('');
+  const [initialTags, setInitialTags] = useState([]);
+  const [initialLocationAddress, setInitialLocationAddress] = useState('');
+  const [initialSelectedLocation, setInitialSelectedLocation] = useState(null);
 
   useEffect(() => {
     const fetchCurrentUserAndHack = async () => {
@@ -98,23 +107,36 @@ export default function EditHackPage({ params }) {
         setTitle(hackData.title ? hackData.title.trim() : '');
         setDescription(hackData.description || '');
         setCurrentTags(hackData.tags ? hackData.tags.map(t => String(t).toLowerCase()) : []);
+
+        // Store initial values
+        setInitialTitle(hackData.title ? hackData.title.trim() : '');
+        setInitialDescription(hackData.description || '');
+        setInitialTags(hackData.tags ? hackData.tags.map(t => String(t).toLowerCase()) : []);
+
         if (hackData.location) {
           try {
             const parsedLocation = JSON.parse(hackData.location);
             setLocationAddress(parsedLocation.address || '');
+            setInitialLocationAddress(parsedLocation.address || ''); // Store initial
             if (parsedLocation.address && parsedLocation.lat && parsedLocation.lng) {
               setSelectedLocation(parsedLocation);
+              setInitialSelectedLocation(parsedLocation); // Store initial
             } else {
               setSelectedLocation({ address: parsedLocation.address || '', lat: null, lng: null });
+              setInitialSelectedLocation({ address: parsedLocation.address || '', lat: null, lng: null }); // Store initial
             }
           } catch (e) {
             console.error("Error parsing location JSON from DB:", e);
             setLocationAddress('');
+            setInitialLocationAddress(''); // Store initial
             setSelectedLocation(null);
+            setInitialSelectedLocation(null); // Store initial
           }
         } else {
           setLocationAddress('');
+          setInitialLocationAddress(''); // Store initial
           setSelectedLocation(null);
+          setInitialSelectedLocation(null); // Store initial
         }
 
       } catch (err) {
@@ -127,6 +149,33 @@ export default function EditHackPage({ params }) {
 
     fetchCurrentUserAndHack();
   }, [hackId, router]);
+
+  const hasUnsavedChanges = () => {
+    if (title !== initialTitle) return true;
+    if (description !== initialDescription) return true;
+    if (JSON.stringify(currentTags.sort()) !== JSON.stringify(initialTags.sort())) return true;
+    // For location, check both address string and the selectedLocation object structure
+    if (locationAddress !== initialLocationAddress) return true;
+    if (JSON.stringify(selectedLocation) !== JSON.stringify(initialSelectedLocation)) return true;
+    return false;
+  };
+
+  const handleCancel = () => {
+    if (hasUnsavedChanges()) {
+      setShowCancelConfirmModal(true);
+    } else {
+      router.push(`/hacks-page/${hackId}`);
+    }
+  };
+
+  const confirmCancelAndRedirect = () => {
+    setShowCancelConfirmModal(false);
+    router.push(`/hacks-page/${hackId}`);
+  };
+
+  const cancelAndKeepEditing = () => {
+    setShowCancelConfirmModal(false);
+  };
 
   const handleClear = () => {
     setTitle('');
@@ -338,7 +387,7 @@ export default function EditHackPage({ params }) {
               </button>
               <button
                 type="button"
-                onClick={() => router.push(`/hacks-page/${hackId}`)}
+                onClick={handleCancel}
                 className="w-full flex justify-center py-3 px-4 border border-[#D1905A] rounded-lg shadow-sm text-sm font-medium text-[#8B4C24] bg-transparent hover:bg-[#F5E3C6] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8B4C24] transition duration-150 ease-in-out"
                 disabled={isLoading}
               >
@@ -350,6 +399,11 @@ export default function EditHackPage({ params }) {
         <Footer />
       </div>
       <BottomNav />
+      <ConfirmCancelModal
+        isOpen={showCancelConfirmModal}
+        onConfirm={confirmCancelAndRedirect}
+        onCancel={cancelAndKeepEditing}
+      />
     </div>
   );
 }

@@ -8,6 +8,7 @@ import BottomNav from '@/components/BottomNav';
 import StickyNavbar from '@/components/StickyNavbar';
 import LocationAutocomplete from '@/components/mapComponents/LocationAutoComplete';
 import { tags as availableTags } from '@/lib/tags';
+import ConfirmCancelModal from '@/components/ConfirmCancelModal';
 
 /**
  * EditEventPage.jsx
@@ -39,6 +40,14 @@ export default function EditEventPage({ params }) {
   const [locationAddress, setLocationAddress] = useState('');
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [locationKey, setLocationKey] = useState(0);
+  const [showCancelConfirmModal, setShowCancelConfirmModal] = useState(false);
+
+  // Initial state for unsaved changes detection
+  const [initialTitle, setInitialTitle] = useState('');
+  const [initialDescription, setInitialDescription] = useState('');
+  const [initialTags, setInitialTags] = useState([]);
+  const [initialLocationAddress, setInitialLocationAddress] = useState('');
+  const [initialSelectedLocation, setInitialSelectedLocation] = useState(null);
 
   useEffect(() => {
     const fetchCurrentUserAndEvent = async () => {
@@ -99,23 +108,36 @@ export default function EditEventPage({ params }) {
         setTitle(eventData.title ? eventData.title.trim() : '');
         setDescription(eventData.description || '');
         setCurrentTags(eventData.tags ? eventData.tags.map(t => String(t).toLowerCase()) : []);
+
+        // Set initial state for comparison
+        setInitialTitle(eventData.title ? eventData.title.trim() : '');
+        setInitialDescription(eventData.description || '');
+        setInitialTags(eventData.tags ? eventData.tags.map(t => String(t).toLowerCase()) : []);
+
         if (eventData.location) { // Parse and set location
           try {
             const parsedLocation = JSON.parse(eventData.location);
             setLocationAddress(parsedLocation.address || '');
+            setInitialLocationAddress(parsedLocation.address || ''); // Store initial
             if (parsedLocation.address && parsedLocation.lat && parsedLocation.lng) {
               setSelectedLocation(parsedLocation);
+              setInitialSelectedLocation(parsedLocation); // Store initial
             } else {
               setSelectedLocation({ address: parsedLocation.address || '', lat: null, lng: null });
+              setInitialSelectedLocation({ address: parsedLocation.address || '', lat: null, lng: null }); // Store initial
             }
           } catch (e) {
             console.error("Error parsing event location JSON from DB:", e);
             setLocationAddress('');
+            setInitialLocationAddress(''); // Store initial
             setSelectedLocation(null);
+            setInitialSelectedLocation(null); // Store initial
           }
         } else {
           setLocationAddress('');
+          setInitialLocationAddress(''); // Store initial
           setSelectedLocation(null);
+          setInitialSelectedLocation(null); // Store initial
         }
       } catch (err) {
         console.error(err);
@@ -127,6 +149,32 @@ export default function EditEventPage({ params }) {
 
     fetchCurrentUserAndEvent();
   }, [eventId, router]);
+
+  const hasUnsavedChanges = () => {
+    if (title !== initialTitle) return true;
+    if (description !== initialDescription) return true;
+    if (JSON.stringify(currentTags.sort()) !== JSON.stringify(initialTags.sort())) return true;
+    if (locationAddress !== initialLocationAddress) return true;
+    if (JSON.stringify(selectedLocation) !== JSON.stringify(initialSelectedLocation)) return true;
+    return false;
+  };
+
+  const handleCancel = () => {
+    if (hasUnsavedChanges()) {
+      setShowCancelConfirmModal(true);
+    } else {
+      router.push(`/events-page/${eventId}`);
+    }
+  };
+
+  const confirmCancelAndRedirect = () => {
+    setShowCancelConfirmModal(false);
+    router.push(`/events-page/${eventId}`);
+  };
+
+  const cancelAndKeepEditing = () => {
+    setShowCancelConfirmModal(false);
+  };
 
   const handleClear = () => {
     setTitle('');
@@ -342,7 +390,7 @@ export default function EditEventPage({ params }) {
               </button>
               <button
                 type="button"
-                onClick={() => router.push(`/events-page/${eventId}`)} // Adjusted cancel route
+                onClick={handleCancel}
                 disabled={isLoading}
                 className="w-full flex justify-center py-3 px-4 border border-[#D1905A] rounded-lg shadow-sm text-sm font-medium text-[#8B4C24] bg-transparent hover:bg-[#F5E3C6] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8B4C24] transition duration-150 ease-in-out"
               >
@@ -355,6 +403,11 @@ export default function EditEventPage({ params }) {
         <Footer />
       </div>
       <BottomNav />
+      <ConfirmCancelModal
+        isOpen={showCancelConfirmModal}
+        onConfirm={confirmCancelAndRedirect}
+        onCancel={cancelAndKeepEditing}
+      />
     </div>
   );
 }

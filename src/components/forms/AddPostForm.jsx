@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import LocationAutoComplete from '@/components/mapComponents/LocationAutoComplete';
+import ConfirmCancelModal from '@/components/ConfirmCancelModal';
 
 /**
  * AddHackForm.jsx
@@ -37,6 +38,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
     lng: null
   });
   const [locationKey, setLocationKey] = useState(0);
+  const [showCancelConfirmModal, setShowCancelConfirmModal] = useState(false);
 
   const MIN_DATE = '1900-01-01';
   const MAX_DATE = '2100-01-01';
@@ -162,9 +164,25 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
   };
 
   const handleCancel = () => {
+    // Directly call onClose if no input has been made, otherwise show confirmation
+    if (!title && !description && selectedTags.length === 0 && !price && !eventStartDate && !eventEndDate && !rawAddress) {
+      if (onClose) {
+        onClose();
+      }
+    } else {
+      setShowCancelConfirmModal(true);
+    }
+  };
+
+  const confirmCancel = () => {
+    setShowCancelConfirmModal(false);
     if (onClose) {
       onClose();
     }
+  };
+
+  const cancelAndKeepEditing = () => {
+    setShowCancelConfirmModal(false);
   };
 
   const handleTagChange = (tagValue) => {
@@ -460,6 +478,12 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
           Cancel
         </button>
       </div>
+
+      <ConfirmCancelModal
+        isOpen={showCancelConfirmModal}
+        onConfirm={confirmCancel}
+        onCancel={cancelAndKeepEditing}
+      />
     </form>
   );
 } 

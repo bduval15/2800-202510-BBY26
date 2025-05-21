@@ -8,6 +8,7 @@ import BottomNav from '@/components/BottomNav';
 import StickyNavbar from '@/components/StickyNavbar';
 import LocationAutoComplete from '@/components/mapComponents/LocationAutoComplete';
 import { tags as availableTags } from '@/lib/tags';
+import ConfirmCancelModal from '@/components/ConfirmCancelModal';
 
 /**
  * EditDealPage.jsx
@@ -39,6 +40,14 @@ export default function EditDealPage({ params }) {
   const [currentUserId, setCurrentUserId] = useState(null);
   const [dealAuthorId, setDealAuthorId] = useState(null);
   const [locationKey, setLocationKey] = useState(0);
+  const [showCancelConfirmModal, setShowCancelConfirmModal] = useState(false);
+
+  // Initial state for unsaved changes detection
+  const [initialTitle, setInitialTitle] = useState('');
+  const [initialDescription, setInitialDescription] = useState('');
+  const [initialPrice, setInitialPrice] = useState('');
+  const [initialLocation, setInitialLocation] = useState('');
+  const [initialTags, setInitialTags] = useState([]);
 
   useEffect(() => {
     const fetchCurrentUserAndDeal = async () => {
@@ -100,6 +109,11 @@ export default function EditDealPage({ params }) {
         setDescription(dealData.description || '');
         setPrice(dealData.price !== null ? dealData.price.toString() : ''); // Ensure price is a string for input
 
+        // Set initial values for comparison
+        setInitialTitle(dealData.title ? dealData.title.trim() : '');
+        setInitialDescription(dealData.description || '');
+        setInitialPrice(dealData.price !== null ? dealData.price.toString() : '');
+
         // Handle location: could be string or object
         let displayLocation = '';
         if (dealData.location) {
@@ -117,6 +131,9 @@ export default function EditDealPage({ params }) {
         setLocation(displayLocation);
         setCurrentTags(dealData.tags ? dealData.tags.map(t => String(t).toLowerCase()) : []); // Normalize to lowercase
 
+        setInitialLocation(displayLocation); // Store initial location
+        setInitialTags(dealData.tags ? dealData.tags.map(t => String(t).toLowerCase()) : []); // Store initial tags
+
       } catch (err) {
         console.error(`Error fetching deal ${dealId} for edit:`, err);
         setError(err.message || "An unexpected error occurred while fetching deal details.");
@@ -127,6 +144,32 @@ export default function EditDealPage({ params }) {
 
     fetchCurrentUserAndDeal();
   }, [dealId, router, supabase]);
+
+  const hasUnsavedChanges = () => {
+    if (title !== initialTitle) return true;
+    if (description !== initialDescription) return true;
+    if (price !== initialPrice) return true;
+    if (location !== initialLocation) return true;
+    if (JSON.stringify(currentTags.sort()) !== JSON.stringify(initialTags.sort())) return true;
+    return false;
+  };
+
+  const handleCancel = () => {
+    if (hasUnsavedChanges()) {
+      setShowCancelConfirmModal(true);
+    } else {
+      router.push(`/deals-page/${dealId}`);
+    }
+  };
+
+  const confirmCancelAndRedirect = () => {
+    setShowCancelConfirmModal(false);
+    router.push(`/deals-page/${dealId}`);
+  };
+
+  const cancelAndKeepEditing = () => {
+    setShowCancelConfirmModal(false);
+  };
 
   const handleClear = () => {
     setTitle('');
@@ -378,7 +421,7 @@ export default function EditDealPage({ params }) {
               </button>
               <button
                 type="button"
-                onClick={() => router.push(`/deals-page/${dealId}`)}
+                onClick={handleCancel}
                 className="w-full flex justify-center py-3 px-4 border border-[#D1905A] rounded-lg shadow-sm text-sm font-medium text-[#8B4C24] bg-transparent hover:bg-[#F5E3C6] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8B4C24] transition duration-150 ease-in-out"
               >
                 Cancel
@@ -389,6 +432,11 @@ export default function EditDealPage({ params }) {
         <Footer />
       </div>
       <BottomNav />
+      <ConfirmCancelModal
+        isOpen={showCancelConfirmModal}
+        onConfirm={confirmCancelAndRedirect}
+        onCancel={cancelAndKeepEditing}
+      />
     </div>
   );
 } 
