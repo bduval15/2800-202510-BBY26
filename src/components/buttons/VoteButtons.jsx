@@ -32,6 +32,7 @@ const VoteButtons = ({ itemId, itemType, userId, upvotes: initialUpvotes, downvo
   }, [initialUpvotes, initialDownvotes]);
 
   useEffect(() => {
+    // Fetches the current user's vote status for this item when component mounts or dependencies change.
     if (!userId) {
       setCurrentUserVoteType(null);
       return;
@@ -79,6 +80,9 @@ const VoteButtons = ({ itemId, itemType, userId, upvotes: initialUpvotes, downvo
   }, [userId, itemId, itemType, hackId, dealId, eventId]);
 
   const syncVoteWithDB = async (newItemUpvotes, newItemDownvotes, nextVoteType) => {
+    // Persists vote changes to the database.
+    // Updates the total upvotes/downvotes on the item's specific table (e.g., 'hacks').
+    // Then, updates or creates a record in 'user_item_votes' to reflect the current user's vote.
     const currentItemId = itemId || hackId || dealId || eventId;
     const currentItemType = itemType || (hackId ? 'hacks' : dealId ? 'deals' : eventId ? 'events' : null);
 
@@ -113,8 +117,8 @@ const VoteButtons = ({ itemId, itemType, userId, upvotes: initialUpvotes, downvo
         throw new Error(`Unknown itemType for DB sync: ${currentItemType}`);
       }
 
-      // First, delete any existing vote by this user for this specific item
-      // This simplifies logic: we don't need to differentiate between insert and update for the user_item_votes table.
+      // Simplifies vote management by first deleting any existing vote for this user/item,
+      // then inserting a new one if the user is casting/changing a vote.
       await clientDB
         .from('user_item_votes')
         .delete()
@@ -161,6 +165,9 @@ const VoteButtons = ({ itemId, itemType, userId, upvotes: initialUpvotes, downvo
   };
 
   const handleVote = async (e, voteAction) => {
+    // Handles a vote action (upvote or downvote).
+    // Updates UI optimistically, then attempts to sync with the database.
+    // Reverts UI changes if DB sync fails.
     e.stopPropagation();
     e.preventDefault();
 
@@ -210,6 +217,7 @@ const VoteButtons = ({ itemId, itemType, userId, upvotes: initialUpvotes, downvo
 
     const success = await syncVoteWithDB(newLocalUpvotes, newLocalDownvotes, nextUserVoteType);
 
+    // If DB sync fails, revert optimistic UI updates.
     if (!success) {
       setLocalUpvotes(originalLocalUpvotes);
       setLocalDownvotes(originalLocalDownvotes);

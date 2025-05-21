@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { ChatBubbleOvalLeftEllipsisIcon } from '@heroicons/react/24/outline';
-import { clientDB } from '@/supabaseClient'; // Import Supabase client
+import { clientDB } from '@/supabaseClient'; 
 
 /**
  * CommentCount.jsx
@@ -38,9 +38,10 @@ const CommentCount = ({ entityId, entityType, onClick }) => {
     setError(null);
     try {
       const entityColumn = `${entityType.toLowerCase()}_id`;
+      // Fetch only the count of comments for the given entity
       const { count: commentCount, error: fetchError } = await clientDB
         .from('comment')
-        .select('id', { count: 'exact', head: true })
+        .select('id', { count: 'exact', head: true }) // `head: true` ensures only count is returned
         .eq(entityColumn, entityId);
 
       if (fetchError) {
@@ -63,9 +64,11 @@ const CommentCount = ({ entityId, entityType, onClick }) => {
   }, [fetchCommentCount]);
 
 
+  // Listen for a global event indicating a comment was added/deleted, then refetch count
   useEffect(() => {
     const handleCommentUpdate = () => fetchCommentCount();
     window.addEventListener('commentUpdated', handleCommentUpdate);
+    // Cleanup listener on component unmount
     return () => window.removeEventListener('commentUpdated', handleCommentUpdate);
   }, [fetchCommentCount]);
 
@@ -73,6 +76,7 @@ const CommentCount = ({ entityId, entityType, onClick }) => {
     if (onClick) {
       onClick();
     } else {
+      // Default behavior or logging if no onClick is provided
       console.log('Comment icon clicked, but no onClick handler provided.');
     }
   };
@@ -86,6 +90,7 @@ const CommentCount = ({ entityId, entityType, onClick }) => {
     );
   }
 
+  // If there's an error and count is 0, don't render the component
   if (error && count === 0) {
     return null;
   }
@@ -110,4 +115,4 @@ CommentCount.propTypes = {
   onClick: PropTypes.func,
 };
 
-export default CommentCount; 
+export default CommentCount;

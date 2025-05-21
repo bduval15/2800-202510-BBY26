@@ -3,13 +3,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 /**
+ * BaseCard.jsx
+ * Loaf Life - Base Card
+ *
  * A reusable base card component providing common styling.
  * Features rounded corners, padding, shadow, and flex layout for content alignment.
  *
- * @param {object} props - The component props.
- * @param {React.ReactNode} props.children - The content to display inside the card.
- * @param {string} [props.className] - Optional additional CSS classes for customization.
+ * Written with assistance from Google Gemini 2.5 Pro
+ * @author: Nathan O
+ * @author: https://gemini.google.com/app
  */
+
 const BaseCard = ({ children, className = '' }) => {
   return (
     <div

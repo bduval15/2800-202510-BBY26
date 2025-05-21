@@ -48,7 +48,8 @@ const BookmarkButton = ({ hackId, dealId, eventId }) => {
         setError('Could not fetch user session.');
         setUserId(null);
       } finally {
-        //isLoading false will be handled by the bookmark check effect or if no itemid
+        // If no itemId, stop loading as bookmark status cannot be determined without an item.
+        // The loading state will be handled by the checkIfBookmarked effect if itemId is present.
         if (!itemId) setIsLoading(false); 
       }
     };
@@ -72,6 +73,7 @@ const BookmarkButton = ({ hackId, dealId, eventId }) => {
           .select('id')
           .eq('user_id', userId);
 
+        // Add item-specific filter to the bookmark check query.
         if (itemType === 'hack') {
           query = query.eq('hack_id', itemId);
         } else if (itemType === 'deal') {
@@ -125,6 +127,7 @@ const BookmarkButton = ({ hackId, dealId, eventId }) => {
           .delete()
           .eq('user_id', userId);
 
+        // Add item-specific filter to the delete query.
         if (itemType === 'hack') {
           deleteQuery = deleteQuery.eq('hack_id', itemId);
         } else if (itemType === 'deal') {
@@ -151,6 +154,7 @@ const BookmarkButton = ({ hackId, dealId, eventId }) => {
           created_at: new Date().toISOString(),
         };
 
+        // Add type-specific ID field to the item being saved.
         if (itemType === 'hack') {
           itemToInsert.hack_id = itemId;
         } else if (itemType === 'deal') {
@@ -175,6 +179,7 @@ const BookmarkButton = ({ hackId, dealId, eventId }) => {
       }
     } catch (err) {
       console.error(`Error updating bookmark for item ${itemId}. Raw error:`, JSON.stringify(err, null, 2));
+      // Construct a more user-friendly error message from the raw error object.
       let displayErrorMessage = 'Failed to update bookmark.';
       if (err && typeof err === 'object') {
         if (err.message) {
@@ -198,7 +203,7 @@ const BookmarkButton = ({ hackId, dealId, eventId }) => {
     }
   };
 
-  // Disable if loading or if no valid item id is derived (neither hackId nor dealId provided)
+  // Disable if loading or if no valid item id is derived (neither hackId, dealId, nor eventId provided)
   const isDisabled = isLoading || !itemId;
 
   return (
