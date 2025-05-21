@@ -218,9 +218,6 @@ export default function ProfilePage() {
     }
   };
 
-
-
-
   // Save avatar selection to Supabase
   const handleSaveAvatar = async (avatarUrl) => {
     setSelectedAvatar(avatarUrl);
