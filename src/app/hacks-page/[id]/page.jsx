@@ -1,9 +1,35 @@
+/**
+ * page.jsx (HackDetailPage)
+ * Loaf Life – Displays details for a specific hack.
+ *
+ * This page fetches and displays comprehensive information about a
+ * particular hack from the Supabase database, identified by its ID.
+ * It presents the hack's title, description, associated tags,
+ * location, author details, and creation timestamp.
+ * Authenticated users who are authors of the hack can edit or
+ * delete their posts. All users can engage by voting on or
+ * bookmarking hacks.
+ *
+ * Features:
+ * - Displays hack title, description, tags, location, author.
+ * - Allows authors to edit or delete their hacks.
+ * - Enables users to vote on hacks.
+ * - Enables users to bookmark hacks.
+ * - Integrates a comment section for user discussions.
+ *
+ * Portions of styling and logic assisted by Google Gemini 2.5 Flash.
+ *
+ * Modified with assistance from Google Gemini 2.5 Flash.
+ *
+ * @author Nathan Oloresisimo
+ * @author https://gemini.google.com/app
+ */
+
 'use client';
 
 import React, { useState, useEffect, use, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Footer from '@/components/Footer';
-import Link from 'next/link';
 import BookmarkButton from '@/components/buttons/Bookmark';
 import VoteButtons from '@/components/buttons/VoteButtons';
 import { ArrowLeftIcon, PencilIcon, TrashIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
@@ -13,25 +39,12 @@ import CommentSection from '@/components/sections/CommentSection';
 import StickyNavbar from '@/components/StickyNavbar';
 import { clientDB } from '@/supabaseClient';
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
+import { toTitleCase } from '@/lib/utils';
 
-/**
- * HackDetails.jsx
- * Loaf Life - Hack Details Page
- *
- * This page displays the details of a specific hack, fetched from Supabase
- * using the hack ID. It shows the hack's title, description, tags, location,
- * author, and creation timestamp. Authenticated authors can edit or delete
- * their hacks. Users can also vote on and bookmark hacks.
- *
- * Modified with assistance from Google Gemini 2.5 Flash
- *
- * @author: Nathan O
- * @author: https://gemini.google.com/app
- */
 
 export default function HackDetailPage({ params }) {
   // -- State & Hooks --
-  const resolvedParams = use(params);
+  const resolvedParams = use(params); 
   const hackId = resolvedParams.id;
   const [hack, setHack] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -44,6 +57,7 @@ export default function HackDetailPage({ params }) {
   const optionsMenuRef = useRef(null);
 
   // -- Effects --
+  // Fetch current user's ID on component mount
   useEffect(() => {
     const fetchCurrentUser = async () => {
       const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
@@ -58,6 +72,7 @@ export default function HackDetailPage({ params }) {
     fetchCurrentUser();
   }, []);
 
+  // Fetch hack details when hackId changes
   useEffect(() => {
     if (!hackId) {
       setIsLoading(false);
@@ -76,6 +91,7 @@ export default function HackDetailPage({ params }) {
           .single();
 
         if (fetchError) {
+          // Handle specific Supabase error for 'item not found'
           if (fetchError.code === 'PGRST116') {
             setError("Hack not found.");
             setHack(null);
@@ -98,8 +114,10 @@ export default function HackDetailPage({ params }) {
     fetchHackDetails();
   }, [hackId]);
 
+  // Effect to handle clicks outside the options menu to close it
   useEffect(() => {
     const handleClickOutside = (event) => {
+      // If the click is outside the options menu, close it
       if (optionsMenuRef.current && !optionsMenuRef.current.contains(event.target)) {
         setIsOptionsMenuOpen(false);
       }
@@ -107,6 +125,7 @@ export default function HackDetailPage({ params }) {
     if (isOptionsMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
+    // Cleanup event listener on component unmount or when menu closes
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
@@ -150,20 +169,6 @@ export default function HackDetailPage({ params }) {
     }
     const diffInWeeks = Math.floor(diffInDays / 7);
     return `${diffInWeeks} weeks ago`;
-  };
-
-  const toTitleCase = (str) => {
-    if (!str) return '';
-    const minorWords = new Set([
-      "a", "an", "the", "and", "but", "or", "for", "nor", "on", "at", "to", "from", "by", "of", "in", "into", "near", "over", "past", "through", "up", "upon", "with", "without"
-    ]);
-    const words = String(str).toLowerCase().split(' ');
-    return words.map((word, index) => {
-      if (index === 0 || index === words.length - 1 || !minorWords.has(word)) {
-        return word.charAt(0).toUpperCase() + word.slice(1);
-      }
-      return word;
-    }).join(' ');
   };
 
   // -- Handlers --
@@ -298,10 +303,8 @@ export default function HackDetailPage({ params }) {
             <BookmarkButton hackId={hack.id} />
           </div>
         </div>
-
         <CommentSection entityId={hack.id} entityType="hack" />
         <Footer />
-
       </div>
       <BottomNav />
       <ConfirmDeleteModal
