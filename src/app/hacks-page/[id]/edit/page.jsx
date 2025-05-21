@@ -120,7 +120,7 @@ export default function EditHackPage({ params }) {
         }
         
         setHackAuthorId(hackData.user_id);
-        setTitle(hackData.title || '');
+        setTitle(hackData.title ? hackData.title.trim() : '');
         setDescription(hackData.description || '');
         setCurrentTags(hackData.tags ? hackData.tags.map(t => String(t).toLowerCase()) : []);
         if (hackData.location) {
@@ -196,7 +196,8 @@ export default function EditHackPage({ params }) {
     setSubmitError(null);
     setIsLoading(true);
 
-    if (!title.trim()) {
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) {
         setSubmitError("Title cannot be empty.");
         setIsLoading(false);
         return;
@@ -235,7 +236,7 @@ export default function EditHackPage({ params }) {
       const { data, error: updateError } = await clientDB
         .from('hacks')
         .update({ 
-            title, 
+            title: trimmedTitle, 
             description,
             tags: currentTags,
             location: updatedLocationJson,

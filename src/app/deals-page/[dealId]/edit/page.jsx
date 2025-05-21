@@ -121,7 +121,7 @@ export default function EditDealPage({ params }) {
         }
 
         setDealAuthorId(dealData.user_id);
-        setTitle(dealData.title || '');
+        setTitle(dealData.title ? dealData.title.trim() : '');
         setDescription(dealData.description || '');
         setPrice(dealData.price !== null ? dealData.price.toString() : ''); // Ensure price is a string for input
 
@@ -185,7 +185,9 @@ export default function EditDealPage({ params }) {
     setSubmitError(null);
     setIsLoading(true);
 
-    if (!title.trim()) {
+    const trimmedTitle = title.trim();
+
+    if (!trimmedTitle) {
       setSubmitError("Title cannot be empty.");
       setIsLoading(false);
       return;
@@ -226,7 +228,7 @@ export default function EditDealPage({ params }) {
       const { error: updateError } = await supabase
         .from('deals')
         .update({
-          title,
+          title: trimmedTitle,
           description,
           price: parsedPrice,
           location: locationToStore,
