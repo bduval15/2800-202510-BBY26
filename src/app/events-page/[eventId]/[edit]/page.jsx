@@ -1,3 +1,31 @@
+/**
+ * page.jsx (EditEventPage)
+ * Loaf Life – Allows users to edit their created events.
+ *
+ * This page enables authenticated users to modify details of their events.
+ * It fetches existing event data (title, description, tags, location)
+ * from Supabase and populates a form. Users can update these fields.
+ * The page includes input validation, a confirmation modal for unsaved
+ * changes, and location autocomplete. This page was converted from an
+ * earlier 'EditHackPage' component, adapting it for 'events'.
+ *
+ * Features:
+ * - Fetches event data from Supabase.
+ * - Form for editing event details (title, description, tags, location).
+ * - Input validation for form fields.
+ * - Tag management (selection up to 5 tags).
+ * - Location autocomplete using Google Places API.
+ * - Unsaved changes confirmation modal.
+ * - Updates event data in the Supabase 'events' table.
+ *
+ * Portions of logic assisted by ChatGPT.
+ * Modified with assistance from ChatGPT (for conversion from EditHackPage).
+ *
+ * @author Nathan Oloresisimo
+ * @author Conner Ponton
+ * @author https://chatgpt.com
+ */
+
 'use client';
 
 import React, { useState, useEffect, use } from 'react';
@@ -10,21 +38,6 @@ import LocationAutocomplete from '@/components/mapComponents/LocationAutoComplet
 import { tags as availableTags } from '@/lib/tags';
 import ConfirmCancelModal from '@/components/ConfirmCancelModal';
 
-/**
- * EditEventPage.jsx
- * Loaf Life - Edit Event Page
- * 
- * This page allows authenticated users to edit the details of an event they
- * previously created. It fetches existing event data (title, description,
- * tags, location), populates a form, and allows updates. Includes input
- * validation, unsaved changes confirmation, and location autocomplete.
- * 
- * Converted from 'Edit Hack Page' with table changes for 'events'
- * 
- * @author: Nathan O
- * @author: Conner P
- * @author: ChatGPT used to simplify conversion 
- */
 
 const MAX_TAGS = 5;
 
@@ -120,30 +133,35 @@ export default function EditEventPage({ params }) {
         setInitialDescription(eventData.description || '');
         setInitialTags(eventData.tags ? eventData.tags.map(t => String(t).toLowerCase()) : []);
 
-        if (eventData.location) { // Parse and set location
+        if (eventData.location) {
           try {
+            // Location data is expected to be a JSON string
             const parsedLocation = JSON.parse(eventData.location);
             setLocationAddress(parsedLocation.address || '');
-            setInitialLocationAddress(parsedLocation.address || ''); // Store initial
+            setInitialLocationAddress(parsedLocation.address || '');
+
+            // Check if full coordinates are available in the parsed location
             if (parsedLocation.address && parsedLocation.lat && parsedLocation.lng) {
               setSelectedLocation(parsedLocation);
-              setInitialSelectedLocation(parsedLocation); // Store initial
+              setInitialSelectedLocation(parsedLocation);
             } else {
+              // If not, store address with null coordinates (or just address if that's all there is)
               setSelectedLocation({ address: parsedLocation.address || '', lat: null, lng: null });
-              setInitialSelectedLocation({ address: parsedLocation.address || '', lat: null, lng: null }); // Store initial
+              setInitialSelectedLocation({ address: parsedLocation.address || '', lat: null, lng: null });
             }
           } catch (e) {
             console.error("Error parsing event location JSON from DB:", e);
             setLocationAddress('');
-            setInitialLocationAddress(''); // Store initial
+            setInitialLocationAddress('');
             setSelectedLocation(null);
-            setInitialSelectedLocation(null); // Store initial
+            setInitialSelectedLocation(null);
           }
         } else {
+          // Initialize location fields if no location data from DB
           setLocationAddress('');
-          setInitialLocationAddress(''); // Store initial
+          setInitialLocationAddress('');
           setSelectedLocation(null);
-          setInitialSelectedLocation(null); // Store initial
+          setInitialSelectedLocation(null);
         }
       } catch (err) {
         console.error(err);
@@ -168,6 +186,7 @@ export default function EditEventPage({ params }) {
 
   // -- Event Handlers --
   const handleCancel = () => {
+    // If there are unsaved changes, show a confirmation modal before navigating
     if (hasUnsavedChanges()) {
       setShowCancelConfirmModal(true);
     } else {
@@ -191,6 +210,7 @@ export default function EditEventPage({ params }) {
     setLocationAddress('');
     setSelectedLocation(null);
     setSubmitError(null);
+    // Increment key to force re-render of LocationSearchInput if it relies on a key
     setLocationKey(prevKey => prevKey + 1); 
   };
 
@@ -198,14 +218,16 @@ export default function EditEventPage({ params }) {
     setSubmitError(null);
     setCurrentTags(prevLowercaseTags => {
       const lowerTagValue = String(tagValueFromButton).toLowerCase();
+      // Toggle tag selection
       if (prevLowercaseTags.includes(lowerTagValue)) {
         return prevLowercaseTags.filter(t => t !== lowerTagValue);
       } else {
+        // Add tag if under max limit
         if (prevLowercaseTags.length < MAX_TAGS) {
           return [...prevLowercaseTags, lowerTagValue];
         } else {
           setSubmitError(`You can select up to ${MAX_TAGS} tags.`);
-          return prevLowercaseTags;
+          return prevLowercaseTags; // Do not add tag if limit reached
         }
       }
     });
@@ -227,7 +249,7 @@ export default function EditEventPage({ params }) {
     setSubmitError(null);
     setIsLoading(true);
 
-    // same validations
+    // Basic form validations
     const trimmedTitle = title.trim();
     if (!trimmedTitle) {
       setSubmitError("Title cannot be empty.");
@@ -244,6 +266,7 @@ export default function EditEventPage({ params }) {
       setIsLoading(false);
       return;
     }
+    // Authorization check
     if (currentUserId !== eventAuthorId) {
       setSubmitError("Authorization error.");
       setIsLoading(false);
@@ -251,21 +274,23 @@ export default function EditEventPage({ params }) {
     }
 
     let updatedLocationJson = null;
+    // Prepare location data for DB storage
     if (selectedLocation && selectedLocation.address && selectedLocation.lat !== null && selectedLocation.lng !== null) {
+      // Case 1: Full location data (address + lat/lng) from geocoding selection
       updatedLocationJson = JSON.stringify({
         address: selectedLocation.address,
         lat: selectedLocation.lat,
         lng: selectedLocation.lng
       });
     } else if (selectedLocation && selectedLocation.address && (!selectedLocation.lat || !selectedLocation.lng)) {
-      // If lat/lng are missing but address is there, save address only
+      // Case 2: Address selected, but lat/lng might be missing (e.g. partial geocode or just address)
       updatedLocationJson = JSON.stringify({ address: selectedLocation.address, lat: null, lng: null });
     } else if (!selectedLocation && locationAddress.trim()) {
-        // If no selected location object but address string is present (manual input not fully geocoded)
-        updatedLocationJson = JSON.stringify({ address: locationAddress.trim(), lat: null, lng: null });
+      // Case 3: No selected location object, but address string is present (manual input not fully geocoded)
+      updatedLocationJson = JSON.stringify({ address: locationAddress.trim(), lat: null, lng: null });
     }
 
-    // update
+    // Attempt to update the event in the database
     try {
       const { error: updateError } = await clientDB
         .from('events')          
@@ -276,14 +301,14 @@ export default function EditEventPage({ params }) {
           location: updatedLocationJson, 
         })
         .eq('id', eventId)
-        .eq('user_id', currentUserId);
+        .eq('user_id', currentUserId); // Ensure only the author can update
 
       if (updateError) throw updateError;
 
-      router.push(`/events-page/${eventId}`);  
+      router.push(`/events-page/${eventId}`);  // Navigate to event page on success
     } catch (err) {
-      console.error(err);
-      setSubmitError(err.message || "Failed to save.");
+      console.error("Error updating event:", err);
+      setSubmitError(err.message || "Failed to save event. Please try again.");
     } finally {
       setIsLoading(false);
     }
