@@ -65,6 +65,12 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) {
+      console.error("Title cannot be empty or just whitespace.");
+      return;
+    }
+
     let resolvedLocation = location;
 
     // Tag validation for both hacks and deals
@@ -134,7 +140,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
     }
 
     const formData = {
-      title,
+      title: trimmedTitle,
       postType,
       rawAddress,
       location: resolvedLocation,

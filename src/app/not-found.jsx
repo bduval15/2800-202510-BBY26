@@ -21,7 +21,7 @@ export default function NotFound() {
         Let's get you back to familiar dough.
       </p>
       <Link
-        href="/"
+        href="/main-feed-page"
         className="py-3 px-8 rounded-full text-lg font-semibold focus:outline-none transition-all duration-200 ease-in-out whitespace-nowrap bg-[#8B4C24] text-white hover:bg-[#7a421f] shadow-md hover:shadow-lg"
       >
         Return Home

@@ -106,7 +106,7 @@ export default function EventsPage() {
       try {
         const { data, error: fetchError } = await clientDB
           .from('events')
-          .select('id, title, description, location, created_at, user_id, tags, upvotes, downvotes');
+          .select('id, title, description, location, created_at, user_id, tags, upvotes, downvotes, start_date, end_date');
 
         if (fetchError) throw fetchError;
 
@@ -165,6 +165,8 @@ export default function EventsPage() {
               description={event.description}
               userId={currentUserId}
               createdAt={event.created_at}
+              startDate={event.start_date}
+              endDate={event.end_date}
             />
           ))
         ) : (

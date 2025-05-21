@@ -46,7 +46,9 @@ const EventCard = ({
   tags = [],
   className = '',
   userId,
-  createdAt 
+  createdAt,
+  startDate,
+  endDate
 }) => {
   let parsedLocation = {};
   try {
@@ -58,6 +60,27 @@ const EventCard = ({
   } catch (error) {
     console.error("Error parsing location JSON:", error);
     parsedLocation = { address: "Invalid location" };
+  }
+
+  const formatDate = (dateString) => {
+    if (!dateString) return null;
+    const date = new Date(dateString + 'T00:00:00'); // Ensure date is interpreted as local
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
+  };
+
+  const formattedStartDate = formatDate(startDate);
+  const formattedEndDate = formatDate(endDate);
+
+  let displayDate = null;
+  if (formattedStartDate) {
+    if (formattedEndDate && formattedStartDate !== formattedEndDate) {
+      displayDate = `📅 ${formattedStartDate} - ${formattedEndDate}`;
+    } else {
+      displayDate = `📅 ${formattedStartDate}`;
+    }
   }
 
   const handleButtonClick = (e) => {
@@ -80,9 +103,16 @@ const EventCard = ({
         <div className="w-full mb-2 text-sm text-[#8B4C24]/80">
           {parsedLocation.address && <span>📍 {parsedLocation.address}</span>}
           {price != null && (
-            <span className="ml-4">💵 {typeof price === 'number' ? price.toFixed(2) : price}</span>
+            <span className="ml-2">💵 {typeof price === 'number' ? price.toFixed(2) : price}</span>
           )}
         </div>
+
+        {/* Event Dates */}
+        {displayDate && (
+          <div className="w-full mb-2 text-sm text-[#8B4C24]/80">
+            <span>{displayDate}</span>
+          </div>
+        )}
 
          {/* Tags */}
          {tags && tags.length > 0 && (
@@ -128,7 +158,9 @@ EventCard.propTypes = {
   tags: PropTypes.arrayOf(PropTypes.string),
   className: PropTypes.string,
   userId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  createdAt: PropTypes.string
+  createdAt: PropTypes.string,
+  startDate: PropTypes.string,
+  endDate: PropTypes.string,
 };
 
 export default EventCard;

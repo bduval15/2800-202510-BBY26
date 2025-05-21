@@ -121,7 +121,7 @@ export default function EditEventPage({ params }) {
 
         // 5. populate form
         setEventAuthorId(eventData.user_id);
-        setTitle(eventData.title || '');
+        setTitle(eventData.title ? eventData.title.trim() : '');
         setDescription(eventData.description || '');
         setCurrentTags(eventData.tags ? eventData.tags.map(t => String(t).toLowerCase()) : []);
         if (eventData.location) { // Parse and set location
@@ -197,7 +197,8 @@ export default function EditEventPage({ params }) {
     setIsLoading(true);
 
     // same validations
-    if (!title.trim()) {
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) {
       setSubmitError("Title cannot be empty.");
       setIsLoading(false);
       return;
@@ -238,7 +239,7 @@ export default function EditEventPage({ params }) {
       const { error: updateError } = await clientDB
         .from('events')          
         .update({
-          title,
+          title: trimmedTitle,
           description,
           tags: currentTags,
           location: updatedLocationJson, 

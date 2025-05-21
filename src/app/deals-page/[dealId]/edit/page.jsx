@@ -121,7 +121,7 @@ export default function EditDealPage({ params }) {
         }
 
         setDealAuthorId(dealData.user_id);
-        setTitle(dealData.title || '');
+        setTitle(dealData.title ? dealData.title.trim() : '');
         setDescription(dealData.description || '');
         setPrice(dealData.price !== null ? dealData.price.toString() : ''); // Ensure price is a string for input
 
@@ -170,7 +170,7 @@ export default function EditDealPage({ params }) {
       if (prevLowercaseTags.includes(lowerTagValue)) {
         return prevLowercaseTags.filter(t => t !== lowerTagValue);
       } else {
-        if (prevLowercaseTags.length < MAX_TAGS) { // Corrected MAX_TAGS check
+        if (prevLowercaseTags.length < MAX_TAGS) { 
           return [...prevLowercaseTags, lowerTagValue];
         } else {
           setSubmitError(`You can select up to ${MAX_TAGS} tags.`);
@@ -185,7 +185,9 @@ export default function EditDealPage({ params }) {
     setSubmitError(null);
     setIsLoading(true);
 
-    if (!title.trim()) {
+    const trimmedTitle = title.trim();
+
+    if (!trimmedTitle) {
       setSubmitError("Title cannot be empty.");
       setIsLoading(false);
       return;
@@ -226,7 +228,7 @@ export default function EditDealPage({ params }) {
       const { error: updateError } = await supabase
         .from('deals')
         .update({
-          title,
+          title: trimmedTitle,
           description,
           price: parsedPrice,
           location: locationToStore,
