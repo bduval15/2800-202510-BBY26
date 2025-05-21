@@ -9,9 +9,9 @@ import { clientDB } from '@/supabaseClient'; // Import Supabase client
  *
  * This component allows users to add a comment to an entity (hack, deal, or event).
  *
- * @author: Nathan O
+ * Modified with assistance from Google Gemini 2.5 Pro
  *
- * Modified with assistance from Google Gemini 2.5 Flash
+ * @author: Nathan O
  * @author https://gemini.google.com/app
  */
 
@@ -21,12 +21,12 @@ export default function AddCommentForm({ entityId, entityType, onCommentAdded })
   const [error, setError] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
 
+  // Fetch the current user's ID when the component mounts
   useEffect(() => {
     const fetchUser = async () => {
       const { data: { user }, error: userError } = await clientDB.auth.getUser();
       if (userError) {
-        console.error('Error fetching user:', userError);
-        // setError('Could not authenticate user. Please log in to comment.'); // Optional: inform user
+        console.error('Error fetching user:', userError);        
       } else if (user) {
         setCurrentUserId(user.id);
       }
@@ -53,6 +53,7 @@ export default function AddCommentForm({ entityId, entityType, onCommentAdded })
     const commentData = {
       message: commentText,
       user_id: currentUserId, 
+      // Dynamically set the foreign key column name (e.g., hack_id, deal_id) based on entityType
       [`${entityType.toLowerCase()}_id`]: entityId,
     };
 
@@ -65,7 +66,7 @@ export default function AddCommentForm({ entityId, entityType, onCommentAdded })
     try {
       // Use Supabase client to insert data
       const { error: insertError } = await clientDB
-        .from('comment') // Your table name in Supabase
+        .from('comment') 
         .insert([commentData]);
 
       if (insertError) {
@@ -86,23 +87,31 @@ export default function AddCommentForm({ entityId, entityType, onCommentAdded })
   };
 
   return (
+    // Form for submitting a comment
     <form onSubmit={handleSubmit} className="mt-4">
+      {/* Textarea for entering comment text */}
       <textarea
         value={commentText}
         onChange={(e) => setCommentText(e.target.value)}
         placeholder="Add a comment..."
         className="w-full p-2 border border-[#8B4C24]/30 rounded-lg focus:ring-[#A0522D] focus:border-[#A0522D] text-[#8B4C24] bg-[#F5EFE6]"
         rows="2"
-        disabled={isSubmitting || !currentUserId}
+        // Disable textarea if submitting or user not logged in
+        disabled={isSubmitting || !currentUserId} 
       ></textarea>
+      {/* Show login prompt if user is not logged in */}
       {!currentUserId && <p className="text-sm text-amber-700 mt-1">Please log in to comment.</p>}
+      {/* Display error message if any */}
       {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
       <div className="mt-2 flex justify-end">
+        {/* Submit button for posting the comment */}
         <button
           type="submit"
           className="px-3 py-1.5 bg-[#639751] text-white rounded-lg hover:bg-[#538741] focus:outline-none focus:ring-2 focus:ring-[#639751] focus:ring-opacity-50 disabled:opacity-50"
-          disabled={isSubmitting || !commentText.trim() || !currentUserId}
+          // Disable button if submitting, comment is empty, or user not logged in
+          disabled={isSubmitting || !commentText.trim() || !currentUserId} 
         >
+          {/* Set button text based on submission state */}
           {isSubmitting ? 'Posting...' : 'Post Comment'}
         </button>
       </div>
