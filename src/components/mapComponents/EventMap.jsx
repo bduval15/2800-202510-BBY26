@@ -60,21 +60,21 @@ L.Icon.Default.mergeOptions({
 
 // Custom icons for each thread type
 const dealsIcon = L.icon({
-    iconUrl: '/images/mapPinBlue.png',
+    iconUrl: '/images/map/mapPinBlue.png',
     iconSize: [48, 48],
     iconAnchor: [16, 32],
     popupAnchor: [8, -32],
 });
 
 const hacksIcon = L.icon({
-    iconUrl: '/images/mapPinPurple.png',
+    iconUrl: '/images/map/mapPinPurple.png',
     iconSize: [48, 48],
     iconAnchor: [16, 32],
     popupAnchor: [8, -32],
 });
 
 const eventsIcon = L.icon({
-    iconUrl: '/images/mapPinRed.png',
+    iconUrl: '/images/map/mapPinRed.png',
     iconSize: [48, 48],
     iconAnchor: [16, 32],
     popupAnchor: [8, -32],
