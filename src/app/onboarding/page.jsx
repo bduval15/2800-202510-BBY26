@@ -160,7 +160,10 @@ export default function OnboardingPage() {
                     {/* Interests selection area */}
                     <div>
                         <label className="block text-sm font-medium text-[#8B4C24] mb-1">Please select your interests</label>
-
+                        {/* Error or guidance message */}
+                        <p className={`text-xs ${error === 'max' ? 'text-red-600' : 'text-gray-500'}`}>
+                            The maximum you can choose is {MAX_SELECTION}.
+                        </p>
                         <div className="flex flex-wrap gap-2 mt-2 mb-3">
                             {PREDEFINED_INTERESTS.map((item) => {
                                 const isSelected = interests.some((i) => i.label === item.label);
@@ -189,11 +192,6 @@ export default function OnboardingPage() {
                                 );
                             })}
                         </div>
-
-                        {/* Error or guidance message */}
-                        <p className={`text-xs ${error === 'max' ? 'text-red-600' : 'text-gray-500'}`}>
-                            The maximum you can choose is {MAX_SELECTION}.
-                        </p>
                     </div>
 
                     {/* Final submit button */}

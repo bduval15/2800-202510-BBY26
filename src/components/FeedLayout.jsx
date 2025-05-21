@@ -19,7 +19,6 @@ import StickyNavbar from './StickyNavbar'
 import { ChevronDownIcon } from "@heroicons/react/24/outline"
 import { ChevronLeftIcon } from "@heroicons/react/24/outline"
 
-
 export default function FeedLayout({
   children,
   title,
