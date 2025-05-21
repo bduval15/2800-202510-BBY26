@@ -87,6 +87,22 @@ export default function AIbutton({ interests }) {
                 if (error || !data?.length) continue
 
                 const selected = data[Math.floor(Math.random() * data.length)]
+
+                let loc = selected.location
+                if (typeof loc === 'string') {
+                    try {
+                        loc = JSON.parse(loc)
+                    } catch (_e) {
+                        // not JSON, leave it as-is
+                    }
+                }
+                if (loc && typeof loc === 'object' && 'address' in loc) {
+                    loc = loc.address
+                }
+
+                // 2) wrap it back into the shape EventCard wants
+                selected.location = loc
+
                 setLastCardId(selected.id)
                 setRecommendationCard({ ...selected, table })
                 found = true
@@ -254,10 +270,10 @@ export default function AIbutton({ interests }) {
                         initial={{ y: 0 }}
                         animate={{ y: [10, -5, -15, 10, 0] }}
                         transition={{
-                          duration: 1.2,
-                          ease: "easeInOut",
-                          repeat: Infinity,
-                          repeatDelay: 4,
+                            duration: 1.2,
+                            ease: "easeInOut",
+                            repeat: Infinity,
+                            repeatDelay: 4,
                         }}
 
                     >

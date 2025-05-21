@@ -40,7 +40,7 @@ const DealCard = ({ id, title, location, price, tags, expirationDate, upvotes = 
 
         {/* Location */}
         {location && (
-          <p className="text-sm text-gray-700 mb-1">
+          <p className="text-sm text-[#8B4C24]/80 mb-1">
             <span className="font-medium text-[#6A4C3C]">📍</span> {location}
           </p>
         )}
