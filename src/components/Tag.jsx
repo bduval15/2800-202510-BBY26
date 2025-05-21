@@ -1,18 +1,26 @@
+/**
+ * Tag.jsx
+ * Loaf Life – Displays a styled tag with an optional emoji.
+ *
+ * This component renders a tag with a label and an associated emoji. The emoji
+ * is determined by the `getEmojiForTag` utility function based on the tag's
+ * label. It is used to visually represent tags in various parts of the
+ * application, such as on post cards or in tag selection interfaces.
+ *
+ * Features:
+ * - Displays a tag label.
+ * - Shows an emoji corresponding to the tag label (if available).
+ * - Styled for consistent appearance across the application.
+ *
+ * Written with assistance from Google Gemini 2.5 Flash.
+ *
+ * @author Nathan Oloresisimo
+ * @author https://gemini.google.com/app
+ */
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import { getEmojiForTag } from '../utils/tagEmojis';
-
-/**
- * Tag.jsx
- * Loaf Life - Tag Component
- * 
- * This component displays a tag.
- * 
- * @author: Nathan O
- * 
- * Written with assistance from Google Gemini 2.5 Flash
- * @author https://gemini.google.com/app
- */
 
 const Tag = ({ label }) => {
   const emoji = getEmojiForTag(label);
