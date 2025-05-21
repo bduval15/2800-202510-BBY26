@@ -18,7 +18,6 @@
 import React, { useState, useEffect, useRef, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Footer from '@/components/Footer';
-import Link from 'next/link';
 import BookmarkButton from '@/components/buttons/Bookmark';
 import VoteButtons from '@/components/buttons/VoteButtons';
 import { ArrowLeftIcon, PencilIcon, TrashIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
@@ -219,7 +218,7 @@ export default function EventDetailPage({ params }) {
           </div>
 
           {/* Title */}
-          <h1 className="text-3xl font-bold mb-2 text-[#8B4C24]">{event.title}</h1>
+          <h1 className="text-3xl font-bold mb-2 text-[#8B4C24]">{capitalizeFirstLetter(event.title)}</h1>
 
           {/* Tags */}
           <div className="mb-6 flex flex-wrap gap-2">

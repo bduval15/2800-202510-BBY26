@@ -222,7 +222,7 @@ export default function HackDetailPage({ params }) {
           </div>
 
           {/* Hack Title */}
-          <h1 className="text-3xl font-bold mb-2 text-[#8B4C24]">{hack.title}</h1>
+          <h1 className="text-3xl font-bold mb-2 text-[#8B4C24]">{capitalizeFirstLetter(hack.title)}</h1>
 
           {/* Tags Display */}
           {hack.tags && hack.tags.length > 0 && (

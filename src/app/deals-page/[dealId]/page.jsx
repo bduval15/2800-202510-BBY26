@@ -253,7 +253,7 @@ export default function DealDetailPage() {
             )}
           </div>
 
-          <h1 className="text-3xl font-bold mb-2 text-[#8B4C24]">{deal.title}</h1>
+          <h1 className="text-3xl font-bold mb-2 text-[#8B4C24]">{capitalizeFirstLetter(deal.title)}</h1>
 
           {deal.tags && deal.tags.length > 0 && (
             <div className="mb-6 flex flex-wrap gap-2">
