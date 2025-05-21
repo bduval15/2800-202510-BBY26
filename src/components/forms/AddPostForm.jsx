@@ -8,13 +8,13 @@ import ConfirmCancelModal from '@/components/ConfirmCancelModal';
  * AddHackForm.jsx
  * Loaf Life - Add Hack Form
  * 
- * This form allows users to add a new hack to the database.
+ * This form allows users to add a new deal, hack, or event to the database.
+ * 
+ * Written with assistance from Google Gemini 2.5 Pro
  * 
  * @author Nathan O
  * @author Conner P
  * @author Brady D
- * 
- * Written with assistance from Google Gemini 2.5 Flash
  * @author https://gemini.google.com/app
  */
 
@@ -22,7 +22,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
-  const [postType, setPostType] = useState('hack');
+  const [postType, setPostType] = useState('hack'); // Default post type
   const [price, setPrice] = useState('');
   const [showTagError, setShowTagError] = useState(false);
   const [showTagLimitError, setShowTagLimitError] = useState(false);
@@ -37,7 +37,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
     lat: null,
     lng: null
   });
-  const [locationKey, setLocationKey] = useState(0);
+  const [locationKey, setLocationKey] = useState(0); // Used to force re-render of LocationAutoComplete
   const [showCancelConfirmModal, setShowCancelConfirmModal] = useState(false);
 
   const MIN_DATE = '1900-01-01';
@@ -61,7 +61,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
       lat: null,
       lng: null
     });
-    setLocationKey(prevKey => prevKey + 1);
+    setLocationKey(prevKey => prevKey + 1); // Increment key to reset LocationAutoComplete
   };
 
   const handleSubmit = async (e) => {
@@ -75,83 +75,92 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
 
     let resolvedLocation = location;
 
-    // Tag validation for both hacks and deals
     if (selectedTags.length === 0) {
       setShowTagError(true);
-      return; // Prevent submission
+      return; 
     }
     setShowTagError(false);
 
-    // Date validation for events
+    // Date validation specific to 'event' post type
     if (postType === 'event') {
       if (!eventStartDate || !eventEndDate) {
-        // Or handle as a required field error, this is a basic check
         console.log("Start and End dates are required for events.")
         return;
       }
       const startDate = new Date(eventStartDate);
       const endDate = new Date(eventEndDate);
 
+      // Check if dates are within the defined MIN_DATE and MAX_DATE range
       if (startDate < new Date(MIN_DATE) || startDate > new Date(MAX_DATE) || endDate < new Date(MIN_DATE) || endDate > new Date(MAX_DATE)) {
         setShowDateRangeError(true);
-        setShowDateOrderError(false);
+        setShowDateOrderError(false); 
         return;
       }
       setShowDateRangeError(false);
 
+      // Check if end date is before start date
       if (endDate < startDate) {
         setShowDateOrderError(true);
-        setShowDateRangeError(false);
-        return; // Prevent submission
+        setShowDateRangeError(false); 
+        return; 
       }
       setShowDateOrderError(false);
     }
 
+    // Geocode address if coordinates are not already set (e.g., from autocomplete selection)
     if (location.lat == null || location.lng == null) {
-      if (rawAddress.trim()) {
+      if (rawAddress.trim()) { // Proceed only if there's a raw address input
         try {
+          // Construct query parameters for Nominatim API
           const params = new URLSearchParams({
             q: rawAddress,
             format: 'json',
-            limit: '1',
-            viewbox: '-123.5,49.5,-122.4,49.0',
-            bounded: '1'
+            limit: '1', // Request only the top result
+            viewbox: '-123.5,49.5,-122.4,49.0', // Bounding box to prioritize local results
+            bounded: '1' // Restrict search to within the viewbox
           });
+          // Fetch geocoding data from OpenStreetMap Nominatim
           const res = await fetch(
             `https://nominatim.openstreetmap.org/search?${params}`,
-            { headers: { 'Accept-Language': 'en' } }
+            { headers: { 'Accept-Language': 'en' } } 
           );
           const data = await res.json();
-          if (data[0]) {
+          if (data && data[0]) { // If geocoding is successful
             const lat = parseFloat(data[0].lat);
             const lng = parseFloat(data[0].lon);
             resolvedLocation = { address: rawAddress, lat, lng };
           } else {
-            // no hits → mark Not Specified
+            // If no results, set location to 'Not Specified'
             resolvedLocation = { address: 'Not Specified', lat: null, lng: null };
           }
         } catch (err) {
           console.error('geocode lookup failed', err);
+          // If geocoding API call fails, set location to 'Not Specified'
           resolvedLocation = { address: 'Not Specified', lat: null, lng: null };
         }
       } else {
+        // If no raw address and no coordinates, set location to 'Not Specified'
         resolvedLocation = { address: 'Not Specified', lat: null, lng: null };
       }
 
-      setLocation(resolvedLocation); setCoords(resolvedLocation.lat != null ? [resolvedLocation.lat, resolvedLocation.lng] : null);
+      setLocation(resolvedLocation); 
+      setCoords(resolvedLocation.lat != null ? [resolvedLocation.lat, resolvedLocation.lng] : null);
     }
 
+    // Construct the final form data object
     const formData = {
       title: trimmedTitle,
       postType,
       rawAddress,
       location: resolvedLocation,
       tags: selectedTags,
+      // Conditionally include price for 'deal' type, otherwise just description
       ...(postType === 'deal'
-        ? { price: parseFloat(price) || 0, description }
+        ? { price: parseFloat(price) || 0, description } // Parse price, default to 0 if invalid
         : { description })
     };
 
+    // Add event-specific date fields if post type is 'event'
     if (postType === 'event') {
       formData.start_date = eventStartDate;
       formData.end_date = eventEndDate;
@@ -164,7 +173,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
   };
 
   const handleCancel = () => {
-    // Directly call onClose if no input has been made, otherwise show confirmation
+    // Directly call onClose if no input has been made, otherwise show confirmation modal
     if (!title && !description && selectedTags.length === 0 && !price && !eventStartDate && !eventEndDate && !rawAddress) {
       if (onClose) {
         onClose();
@@ -185,25 +194,31 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
     setShowCancelConfirmModal(false);
   };
 
+  // Handles adding or removing a tag from the selected tags list
   const handleTagChange = (tagValue) => {
     setSelectedTags(prevSelectedTags => {
       if (prevSelectedTags.includes(tagValue)) {
+        // If tag is already selected, remove it
         setShowTagLimitError(false); 
         return prevSelectedTags.filter(t => t !== tagValue);
       } else {
+        // If tag is not selected, add it if under the 5 tag limit
         if (prevSelectedTags.length < 5) {
           setShowTagLimitError(false); 
           return [...prevSelectedTags, tagValue];
         } else {
+          // If tag limit is reached, show error and don't add the tag
           setShowTagLimitError(true);
-          return prevSelectedTags; b
+          return prevSelectedTags; 
         }
       }
     });
   };
 
   return (
+    // Main form container
     <form onSubmit={handleSubmit} className="p-4 bg-[#FDFAF5] shadow-md rounded-lg space-y-6 mb-6 ">
+      {/* Header section */}
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-semibold text-[#8B4C24]">
           {postType === 'hack' ? 'Add a New Hack' : (postType === 'deal') ? 'Add a New Deal' : 'Add a New Event'}
@@ -220,6 +235,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
       </div>
       <p className="text-xs text-gray-600 -mt-4 mb-2">* Indicates a required field</p>
 
+      {/* Post type selection */}
       <div>
         <label className="block text-sm font-medium text-[#6A401F] mb-2">
           Post Type
@@ -258,6 +274,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
         </div>
       </div>
 
+      {/* Title input */}
       <div>
         <label htmlFor="title" className="block text-sm font-medium text-[#6A401F] mb-1">
           Title*
@@ -273,6 +290,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
         />
       </div>
 
+      {/* Description input for hacks and deals */}
       {(postType === 'hack' || postType === 'deal') && (
         <div>
           <label htmlFor="description" className="block text-sm font-medium text-[#6A401F] mb-1">
@@ -290,6 +308,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
         </div>
       )}
 
+      {/* Location input for hacks */}
       {postType === 'hack' && (
         <div>
           <label className="block text-sm font-medium text-[#6A401F] mb-1">
@@ -311,6 +330,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
         </div>
       )}
 
+      {/* Location and price inputs for deals */}
       {postType === 'deal' && (
         <>
           <div>
@@ -351,6 +371,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
         </>
       )}
 
+      {/* Event specific inputs */}
       {postType === 'event' && (
         <>
           <div>
@@ -385,7 +406,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
               }}
             />
           </div>
-          {/* Event Start and End Dates */}
+          {/* Event date inputs */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="eventStartDate" className="block text-sm font-medium text-[#6A401F] mb-1">
@@ -420,12 +441,13 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
                   setShowDateRangeError(false);
                 }}
                 required={postType === 'event'}
-                min={MIN_DATE} // Dynamically set min based on eventStartDate if preferred
+                min={MIN_DATE}
                 max={MAX_DATE}
                 className="mt-1 block w-full px-4 py-2.5 border border-[#D1905A] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8B4C24] focus:border-[#8B4C24] sm:text-sm bg-white text-gray-900"
               />
             </div>
           </div>
+          {/* Date validation error messages */}
           {showDateOrderError && (
             <p className="text-xs text-red-500 mt-1">End date cannot be before the start date.</p>
           )}
@@ -435,7 +457,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
         </>
       )}
 
-      {/* Tag Selection */}
+      {/* Tag selection section */}
       <div>
         <label className="block text-sm font-medium text-[#6A401F] mb-2">
           Tags*
@@ -455,6 +477,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
             </button>
           ))}
         </div>
+        {/* Tag validation error messages */}
         {showTagError && (
           <p className="text-xs text-red-500 mt-1">Please select at least one tag.</p>
         )}
@@ -463,6 +486,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
         )}
       </div>
 
+      {/* Form action buttons */}
       <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-2">
         <button
           type="submit"
@@ -479,6 +503,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
         </button>
       </div>
 
+      {/* Cancel confirmation modal */}
       <ConfirmCancelModal
         isOpen={showCancelConfirmModal}
         onConfirm={confirmCancel}
