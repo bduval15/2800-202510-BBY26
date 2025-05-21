@@ -1,3 +1,27 @@
+/**
+ * page.jsx (EditHackPage)
+ * Loaf Life – Enables users to edit their created hacks.
+ *
+ * This page allows authenticated authors to modify their existing hacks.
+ * It fetches hack data (title, description, tags, location), populates an
+ * editable form, and handles updates. Integrates with Supabase for data
+ * and Google Maps for location autocomplete.
+ *
+ * Features:
+ * - Fetches and displays existing hack details for editing.
+ * - Allows modification of title, description, tags, and location.
+ * - Validates user input before submission.
+ * - Provides unsaved changes confirmation.
+ * - Utilizes location autocomplete for address input.
+ * - Restricts editing access to the hack's author.
+ *
+ * Portions of logic and component structure assisted by Google Gemini 2.5 Flash.
+ * Modified with assistance from Google Gemini 2.5 Flash.
+ *
+ * @author Nathan Oloresisimo
+ * @author https://gemini.google.com/app
+ */
+
 'use client';
 
 import React, { useState, useEffect, use, useRef } from 'react';
@@ -10,26 +34,10 @@ import LocationAutocomplete from '@/components/mapComponents/LocationAutoComplet
 import { tags } from '@/lib/tags';
 import ConfirmCancelModal from '@/components/ConfirmCancelModal';
 
-/**
- * EditHackPage.jsx
- * Loaf Life - Edit Hack Page
- * 
- * This page allows authenticated users to edit the details of a hack they
- * previously created. It fetches existing hack data (title, description,
- * tags, location), populates a form for editing, and handles updates.
- * Includes input validation, unsaved changes confirmation, and location
- * autocomplete functionality.
- * 
- * Modified with assistance from Google Gemini 2.5 Flash
- * 
- * @author: Nathan O
- * @author: https://gemini.google.com/app
- */
-
 const MAX_TAGS = 5; 
 
 export default function EditHackPage({ params }) {
-  // -- State Management & Hooks --
+  // -- State & Hooks --
   const resolvedParams = use(params);
   const hackId = resolvedParams.id;
   const router = useRouter();
@@ -123,26 +131,26 @@ export default function EditHackPage({ params }) {
           try {
             const parsedLocation = JSON.parse(hackData.location);
             setLocationAddress(parsedLocation.address || '');
-            setInitialLocationAddress(parsedLocation.address || ''); // Store initial
+            setInitialLocationAddress(parsedLocation.address || '');
             if (parsedLocation.address && parsedLocation.lat && parsedLocation.lng) {
               setSelectedLocation(parsedLocation);
-              setInitialSelectedLocation(parsedLocation); // Store initial
+              setInitialSelectedLocation(parsedLocation);
             } else {
               setSelectedLocation({ address: parsedLocation.address || '', lat: null, lng: null });
-              setInitialSelectedLocation({ address: parsedLocation.address || '', lat: null, lng: null }); // Store initial
+              setInitialSelectedLocation({ address: parsedLocation.address || '', lat: null, lng: null });
             }
           } catch (e) {
             console.error("Error parsing location JSON from DB:", e);
             setLocationAddress('');
-            setInitialLocationAddress(''); // Store initial
+            setInitialLocationAddress('');
             setSelectedLocation(null);
-            setInitialSelectedLocation(null); // Store initial
+            setInitialSelectedLocation(null);
           }
         } else {
           setLocationAddress('');
-          setInitialLocationAddress(''); // Store initial
+          setInitialLocationAddress('');
           setSelectedLocation(null);
-          setInitialSelectedLocation(null); // Store initial
+          setInitialSelectedLocation(null);
         }
 
       } catch (err) {
