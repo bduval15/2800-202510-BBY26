@@ -1,25 +1,45 @@
 /**
  * supabaseClient.js
- * Loaf Life – Supabase client for App Router of client data
- *
- * Uses @supabase/auth-helpers-nextjs to enable cookie-based auth persistence.
- *
- * @author Conner Ponton
  * 
- * @author ChatGPT
- * Utilized for guidance on persistent sessions and error checking 
+ * Loaf Life - Supabase Client Configuration
+ * 
+ * Provides authenticated Supabase client instance for Next.js App Router with:
+ * - Cookie-based authentication persistence
+ * - Secure session management
+ * - Client-side component access
+ * 
+ * @author Conner Ponton
+ * @author ChatGPT - Assisted with auth configuration guidance
  */
 
-'use client';
+'use client'; // Next.js client component directive
 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
-//Client-side Supabase instance for use in React components.
+/**
+ * Supabase Client Instance
+ * @constant {Object} clientDB
+ * @description Configures and exports Supabase client with secure cookie settings:
+ * - Automatic JWT refresh handling
+ * - Client-side auth state management
+ * - Secure cookie policies for production
+ * 
+ * @example
+ * import { clientDB } from '@/supabaseClient';
+ * const { data } = await clientDB.from('table').select();
+ */
 export const clientDB = createClientComponentClient({
   cookieOptions: {
-    maxAge: 3600, // 1 hour
-    secure: true,
-    sameSite: 'lax',
-    path: '/',
+    /**
+     * Session Cookie Configuration
+     * - maxAge: 1 hour expiration (matches Supabase JWT expiry)
+     * - secure: Enforce HTTPS-only cookies
+     * - sameSite: Lax policy for CSRF protection
+     * - path: Root path accessibility
+     */
+    maxAge: 3600, // 3600 seconds = 1 hour (matches default Supabase JWT expiry)
+    secure: true,  // Require HTTPS in production
+    sameSite: 'lax', // Balance security and cross-origin needs
+    path: '/',     // Accessible across entire domain
   },
 });
