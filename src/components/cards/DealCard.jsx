@@ -48,6 +48,21 @@ import toTitleCase from '../../utils/toTitleCase';
 
 const DealCard = ({ id, title, location, price, tags, expirationDate, upvotes = 0, downvotes = 0, createdAt, userId }) => {
 
+  // Parse the location once for displaying on the card.
+  let parsedLocation = {}
+  if (location) {
+    if (typeof location === 'string') {
+      try {
+        parsedLocation = JSON.parse(location)
+      } catch {
+        // if it isn’t JSON for some reason, treat the whole thing as the address
+        parsedLocation = { address: location }
+      }
+    } else if (typeof location === 'object') {
+      parsedLocation = location
+    }
+  }
+
   return (
     <Link href={`/deals-page/${id}`} passHref>
       <BaseCard className="flex-col items-start bg-[#F5E3C6] border border-[#D1905A] mb-4">
@@ -64,7 +79,8 @@ const DealCard = ({ id, title, location, price, tags, expirationDate, upvotes = 
         {/* Location */}
         {location && (
           <p className="text-sm text-[#8B4C24]/80 mb-1">
-            <span className="font-medium text-[#6A4C3C]">📍</span> {location}
+            <span className="font-medium text-[#6A4C3C]">📍</span> 
+            {parsedLocation.address}
           </p>
         )}
 
