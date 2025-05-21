@@ -54,19 +54,29 @@ const EventCard = ({
   startDate,
   endDate
 }) => {
-  let parsedLocation = {};
-  // Attempt to parse location, which might be a JSON string or an object.
-  try {
-    if (typeof location === 'string') {
-      parsedLocation = JSON.parse(location);
-    } else if (location && typeof location === 'object') {
-      // If location is already an object, use it directly.
-      parsedLocation = location;
+  let parsedLocation = { address: '' }
+
+  if (typeof location === 'string') {
+    // 1) If it *looks* like JSON, try to parse it…
+    const trimmed = location.trim()
+    if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+      try {
+        const obj = JSON.parse(trimmed)
+        // if that object has an address field, use it, otherwise treat
+        // the whole string as the address
+        parsedLocation.address = obj.address ?? location
+      } catch (e) {
+        // malformed JSON → treat the raw string as the address
+        parsedLocation.address = location
+      }
+    } else {
+      // not JSON at all → raw string is your address
+      parsedLocation.address = location
     }
-  } catch (error) {
-    console.error("Error parsing location JSON:", error);
-    // Fallback if parsing fails.
-    parsedLocation = { address: "Invalid location" };
+
+  } else if (location && typeof location === 'object') {
+    // already an object, just pick its address (or blank if missing)
+    parsedLocation.address = location.address ?? ''
   }
 
   // Formats a date string to MM/DD/YYYY.
@@ -110,7 +120,7 @@ const EventCard = ({
             {toTitleCase(title)}
           </h3>
           {createdAt && (
-              <span className="text-xs text-gray-500 whitespace-nowrap">{formatTimeAgo(createdAt)}</span>
+            <span className="text-xs text-gray-500 whitespace-nowrap">{formatTimeAgo(createdAt)}</span>
           )}
         </div>
 
@@ -129,10 +139,10 @@ const EventCard = ({
           </div>
         )}
 
-         {/* Tags */}
-         {tags && tags.length > 0 && (
+        {/* Tags */}
+        {tags && tags.length > 0 && (
           <div className="w-full mb-2 flex flex-wrap">
-            {[<Tag key="event-type-tag" label="Event" />, ...tags.slice(0, 2)].map((tagComponent, index) => 
+            {[<Tag key="event-type-tag" label="Event" />, ...tags.slice(0, 2)].map((tagComponent, index) =>
               tagComponent.key === "event-type-tag" ? tagComponent : <Tag key={index} label={toTitleCase(tagComponent)} />
             )}
           </div>
@@ -142,16 +152,16 @@ const EventCard = ({
         <div className="flex items-center space-x-2 text-xs w-full mt-2">
           <div onClick={handleButtonClick}>
             <VoteButtons
-                itemId={id}
-                itemType="events"
-                upvotes={upvotes}
-                downvotes={downvotes}
-                userId={userId}
+              itemId={id}
+              itemType="events"
+              upvotes={upvotes}
+              downvotes={downvotes}
+              userId={userId}
             />
           </div>
           <CommentCount
-              entityId={id}
-              entityType="event"
+            entityId={id}
+            entityType="event"
           />
           <div onClick={handleButtonClick} className="ml-auto">
             <BookmarkButton eventId={id} userId={userId} />
