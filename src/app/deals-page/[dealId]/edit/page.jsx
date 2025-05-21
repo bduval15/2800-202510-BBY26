@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import BottomNav from '@/components/BottomNav';
 import StickyNavbar from '@/components/StickyNavbar';
 import LocationAutoComplete from '@/components/mapComponents/LocationAutoComplete';
+import { tags as availableTags } from '@/lib/tags';
 
 /**
  * EditDealPage.jsx
@@ -20,32 +21,6 @@ import LocationAutoComplete from '@/components/mapComponents/LocationAutoComplet
  */
 
 const MAX_TAGS = 5;
-
-const availableTags = [
-  'Animal Care',
-  'Art',
-  'Board Games',
-  'Comedy',
-  'Coding',
-  'Cooking',
-  'Cycling',
-  'Esports',
-  'Entrepreneurship',
-  'Fitness',
-  'Football',
-  'Gaming',
-  'Hiking',
-  'Investing',
-  'Mental Health',
-  'Movies',
-  'Music',
-  'Photography',
-  'Public Speaking',
-  'Reading',
-  'Study Groups',
-  'Sustainability',
-  'Yoga'
-];
 
 export default function EditDealPage({ params }) {
   const resolvedParams = use(params);

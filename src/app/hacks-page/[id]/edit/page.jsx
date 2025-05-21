@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import BottomNav from '@/components/BottomNav';
 import StickyNavbar from '@/components/StickyNavbar';
 import LocationAutocomplete from '@/components/mapComponents/LocationAutoComplete';
+import { tags } from '@/lib/tags';
 
 /**
  * EditHackPage.jsx
@@ -21,32 +22,6 @@ import LocationAutocomplete from '@/components/mapComponents/LocationAutoComplet
  */
 
 const MAX_TAGS = 5; 
-
-const tags = [
-  'Animal Care',
-  'Art',
-  'Board Games',
-  'Comedy',
-  'Coding',
-  'Cooking',
-  'Cycling',
-  'Esports',
-  'Entrepreneurship',
-  'Fitness',
-  'Football',
-  'Gaming',
-  'Hiking',
-  'Investing',
-  'Mental Health',
-  'Movies',
-  'Music',
-  'Photography',
-  'Public Speaking',
-  'Reading',
-  'Study Groups',
-  'Sustainability',
-  'Yoga'
-];
 
 export default function EditHackPage({ params }) {
   const resolvedParams = use(params);
