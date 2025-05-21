@@ -1,3 +1,25 @@
+/**
+ * page.jsx (EventsPage)
+ * Loaf Life – Displays a list of events and allows filtering.
+ *
+ * This page fetches events from Supabase and presents them to the user.
+ * Users can view event details, filter events using tags, and utilize an
+ * AI button for event suggestions. Event information, including title,
+ * location, and dates, is displayed on individual cards.
+ *
+ * Features:
+ * - Fetches and displays a list of events from Supabase.
+ * - Allows users to filter events based on selected tags.
+ * - Integrates an AI button for event recommendations.
+ * - Displays event details (title, location, dates) on cards.
+ *
+ * Written with assistance from Google Gemini 2.5 Flash.
+ *
+ * @author Nathan Oloresisimo
+ * @author Conner Ponton
+ * @author https://gemini.google.com/app
+ */
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -9,23 +31,8 @@ import { clientDB } from '@/supabaseClient';
 import AIbutton from '@/components/buttons/AIbutton';
 import { tags } from '@/lib/tags';
 
-/**
- * EventPage.jsx
- * Loaf Life - Events Page
- * 
- * This page lists events fetched from Supabase. Users can view events,
- * filter them by tags, and interact with an AI button for suggestions.
- * It displays event cards with details like title, location, and dates.
- * 
- * Written with assistance from Google Gemini 2.5 Flash
- * 
- * @author: Nathan O
- * @author: Conner P
- * @author https://gemini.google.com/app
- */
-
 export default function EventsPage() {
-  // -- State --
+  // -- State & Hooks--
   const [selectedTags, setSelectedTags] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -55,23 +62,31 @@ export default function EventsPage() {
   useEffect(() => {
     const fetchInterests = async () => {
       const { data: { user } } = await clientDB.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await clientDB
-        .from('user_profiles')
-        .select('interests')
-        .eq('id', user.id)
-        .single();
-
-      if (error) {
-        console.error('Failed to fetch interests:', error.message);
-      } else if (data?.interests) {
-        setInterests(Array.isArray(data.interests)
-          ? data.interests
-          : data.interests.split(','));
+      if (!user) {
+        setLoading(false); // Ensure loading is set to false even if no user
+        return;
       }
 
-      setLoading(false);
+      try {
+        const { data, error } = await clientDB
+          .from('user_profiles')
+          .select('interests')
+          .eq('id', user.id)
+          .single();
+
+        if (error) {
+          console.error('Failed to fetch interests:', error.message);
+        } else if (data?.interests) {
+          // Interests might be stored as an array or a comma-separated string; ensure it's an array.
+          setInterests(Array.isArray(data.interests)
+            ? data.interests
+            : data.interests.split(',').map(interest => interest.trim()).filter(interest => interest));
+        }
+      } catch (e) {
+        console.error('Exception while fetching interests:', e);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchInterests();
@@ -98,7 +113,7 @@ export default function EventsPage() {
         setIsLoading(false);
       }
     };
-    
+
     fetchEvents();
   }, []);
 
@@ -108,6 +123,7 @@ export default function EventsPage() {
       setSelectedTags([]);
     } else {
       setSelectedTags(prevSelectedTags =>
+        // If the tag is already selected, remove it; otherwise, add it.
         prevSelectedTags.includes(tag)
           ? prevSelectedTags.filter(t => t !== tag)
           : [...prevSelectedTags, tag]
@@ -115,7 +131,8 @@ export default function EventsPage() {
     }
   };
 
-  // Filter by tag
+  // Filter events based on selected tags.
+  // If no tags are selected, all events are shown.
   const filteredEvents = selectedTags.length === 0
     ? allEvents
     : allEvents.filter(evt =>
