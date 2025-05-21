@@ -13,16 +13,18 @@ import { tags } from '@/lib/tags';
  * HacksPage.jsx
  * Loaf Life - Hacks Page
  * 
- * This page lists the hacks that have been posted.
- * Fetches data from Supabase.
+ * This page lists hacks fetched from the Supabase 'hacks' table.
+ * Users can filter hacks by tags and view them in a card layout.
+ * It also includes an AI button for discovering hacks based on user interests.
  * 
+ * Modified with assistance from Google Gemini 2.5 Flash
+ *
  * @author: Nathan O
- * 
- * Written with assistance from Google Gemini 2.5 Flash
- * @author https://gemini.google.com/app
+ * @author: https://gemini.google.com/app
  */
 
 export default function HacksPage() {
+  // -- State --
   const [selectedTags, setSelectedTags] = useState([]);
   const [allHacks, setAllHacks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,6 +32,7 @@ export default function HacksPage() {
   const [interests, setInterests] = useState([]);
   const [currentUserId, setCurrentUserId] = useState(null);
 
+  // -- Effects --
   useEffect(() => {
     const fetchUserAndInterests = async () => {
       const { data: { user } } = await clientDB.auth.getUser();
@@ -88,6 +91,7 @@ export default function HacksPage() {
 
   console.log("[HacksPage] Current allHacks state:", allHacks);
 
+  // -- Handlers --
   const handleTagToggle = (tag) => {
     if (tag === "ALL") {
       setSelectedTags([]);
@@ -100,6 +104,7 @@ export default function HacksPage() {
     }
   };
 
+  // -- Data Filtering --
   const filteredHacks = selectedTags.length === 0
     ? allHacks
     : allHacks.filter(hack => 

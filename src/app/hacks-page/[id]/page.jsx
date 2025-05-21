@@ -18,18 +18,19 @@ import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
  * HackDetails.jsx
  * Loaf Life - Hack Details Page
  *
- * This page displays the details of a specific hack.
- * Fetches data from Supabase based on hack ID.
- * It includes the hack title, description, hack details, author, and timestamp.
- * It also includes a button to save the hack.
- *
- * @author: Nathan O
+ * This page displays the details of a specific hack, fetched from Supabase
+ * using the hack ID. It shows the hack's title, description, tags, location,
+ * author, and creation timestamp. Authenticated authors can edit or delete
+ * their hacks. Users can also vote on and bookmark hacks.
  *
  * Modified with assistance from Google Gemini 2.5 Flash
- * @author https://gemini.google.com/app
+ *
+ * @author: Nathan O
+ * @author: https://gemini.google.com/app
  */
 
 export default function HackDetailPage({ params }) {
+  // -- State & Hooks --
   const resolvedParams = use(params);
   const hackId = resolvedParams.id;
   const [hack, setHack] = useState(null);
@@ -42,6 +43,7 @@ export default function HackDetailPage({ params }) {
   const router = useRouter();
   const optionsMenuRef = useRef(null);
 
+  // -- Effects --
   useEffect(() => {
     const fetchCurrentUser = async () => {
       const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
@@ -110,6 +112,7 @@ export default function HackDetailPage({ params }) {
     };
   }, [isOptionsMenuOpen]);
 
+  // -- Conditional Renders --
   if (isLoading) {
     return <div className="max-w-md mx-auto px-4 py-6 space-y-6 text-center">Loading hack details...</div>;
   }
@@ -122,6 +125,7 @@ export default function HackDetailPage({ params }) {
     return <div className="max-w-md mx-auto px-4 py-6 space-y-6 text-center">Hack not found.</div>;
   }
 
+  // -- Helper Functions --
   // Helper function to format time ago
   const formatTimeAgo = (timestamp) => {
     if (!timestamp) return 'N/A';
@@ -162,6 +166,7 @@ export default function HackDetailPage({ params }) {
     }).join(' ');
   };
 
+  // -- Handlers --
   const handleDelete = async () => {
     setIsOptionsMenuOpen(false);
     setIsDeleteModalOpen(true);

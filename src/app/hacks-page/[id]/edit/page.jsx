@@ -14,17 +14,22 @@ import ConfirmCancelModal from '@/components/ConfirmCancelModal';
  * EditHackPage.jsx
  * Loaf Life - Edit Hack Page
  * 
- * This page allows users to edit a hack.
+ * This page allows authenticated users to edit the details of a hack they
+ * previously created. It fetches existing hack data (title, description,
+ * tags, location), populates a form for editing, and handles updates.
+ * Includes input validation, unsaved changes confirmation, and location
+ * autocomplete functionality.
  * 
  * Modified with assistance from Google Gemini 2.5 Flash
  * 
  * @author: Nathan O
- * @author https://gemini.google.com/app
+ * @author: https://gemini.google.com/app
  */
 
 const MAX_TAGS = 5; 
 
 export default function EditHackPage({ params }) {
+  // -- State Management & Hooks --
   const resolvedParams = use(params);
   const hackId = resolvedParams.id;
   const router = useRouter();
@@ -49,6 +54,7 @@ export default function EditHackPage({ params }) {
   const [initialLocationAddress, setInitialLocationAddress] = useState('');
   const [initialSelectedLocation, setInitialSelectedLocation] = useState(null);
 
+  // -- Effects --
   useEffect(() => {
     const fetchCurrentUserAndHack = async () => {
       setIsLoading(true);
@@ -150,6 +156,7 @@ export default function EditHackPage({ params }) {
     fetchCurrentUserAndHack();
   }, [hackId, router]);
 
+  // -- Helper Functions --
   const hasUnsavedChanges = () => {
     if (title !== initialTitle) return true;
     if (description !== initialDescription) return true;
@@ -160,6 +167,7 @@ export default function EditHackPage({ params }) {
     return false;
   };
 
+  // -- Event Handlers --
   const handleCancel = () => {
     if (hasUnsavedChanges()) {
       setShowCancelConfirmModal(true);
@@ -281,6 +289,7 @@ export default function EditHackPage({ params }) {
     }
   };
 
+  // -- Conditional Renders --
   if (isLoading && !title) { 
     return <div className="max-w-md mx-auto px-4 py-6 space-y-6 text-center">Loading hack editor...</div>;
   }
