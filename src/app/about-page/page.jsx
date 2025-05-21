@@ -11,6 +11,7 @@
  * Portions of layout, card formatting, and styling strategy were refined with ChatGPT o4-mini-high.
  * 
  * @author Aleen Dawood
+ * @author Natalia Arseniuk
  * @author https://chatgpt.com/*
  */
 
