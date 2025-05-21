@@ -14,10 +14,11 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from "react"
+import { useRouter } from 'next/navigation';
 import SortDropdown from "./SortDropdown"
 import StickyNavbar from './StickyNavbar'
 import { ChevronDownIcon } from "@heroicons/react/24/outline"
-import { ChevronLeftIcon } from "@heroicons/react/24/outline"
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 export default function FeedLayout({
   children,
@@ -31,6 +32,7 @@ export default function FeedLayout({
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false)
   const tagDropdownRef = useRef(null)
   const [sortedAndFilteredChildren, setSortedAndFilteredChildren] = useState([])
+  const router = useRouter();
 
   const defaultBestSort = "Best";
   const defaultDateSort = "Newest";
@@ -210,12 +212,11 @@ export default function FeedLayout({
       <main className="max-w-md mx-auto px-4 py-6 space-y-6">
         <div className="relative mb-4 pt-14">
           <button
-            onClick={() => history.back()}
-            className="absolute right-78 flex items-center text-[#8B4C24] hover:text-[#639751] text-sm font-medium transition"
-          >
-            <ChevronLeftIcon className="h-5 w-5 mr-1" />
-            Back
-          </button>
+              onClick={() => router.back()}
+              className="absolute top-14 bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] px-3 py-1.5 rounded-lg shadow-md flex items-center"
+            >
+              <ArrowLeftIcon className="h-5 w-5" />
+            </button>
           <h1 className="text-2xl font-bold text-[#8B4C24] text-center">
             {title}
           </h1>

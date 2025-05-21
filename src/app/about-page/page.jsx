@@ -14,14 +14,24 @@
  * @author https://chatgpt.com/*
  */
 
+'use client'
+
 import React from 'react';
 import Footer from "@/components/Footer";
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { useRouter } from 'next/navigation';
 
 export default function About() {
+    const router = useRouter();
   return (
     <>
       <main className="min-h-screen bg-gradient-to-b from-[#FFF3E0] to-[#F5E3C6] text-[#8B4C24] px-6 py-10 flex flex-col items-center font-sans">
-
+      <button
+              onClick={() => router.back()}
+              className="absolute top-5 left-5 bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] px-3 py-1.5 rounded-lg shadow-md flex items-center"
+            >
+              <ArrowLeftIcon className="h-5 w-5" />
+            </button>
         {/* Main Header */}
         <h1 className="text-3xl font-bold mb-2 text-center">About Us</h1>
         <p className="text-2xl font-semibold mb-0.5 text-center">BBY-26</p>
@@ -39,11 +49,11 @@ export default function About() {
         <section className="max-w-2xl w-full mb-6 bg-white p-6 rounded-xl shadow-md border border-[#D1905A] text-left">
           <p className="text-xl font-semibold mb-2">Team Members:</p>
           <ul className="list-disc list-inside space-y-1 text-lg">
-            <li>Arseniuk, Natalia</li>
-            <li>Dawood, Aleen</li>
-            <li>Duval, Brady</li>
-            <li>Oloresisimo, Nathan</li>
-            <li>Ponton, Conner</li>
+            <li>Natalia Arseniuk</li>
+            <li>Aleen Dawood</li>
+            <li>Brady Duval</li>
+            <li>Nathan Oloresisimo</li>
+            <li>Conner Ponton</li>
           </ul>
         </section>
 
