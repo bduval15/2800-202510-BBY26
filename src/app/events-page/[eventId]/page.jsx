@@ -159,6 +159,15 @@ export default function EventDetailPage({ params }) {
     return `${Math.floor(days / 7)} weeks ago`;
   };
 
+  const formatDateMMDDYYYY = (dateString) => {
+    if (!dateString) return null;
+    const date = new Date(dateString + 'T00:00:00'); // Ensure date is interpreted as local
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return 'Date not available';
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -260,11 +269,18 @@ export default function EventDetailPage({ params }) {
             ))}
           </div>
 
-          {/* Dates */}
-          <div className="mb-4 text-base text-[#8B4C24]">
-            <p><span className="font-bold">Start Date:</span> {formatDate(event.start_date)}</p>
-            <p><span className="font-bold">End Date:</span> {formatDate(event.end_date)}</p>
-          </div>
+          {/* Event Dates - New Section */}
+          {(event.start_date || event.end_date) && (
+            <div className="mb-4 text-base text-[#8B4C24]">
+              <p>
+                <span className="font-bold">📅 Dates: </span> 
+                {formatDateMMDDYYYY(event.start_date)}
+                {event.end_date && formatDateMMDDYYYY(event.start_date) !== formatDateMMDDYYYY(event.end_date) && (
+                  ` - ${formatDateMMDDYYYY(event.end_date)}`
+                )}
+              </p>
+            </div>
+          )}
 
           {/* Location */}
           <p className="text-base mb-4 text-[#8B4C24]">
