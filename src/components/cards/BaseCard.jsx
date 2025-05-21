@@ -1,18 +1,25 @@
-import React from 'react';
-// Import PropTypes for type-checking props - Nate
-import PropTypes from 'prop-types';
-
 /**
  * BaseCard.jsx
- * Loaf Life - Base Card
+ * Loaf Life – A reusable base card component.
  *
- * A reusable base card component providing common styling.
- * Features rounded corners, padding, shadow, and flex layout for content alignment.
+ * This component provides a consistent visual foundation for displaying
+ * content in cards. It includes common styling such as rounded corners,
+ * padding, and a shadow. It uses a flex layout to align content items.
  *
- * Written with assistance from Google Gemini 2.5 Pro
- * @author: Nathan O
- * @author: https://gemini.google.com/app
+ * Features:
+ * - Provides reusable base styling for cards.
+ * - Implements rounded corners and a shadow effect.
+ * - Uses flex layout for easy content alignment.
+ *
+ * Written with assistance from Google Gemini 2.5 Pro.
+ *
+ * @author Nathan Oloresisimo
+ * @author https://gemini.google.com/app
  */
+
+import React from 'react';
+import PropTypes from 'prop-types';
+
 
 const BaseCard = ({ children, className = '' }) => {
   return (
