@@ -7,13 +7,14 @@ import { clientDB } from '@/supabaseClient';
  * Comment.jsx
  * Loaf Life - Comment Card Component
  *
- * This component displays a comment with a user avatar, username, timestamp, and comment text.
- * It includes an edit functionality for the comment author to update the message.
- *
- * @author: Nathan O
+ * This component displays a comment with a user avatar, username,
+ * timestamp, and comment text. It includes an edit functionality
+ * for the comment author to update the message.
  *
  * Modified with assistance from Google Gemini 2.5 Flash
- * @author https://gemini.google.com/app
+ *
+ * @author: Nathan O
+ * @author: https://gemini.google.com/app
  */
 
 const Comment = ({ comment, currentUserId, onCommentUpdated, timestampFormated }) => {
