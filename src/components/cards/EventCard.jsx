@@ -54,7 +54,7 @@ const EventCard = ({
       <div className="w-full mb-2 flex justify-between items-center">
         <Link href={href || `/events-page/${id}`} passHref>
           <h3 className="text-lg font-semibold text-[#8B4C24] hover:underline cursor-pointer mr-2">
-            {title}
+            {titleCase(title)}
           </h3>
         </Link>
         {createdAt && (
