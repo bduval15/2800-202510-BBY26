@@ -1,6 +1,19 @@
 import Link from 'next/link'
 import Image from 'next/image'
 
+/**
+ * NotFound.jsx
+ * Loaf Life - Not Found Page
+ * 
+ * This page displays a 404 error message when a requested page is not found.
+ * It provides a friendly message and a link to return to the main feed page.
+ * 
+ * Modified with assistance from Google Gemini 2.5 Flash
+ * 
+ * @author: Nathan O
+ * @author: https://gemini.google.com/app
+ */
+
 export default function NotFound() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#F5E3C6] text-[#6A401F] p-4">
