@@ -41,13 +41,13 @@ const DealCard = ({ id, title, location, price, tags, expirationDate, upvotes = 
       <BaseCard className="flex-col items-start bg-[#F5E3C6] border border-[#D1905A] mb-4">
         {/* Title */}
         <div className="w-full mb-2 flex justify-between items-center">
-          <h3 className="text-lg font-semibold text-[#8B4C24] hover:underline cursor-pointer mr-2">{toTitleCase(title)}</h3>
+          <div className="flex items-center">
+            <h3 className="text-lg font-semibold text-[#8B4C24] hover:underline cursor-pointer mr-2">{toTitleCase(title)}</h3>            
+          </div>
           {createdAt && (
             <span className="text-xs text-gray-500 whitespace-nowrap">{formatTimeAgo(createdAt)}</span>
           )}
-        </div>
-
-        
+        </div>      
 
         {/* Location */}
         {location && (
@@ -66,9 +66,9 @@ const DealCard = ({ id, title, location, price, tags, expirationDate, upvotes = 
         {/* Tags */}
         {tags && tags.length > 0 && (
           <div className="w-full mb-2 flex flex-wrap">
-            {tags.slice(0, 3).map((tag, index) => (
-              <Tag key={index} label={toTitleCase(tag)} />
-            ))}
+            {[<Tag key="deal-type-tag" label="Deal" />, ...tags.slice(0, 2)].map((tagComponent, index) => 
+              tagComponent.key === "deal-type-tag" ? tagComponent : <Tag key={index} label={toTitleCase(tagComponent)} />
+            )}
           </div>
         )}
         

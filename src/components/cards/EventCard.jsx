@@ -117,9 +117,9 @@ const EventCard = ({
          {/* Tags */}
          {tags && tags.length > 0 && (
           <div className="w-full mb-2 flex flex-wrap">
-            {tags.slice(0, 3).map((tag, index) => (
-              <Tag key={index} label={toTitleCase(tag)} />
-            ))}
+            {[<Tag key="event-type-tag" label="Event" />, ...tags.slice(0, 2)].map((tagComponent, index) => 
+              tagComponent.key === "event-type-tag" ? tagComponent : <Tag key={index} label={toTitleCase(tagComponent)} />
+            )}
           </div>
         )}
 

@@ -49,9 +49,9 @@ const HackCard = ({ id, href, title, upvotes, downvotes, tags = [], className = 
         {/* Tags */}
         {tags && tags.length > 0 && (
           <div className="w-full mb-2 flex flex-wrap">
-            {tags.slice(0, 3).map((tag, index) => (
-              <Tag key={index} label={toTitleCase(tag)} />
-            ))}
+            {[<Tag key="hack-type-tag" label="Hack" />, ...tags.slice(0, 2)].map((tagComponent, index) => 
+              tagComponent.key === "hack-type-tag" ? tagComponent : <Tag key={index} label={toTitleCase(tagComponent)} />
+            )}
           </div>
         )}
 

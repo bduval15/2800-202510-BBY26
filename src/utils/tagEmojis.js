@@ -1,4 +1,6 @@
 export const tagToEmojiMap = {
+  "Event": "📅",
+  "Deal": "🛍️",
   "Gaming": "🎮",
   "Cooking": "👨‍🍳",
   "Coding": "💻",
@@ -9,7 +11,7 @@ export const tagToEmojiMap = {
   "Music": "🎵",
   "Investing": "📈",
   "Yoga": "🧘‍♀️",
-  "Hacks": "🎯",
+  "Hack": "🎯",
   "Cycling": "🚴‍♀️",
   "Football": "⚽",
   "Fitness": "🏋️",
