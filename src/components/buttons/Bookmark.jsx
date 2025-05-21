@@ -11,13 +11,12 @@ import PropTypes from 'prop-types';
  * Loaf Life - Bookmark Button
  * 
  * This component is used to add or remove a bookmark for a hack or deal.
- * It interacts with the 'saved_items' table in Supabase.
- * Now uses specific hack_id or deal_id based on props.
+ * It interacts with the 'saved_items' table in Supabase. 
  * 
+ * Written with assistance from Google Gemini 2.5 Pro
+ *
  * @author: Nathan O
- * 
- * Written with assistance from Google Gemini 2.5 Flash & Google Gemini 2.5 Pro
- * @author https://gemini.google.com/app
+ * @author: https://gemini.google.com/app
  */
 
 const BookmarkButton = ({ hackId, dealId, eventId }) => {

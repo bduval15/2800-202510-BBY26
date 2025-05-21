@@ -7,12 +7,19 @@ import { clientDB } from '@/supabaseClient'; // Import Supabase client
  * CommentCount.jsx
  * Loaf Life - Comment Count Display
  * 
- * This component fetches and displays the comment count for a specific entity.
+ * This component is responsible for fetching and displaying the number of comments 
+ * associated with a specific entity (e.g., a hack, deal, or event). 
+ * It queries the Supabase 'comment' table using the provided `entityId` and `entityType` 
+ * to determine the count. The component visually presents this count alongside a 
+ * chat bubble icon. It also includes functionality to re-fetch the comment count 
+ * when a 'commentUpdated' event is dispatched globally, ensuring the displayed 
+ * count remains current. An optional `onClick` prop allows for custom actions 
+ * when the component is clicked.
  * 
  * Written with assistance from Google Gemini 2.5 Flash
  * 
- * @author https://gemini.google.com/app
  * @author: Nathan O 
+ * @author: https://gemini.google.com/app
  */
 
 const CommentCount = ({ entityId, entityType, onClick }) => {

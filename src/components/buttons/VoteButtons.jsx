@@ -16,7 +16,7 @@ import { clientDB } from '@/supabaseClient';
  * Written with assistance from Google Gemini 2.5 Flash
  * 
  * @author: Nathan O
- * @author https://gemini.google.com/app
+ * @author: https://gemini.google.com/app
  */
 
 const VoteButtons = ({ itemId, itemType, userId, upvotes: initialUpvotes, downvotes: initialDownvotes, hackId, dealId, eventId }) => {
