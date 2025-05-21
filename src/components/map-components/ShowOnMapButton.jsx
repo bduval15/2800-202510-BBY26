@@ -2,7 +2,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { MapPinIcon } from '@heroicons/react/24/outline'; // Or another relevant icon
+import { MapPinIcon } from '@heroicons/react/24/outline';
 
 /**
  * ShowOnMapButton.jsx
@@ -23,7 +23,7 @@ const ShowOnMapButton = ({ lat, lng }) => {
   };
 
   if (typeof lat !== 'number' || typeof lng !== 'number') {
-    return null; 
+    return null;
   }
 
   return (
@@ -31,7 +31,7 @@ const ShowOnMapButton = ({ lat, lng }) => {
       onClick={handleClick}
       aria-label="Show on map"
       className="p-1 rounded-lg bg-[#F5EFE6] border-2 border-[#A0522D] text-[#A0522D] hover:bg-[#EADDCA] shadow-md ml-2 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
-      
+
     >
       <MapPinIcon className="h-5 w-5 mr-1" /> {/* Icon */}
       <span className="text-sm">Show on Map</span> {/* Placeholder text */}
