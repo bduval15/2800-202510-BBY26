@@ -1,3 +1,27 @@
+/**
+ * page.jsx (HacksPage)
+ * Loaf Life – Displays a list of hacks from Supabase.
+ *
+ * This page fetches and displays a list of "hacks" from the Supabase
+ * database. Users can filter the displayed hacks by selecting tags.
+ * Each hack is presented in a card format. The page also features an
+ * AI button that helps users discover hacks relevant to their stored
+ * interests.
+ *
+ * Features:
+ * - Fetches and lists hacks from the Supabase 'hacks' table.
+ * - Allows users to filter hacks by tags.
+ * - Displays hacks in a responsive card layout.
+ * - Includes an AI button for personalized hack discovery.
+ *
+ * Portions of styling and logic assisted by Google Gemini 2.5 Flash.
+ *
+ * Modified with assistance from Google Gemini 2.5 Flash.
+ *
+ * @author Nathan Oloresisimo
+ * @author https://gemini.google.com/app
+ */
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -9,19 +33,6 @@ import { clientDB } from '@/supabaseClient';
 import AIbutton from '@/components/buttons/AIbutton';
 import { tags } from '@/lib/tags';
 
-/**
- * HacksPage.jsx
- * Loaf Life - Hacks Page
- * 
- * This page lists hacks fetched from the Supabase 'hacks' table.
- * Users can filter hacks by tags and view them in a card layout.
- * It also includes an AI button for discovering hacks based on user interests.
- * 
- * Modified with assistance from Google Gemini 2.5 Flash
- *
- * @author: Nathan O
- * @author: https://gemini.google.com/app
- */
 
 export default function HacksPage() {
   // -- State --
@@ -48,6 +59,7 @@ export default function HacksPage() {
         if (interestsError) {
           console.error('Failed to fetch interests:', interestsError.message);
         } else if (interestsData?.interests) {
+          // Ensure interests are stored as an array, handling both array and CSV string formats from DB
           setInterests(Array.isArray(interestsData.interests)
             ? interestsData.interests
             : interestsData.interests.split(','));
@@ -60,6 +72,7 @@ export default function HacksPage() {
     fetchUserAndInterests();
   }, []);
 
+  // Effect to fetch all hacks from the database when the component mounts
   useEffect(() => {
     const fetchHacks = async () => {
       setIsLoading(true);
@@ -76,12 +89,15 @@ export default function HacksPage() {
         if (fetchError) {
           throw fetchError;
         }
+        // Set the fetched hacks to state, or an empty array if data is null
         setAllHacks(data || []);
         console.log("[HacksPage] allHacks state set with:", data || []);
       } catch (err) {
+        // If an error occurs during the try block, set the error state
         setError(err.message);
         console.error("[HacksPage] Error fetching hacks catch block:", err);
       } finally {
+        // Regardless of success or failure, set loading state to false
         setIsLoading(false);
       }
     };
@@ -97,6 +113,7 @@ export default function HacksPage() {
       setSelectedTags([]);
     } else {
       setSelectedTags(prevSelectedTags =>
+        // Toggle tag selection: if tag is already selected, remove it; otherwise, add it.
         prevSelectedTags.includes(tag)
           ? prevSelectedTags.filter(t => t !== tag)
           : [...prevSelectedTags, tag]
@@ -104,22 +121,27 @@ export default function HacksPage() {
     }
   };
 
-  // -- Data Filtering --
+  
+  // Filter hacks: if no tags are selected, all hacks are shown.
+  // Otherwise, hacks are filtered to include only those that contain at least one of the selected tags.
   const filteredHacks = selectedTags.length === 0
     ? allHacks
     : allHacks.filter(hack => 
+        // Check if the hack has tags and if any of the selected tags (case-insensitive) are present in the hack's tags.
         hack.tags && selectedTags.some(selTag => hack.tags.includes(selTag.toLowerCase()))
       );
   console.log("[HacksPage] Current filteredHacks:", filteredHacks);
 
   return (
     <div className="bg-[#F5E3C6] pb-6">
+      {/* Main Feed Layout */}
       <FeedLayout
         title="Hacks"
         tagOptions={tags}
         selectedTags={selectedTags}
         onTagToggle={handleTagToggle}
       >
+        {/* Conditional Hack Display */}
         {isLoading && <p className="text-center text-gray-500 px-4">Loading hacks...</p>}
         {error && <p className="text-center text-red-500 px-4">Error: {error}</p>}
         {!isLoading && !error && filteredHacks.length > 0 ? (
@@ -142,11 +164,14 @@ export default function HacksPage() {
           !isLoading && !error && <p className="text-center text-gray-500 px-4">No hacks found, try adding one!</p>
         )}
 
+        {/* AI Button Section */}
         <div className="px-4 py-2 max-w-md mx-auto w-full">
           <AIbutton interests={interests} />
         </div>
+        {/* Footer */}
         <Footer />
       </FeedLayout>
+      {/* Bottom Navigation */}
       <BottomNav />
     </div>
   )
