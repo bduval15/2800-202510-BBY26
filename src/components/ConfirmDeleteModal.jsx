@@ -1,18 +1,28 @@
+/**
+ * ConfirmDeleteModal.jsx
+ * Loaf Life – Modal for confirming the deletion of an item.
+ *
+ * This component presents a modal dialog to the user, asking for confirmation
+ * before proceeding with a delete operation. It is designed to prevent
+ * accidental deletions by requiring an explicit confirmation. The modal
+ * displays the name of the item to be deleted if provided.
+ *
+ * Features:
+ * - Displays a confirmation message for deletion.
+ * - Shows the name of the item being deleted (optional).
+ * - Provides "Cancel" and "Delete" action buttons.
+ * - Controlled by an `isOpen` prop to show/hide the modal.
+ *
+ * Modified with assistance from Google Gemini 2.5 Flash.
+ *
+ * @author Nathan Oloresisimo
+ * @author https://gemini.google.com/app
+ */
+
 'use client';
 
 import React from 'react';
 
-/**
- * ConfirmDeleteModal.jsx
- * Loaf Life - Confirm Delete Modal
- * 
- * This component allows users to confirm the deletion of a hack or deal.
- * 
- * Modified with assistance from Google Gemini 2.5 Flash
- * 
- * @author: Nathan O
- * @author https://gemini.google.com/app
- */
 
 export default function ConfirmDeleteModal({ isOpen, onClose, onConfirm, itemName }) {
   if (!isOpen) {

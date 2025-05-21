@@ -1,3 +1,22 @@
+/**
+ * ConfirmCancelModal.jsx
+ * Loaf Life – Modal for confirming cancellation of an action.
+ *
+ * This component displays a modal dialog that prompts the user to confirm if
+ * they want to discard unsaved changes or cancel an ongoing action, such as
+ * editing a form. It provides options to confirm the cancellation or to
+ * continue with the current task.
+ *
+ * Features:
+ * - Displays a confirmation message for discarding changes.
+ * - Provides "Keep Editing" and "Discard" action buttons.
+ * - Controlled by an `isOpen` prop to show/hide the modal.
+ *
+ * Modified with assistance from Google Gemini 2.5 Pro.
+ *
+ * @author Nathan Oloresisimo
+ * @author https://gemini.google.com/app
+ */
 'use client'
 
 export default function ConfirmCancelModal({ isOpen, onConfirm, onCancel }) {
