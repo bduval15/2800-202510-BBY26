@@ -20,16 +20,28 @@ import { formatTimeAgo } from '../../utils/formatTimeAgo';
  * @author https://gemini.google.com/app
  * @author Nate O
  */
+const toTitleCase = (str) => {
+  if (!str) return '';
+  const minorWords = new Set([
+    "a", "an", "the", "and", "but", "or", "for", "nor", "on", "at", "to", "from", "by", "of", "in", "into", "near", "over", "past", "through", "up", "upon", "with", "without"
+  ]);
+  const words = String(str).toLowerCase().split(' ');
+  return words.map((word, index) => {
+    if (index === 0 || index === words.length - 1 || !minorWords.has(word)) {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    }
+    return word;
+  }).join(' ');
+};
+
 const DealCard = ({ id, title, location, price, tags, expirationDate, upvotes = 0, downvotes = 0, createdAt, userId }) => {
-  const titleCase = (str) =>
-    str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 
   return (
     <Link href={`/deals-page/${id}`} passHref>
       <BaseCard className="flex-col items-start bg-[#F5E3C6] border border-[#D1905A] mb-4">
         {/* Title */}
         <div className="w-full mb-2 flex justify-between items-center">
-          <h3 className="text-lg font-semibold text-[#8B4C24] hover:underline cursor-pointer mr-2">{titleCase(title)}</h3>
+          <h3 className="text-lg font-semibold text-[#8B4C24] hover:underline cursor-pointer mr-2">{toTitleCase(title)}</h3>
           {createdAt && (
             <span className="text-xs text-gray-500 whitespace-nowrap">{formatTimeAgo(createdAt)}</span>
           )}
@@ -55,7 +67,7 @@ const DealCard = ({ id, title, location, price, tags, expirationDate, upvotes = 
         {tags && tags.length > 0 && (
           <div className="w-full mb-2 flex flex-wrap">
             {tags.slice(0, 3).map((tag, index) => (
-              <Tag key={index} label={titleCase(tag)} />
+              <Tag key={index} label={toTitleCase(tag)} />
             ))}
           </div>
         )}

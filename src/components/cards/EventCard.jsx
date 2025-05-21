@@ -21,8 +21,19 @@ import { formatTimeAgo } from '../../utils/formatTimeAgo';
  * Written with assistance from Google Gemini 2.5 Flash
  * @author https://gemini.google.com/app
  */
-const titleCase = (str) =>
-str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+const toTitleCase = (str) => {
+  if (!str) return '';
+  const minorWords = new Set([
+    "a", "an", "the", "and", "but", "or", "for", "nor", "on", "at", "to", "from", "by", "of", "in", "into", "near", "over", "past", "through", "up", "upon", "with", "without"
+  ]);
+  const words = String(str).toLowerCase().split(' ');
+  return words.map((word, index) => {
+    if (index === 0 || index === words.length - 1 || !minorWords.has(word)) {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    }
+    return word;
+  }).join(' ');
+};
 
 const EventCard = ({
   id,
@@ -54,7 +65,7 @@ const EventCard = ({
       <div className="w-full mb-2 flex justify-between items-center">
         <Link href={href || `/events-page/${id}`} passHref>
           <h3 className="text-lg font-semibold text-[#8B4C24] hover:underline cursor-pointer mr-2">
-            {titleCase(title)}
+            {toTitleCase(title)}
           </h3>
         </Link>
         {createdAt && (
@@ -74,7 +85,7 @@ const EventCard = ({
        {tags && tags.length > 0 && (
         <div className="w-full mb-2 flex flex-wrap">
           {tags.slice(0, 3).map((tag, index) => (
-            <Tag key={index} label={titleCase(tag)} />
+            <Tag key={index} label={toTitleCase(tag)} />
           ))}
         </div>
       )}
