@@ -1,23 +1,33 @@
-'use client'
+/**
+ * Bookmark.jsx
+ * Loaf Life – Bookmark button component.
+ *
+ * This component provides a button for users to bookmark or unbookmark
+ * various items (hacks, deals, events). It visually reflects the current
+ * bookmark status and updates it in the Supabase 'saved_items' table
+ * when clicked.
+ *
+ * Features:
+ * - Displays a bookmark icon (solid or outline) based on status.
+ * - Fetches the current user's ID and initial bookmark state.
+ * - Toggles bookmark status on user click.
+ * - Updates the 'saved_items' table in Supabase for persistence.
+ *
+ * Portions of styling and logic assisted by Google Gemini 2.5 Pro.
+ *
+ * Modified with assistance from Google Gemini 2.5 Flash.
+ *
+ * @author Nathan Oloresisimo
+ * @author https://gemini.google.com/app
+ */
+
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { BookmarkIcon as BookmarkOutlineIcon } from '@heroicons/react/24/outline';
 import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid';
 import { clientDB } from '@/supabaseClient';
 import PropTypes from 'prop-types';
-
-/**
- * Bookmark.jsx
- * Loaf Life - Bookmark Button
- * 
- * This component is used to add or remove a bookmark for a hack or deal.
- * It interacts with the 'saved_items' table in Supabase. 
- * 
- * Written with assistance from Google Gemini 2.5 Pro
- *
- * @author: Nathan O
- * @author: https://gemini.google.com/app
- */
 
 const BookmarkButton = ({ hackId, dealId, eventId }) => {
   const [isBookmarked, setIsBookmarked] = useState(false);
