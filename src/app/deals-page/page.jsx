@@ -7,6 +7,7 @@ import DealCard from '@/components/cards/DealCard'
 import Footer from '@/components/Footer'
 import BottomNav from '@/components/BottomNav'
 import AIbutton from '@/components/buttons/AIbutton';
+import { tags } from '@/lib/tags';
 
 /**
  * DealsPage.jsx
@@ -28,32 +29,6 @@ export default function DealsPage() {
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState(null);
   const supabase = clientDB;
-
-  const tags = [
-    'Animal Care',
-    'Art',
-    'Board Games',
-    'Comedy',
-    'Coding',
-    'Cooking',
-    'Cycling',
-    'Esports',
-    'Entrepreneurship',
-    'Fitness',
-    'Football',
-    'Gaming',
-    'Hiking',
-    'Investing',
-    'Mental Health',
-    'Movies',
-    'Music',
-    'Photography',
-    'Public Speaking',
-    'Reading',
-    'Study Groups',
-    'Sustainability',
-    'Yoga'
-  ];
 
   useEffect(() => {
     const fetchUserAndInterests = async () => {

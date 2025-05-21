@@ -7,6 +7,7 @@ import Footer from '@/components/Footer'
 import BottomNav from '@/components/BottomNav'
 import { clientDB } from '@/supabaseClient';
 import AIbutton from '@/components/buttons/AIbutton';
+import { tags } from '@/lib/tags';
 
 /**
  * HacksPage.jsx
@@ -28,32 +29,6 @@ export default function HacksPage() {
   const [error, setError] = useState(null);
   const [interests, setInterests] = useState([]);
   const [currentUserId, setCurrentUserId] = useState(null);
-
-  const tags = [
-    'Animal Care',
-    'Art',
-    'Board Games',
-    'Comedy',
-    'Coding',
-    'Cooking',
-    'Cycling',
-    'Esports',
-    'Entrepreneurship',
-    'Fitness',
-    'Football',
-    'Gaming',
-    'Hiking',
-    'Investing',
-    'Mental Health',
-    'Movies',
-    'Music',
-    'Photography',
-    'Public Speaking',
-    'Reading',
-    'Study Groups',
-    'Sustainability',
-    'Yoga'
-  ];
 
   useEffect(() => {
     const fetchUserAndInterests = async () => {

@@ -6,6 +6,7 @@ import Footer from '@/components/Footer';
 import BottomNav from '@/components/BottomNav';
 import StickyNavbar from '@/components/StickyNavbar';
 import { clientDB } from '@/supabaseClient';
+import { tags } from '@/lib/tags.js'
 
 /**
  * AddFormPage.jsx
@@ -22,7 +23,7 @@ import { clientDB } from '@/supabaseClient';
 
 export default function AddFormPage() {
   const router = useRouter();
-  const tags = ['Animal Care', 'Art', 'Board Games', 'Comedy', 'Coding', 'Cooking', 'Cycling', 'Esports', 'Entrepreneurship', 'Fitness', 'Football', 'Gaming', 'Hiking', 'Investing', 'Mental Health', 'Movies', 'Music', 'Photography', 'Public Speaking', 'Reading', 'Study Groups', 'Sustainability', 'Yoga'];
+  
 
   const handleSubmitHack = async (formData) => {
     const { data: { session }, error: sessionError } = await clientDB.auth.getSession();
