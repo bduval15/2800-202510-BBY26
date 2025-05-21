@@ -1,3 +1,19 @@
+'use client';
+
+import React, { useState, useEffect, useRef, use } from 'react';
+import { useRouter } from 'next/navigation';
+import Footer from '@/components/Footer';
+import BookmarkButton from '@/components/buttons/Bookmark';
+import VoteButtons from '@/components/buttons/VoteButtons';
+import { ArrowLeftIcon, PencilIcon, TrashIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
+import Tag from '@/components/Tag';
+import BottomNav from '@/components/BottomNav';
+import CommentSection from '@/components/sections/CommentSection';
+import StickyNavbar from '@/components/StickyNavbar';
+import { clientDB } from '@/supabaseClient';
+import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
+import ShowOnMapButton from '@/components/mapComponents/ShowOnMapButton';
+
 /**
  * EventDetails.jsx
  * Loaf Life - Event Details Page
@@ -16,22 +32,6 @@
  * @author: https://gemini.google.com/app
  * @author: ChatGPT used to simplify conversion 
  */
-
-'use client';
-
-import React, { useState, useEffect, useRef, use } from 'react';
-import { useRouter } from 'next/navigation';
-import Footer from '@/components/Footer';
-import BookmarkButton from '@/components/buttons/Bookmark';
-import VoteButtons from '@/components/buttons/VoteButtons';
-import { ArrowLeftIcon, PencilIcon, TrashIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
-import Tag from '@/components/Tag';
-import BottomNav from '@/components/BottomNav';
-import CommentSection from '@/components/sections/CommentSection';
-import StickyNavbar from '@/components/StickyNavbar';
-import { clientDB } from '@/supabaseClient';
-import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
-import ShowOnMapButton from '@/components/mapComponents/ShowOnMapButton';
 
 export default function EventDetailPage({ params }) {
   // -- State & Hooks --
