@@ -18,7 +18,7 @@
 'use client';
 
 import React from 'react';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -31,6 +31,8 @@ import LocateControl from '@/components/mapComponents/LocateControl';
 import styles from '@/components/mapComponents/EventMap.module.css';
 import EventPopup from '@/components/mapComponents/EventPopup';
 import { clientDB } from '@/supabaseClient';
+import { ZoomToEvent } from '@/components/mapComponents/ZoomToEvent';
+
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -99,38 +101,41 @@ function ClosePopupsOnClick() {
     return null;
 }
 
-function ZoomMarker({ evt, userPos }) {
+function FocusHandler({ events, focusId, markersRef }) {
+    const map = useMap()
+
+    useEffect(() => {
+        if (!focusId) return
+
+        const target = events.find(e => String(e.id) === focusId)
+        if (!target) {
+            console.warn('[FocusHandler] no event with id', focusId)
+            return
+        }
+
+        ZoomToEvent(
+            map,
+            { lat: target.lat, lng: target.lng },
+            () => {
+                const marker = markersRef.current[focusId];
+                if (marker) {
+                    marker.openPopup();
+                } else {
+                    console.warn('no marker ref for', focusId);
+                }
+            }
+        )
+    }, [focusId, events, map])
+
+    return null
+}
+
+function ZoomMarker({ evt, userPos, ref  }) {
     const map = useMap();
 
     const handleClick = (e) => {
         e.target.closePopup();
-
-        map.flyTo([evt.lat, evt.lng], 16, { animate: true });
-
-        map.once('moveend', () => {
-            const size = map.getSize();
-            const targetY = size.y * (2 / 3);
-            const targetX = size.x / 2;
-
-            const markerPt = map.latLngToContainerPoint([evt.lat, evt.lng]);
-            const centerPt = map.latLngToContainerPoint(map.getCenter());
-
-            const dy = markerPt.y - targetY;
-            const dx = markerPt.x - targetX;
-
-            const fudgeX = 8;
-            const finalDx = dx + fudgeX;
-
-            const newCenterPt = L.point(
-                centerPt.x + finalDx,
-                centerPt.y + dy
-            );
-
-            const newCenterLatLng = map.containerPointToLatLng(newCenterPt);
-            map.flyTo(newCenterLatLng, map.getZoom(), { animate: true });
-
-            map.once('moveend', () => e.target.openPopup());
-        });
+        ZoomToEvent(map, evt, () => e.target.openPopup());
     };
 
     const iconForThread =
@@ -139,6 +144,7 @@ function ZoomMarker({ evt, userPos }) {
 
     return (
         <Marker
+            ref={ref}
             position={[evt.lat, evt.lng]}
             icon={iconForThread}
             eventHandlers={{ click: handleClick }}
@@ -148,13 +154,12 @@ function ZoomMarker({ evt, userPos }) {
     );
 }
 
-export default function EventMap({
-    events = [],
-}) {
+export default function EventMap({ events = [], focusId = null }) {
 
     const [userPos, setUserPos] = useState(null);
     const [trackedPos, setTrackedPos] = useState(null);
     const [avatarUrl, setAvatarUrl] = useState('/images/logo.png');
+    const markersRef = useRef({});
 
     const vancouverBounds = [
         [49.0, -123.5],
@@ -219,6 +224,7 @@ export default function EventMap({
     return (
         <div className={`${styles.container} h-full w-full`}>
             <MapContainer
+                key={focusId || 'all'}
                 bounds={vancouverBounds}
                 scrollWheelZoom={true}
                 className="h-full w-full"
@@ -239,10 +245,18 @@ export default function EventMap({
                 <ClosePopupsOnClick />
 
                 {events.map(evt => (
-                    <ZoomMarker key={evt.id}
+                    <ZoomMarker
+                        key={evt.id}
                         evt={evt}
-                        userPos={trackedPos} />
+                        userPos={trackedPos}
+                        ref={el => { if (el) markersRef.current[evt.id] = el }} />
                 ))}
+
+                <FocusHandler
+                    events={events}
+                    focusId={focusId}
+                    markersRef={markersRef}
+                />
 
                 <LocateControl
                     position="topright"

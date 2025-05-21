@@ -11,7 +11,7 @@ import VoteButtons from '@/components/buttons/VoteButtons';
 import Tag from '@/components/Tag';
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
 import CommentSection from '@/components/sections/CommentSection';
-import ShowOnMapButton from '@/components/map-components/ShowOnMapButton';
+import ShowOnMapButton from '@/components/mapComponents/ShowOnMapButton';
 
 import { ArrowLeftIcon, MapPinIcon, PencilIcon, TrashIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { clientDB } from '@/supabaseClient.js';
@@ -163,7 +163,7 @@ export default function DealDetailPage() {
             }
           }
           setDisplayLocation(loc);
-          
+
           if (parsedLat !== null && parsedLng !== null) {
             setLocationCoords({ lat: parsedLat, lng: parsedLng });
           } else {
@@ -333,10 +333,13 @@ export default function DealDetailPage() {
               userId={currentUserId}
             />
             {locationCoords && (
-              <ShowOnMapButton lat={locationCoords.lat} lng={locationCoords.lng} />
+              <ShowOnMapButton
+                id={deal.id}
+                children="Show on Map"
+              />
             )}
             <BookmarkButton dealId={deal.id} />
-            
+
           </div>
         </div>
 

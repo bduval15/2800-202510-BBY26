@@ -38,6 +38,7 @@ export default function HackDetailPage({ params }) {
   const [currentUserId, setCurrentUserId] = useState(null);
   const [isOptionsMenuOpen, setIsOptionsMenuOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [locationCoords, setLocationCoords] = useState(null);
   const router = useRouter();
   const optionsMenuRef = useRef(null);
 
@@ -70,11 +71,11 @@ export default function HackDetailPage({ params }) {
           .from('hacks')
           .select('id, title, description, created_at, user_id, tags, upvotes, downvotes, location, user_profiles(name)')
           .eq('id', hackId)
-          .single(); 
+          .single();
 
         if (fetchError) {
           if (fetchError.code === 'PGRST116') {
-            setError("Hack not found."); 
+            setError("Hack not found.");
             setHack(null);
           } else {
             throw fetchError;
@@ -203,7 +204,7 @@ export default function HackDetailPage({ params }) {
             {/* Options Menu Button and Dropdown - visible only to the author */}
             {hack && currentUserId && hack.user_id === currentUserId && (
               <div className="relative" ref={optionsMenuRef}>
-                <button 
+                <button
                   onClick={() => setIsOptionsMenuOpen(!isOptionsMenuOpen)}
                   className="bg-[#F5EFE6] hover:bg-[#EADDCA] text-[#A0522D] border-2 border-[#A0522D] p-2 rounded-lg shadow-md"
                   aria-label="Options"
@@ -212,13 +213,13 @@ export default function HackDetailPage({ params }) {
                 </button>
                 {isOptionsMenuOpen && (
                   <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-10">
-                    <button 
+                    <button
                       onClick={() => { router.push(`/hacks-page/${hackId}/edit`); setIsOptionsMenuOpen(false); }}
                       className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                     >
                       <PencilIcon className="h-5 w-5 mr-2" /> Edit
                     </button>
-                    <button 
+                    <button
                       onClick={handleDelete}
                       className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700"
                     >
@@ -243,7 +244,7 @@ export default function HackDetailPage({ params }) {
           )}
 
           {/* Location Display */}
-          {hack.location && 
+          {hack.location &&
             (() => {
               let displayLocation;
               try {
@@ -261,35 +262,41 @@ export default function HackDetailPage({ params }) {
                   </div>
                 );
               }
-              return null; 
+              return null;
             })()
           }
 
           {/* Description Section */}
           <div className="mb-6">
             <p className="text-[#8B4C24]">{hack.description}</p>
-          </div>         
+          </div>
 
           {/* Author/Timestamp */}
           <p className="text-sm text-[#8B4C24]/80 mb-8">
-             By {hack.user_profiles && hack.user_profiles.name ? hack.user_profiles.name : 'Unknown'} - {formatTimeAgo(hack.created_at)}
+            By {hack.user_profiles && hack.user_profiles.name ? hack.user_profiles.name : 'Unknown'} - {formatTimeAgo(hack.created_at)}
           </p>
 
           {/* Vote and Bookmark Buttons Row */}
-          <div className="flex items-center mb-6">                        
-                <VoteButtons 
-                  itemId={hack.id} 
-                  itemType="hacks" 
-                  upvotes={hack.upvotes || 0} 
-                  downvotes={hack.downvotes || 0} 
-                  userId={currentUserId}/>                                  
-                <BookmarkButton hackId={hack.id} />                                        
+          <div className="flex items-center mb-6">
+            <VoteButtons
+              itemId={hack.id}
+              itemType="hacks"
+              upvotes={hack.upvotes || 0}
+              downvotes={hack.downvotes || 0}
+              userId={currentUserId} />
+            {locationCoords && (
+                          <ShowOnMapButton
+                            id={hack.id}
+                            children="Show on Map"
+                          />
+                        )}
+            <BookmarkButton hackId={hack.id} />
           </div>
         </div>
 
-        <CommentSection entityId={hack.id} entityType="hack"/> 
+        <CommentSection entityId={hack.id} entityType="hack" />
         <Footer />
-      
+
       </div>
       <BottomNav />
       <ConfirmDeleteModal

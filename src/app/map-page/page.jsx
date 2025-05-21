@@ -21,6 +21,7 @@ import styles from '@/components/mapComponents/EventMap.module.css';
 import { clientDB } from '@/supabaseClient';
 import { loadAllEvents } from '@/utils/loadAllEvents';
 import AIbutton from '@/components/buttons/AIbutton';
+import { useSearchParams } from 'next/navigation';
 
 const EventMap = dynamic(
   () => import('@/components/mapComponents/EventMap'),
@@ -38,18 +39,38 @@ export default function MapPage() {
   const [events, setEvents] = useState([]);
   const [interests, setInterests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const focusId = searchParams.get('focus');
+
+  const threads = useMemo(() => ([
+    { id: 'hacks', name: 'Hacks' },
+    { id: 'deals', name: 'Deals' },
+    { id: 'events', name: 'Events' }
+  ]), []);
+
+  const [selectedThreads, setSelectedThreads] = useState(
+    () => threads.map(t => t.id)
+  );
+
+  const filteredEvents = useMemo(() => {
+    return events.filter(evt => selectedThreads.includes(evt.table_id));
+  }, [events, selectedThreads]);
+
+  const handleFilterChange = useCallback(ids => {
+    setSelectedThreads(ids);
+  }, []);
 
   useEffect(() => {
     const fetchInterests = async () => {
       const { data: { user } } = await clientDB.auth.getUser();
       if (!user) return;
-  
+
       const { data, error } = await clientDB
         .from('user_profiles')
         .select('interests')
         .eq('id', user.id)
         .single();
-  
+
       if (error) {
         console.error('Failed to fetch interests:', error.message);
       } else if (data?.interests) {
@@ -57,10 +78,10 @@ export default function MapPage() {
           ? data.interests
           : data.interests.split(','));
       }
-  
+
       setLoading(false);
     };
-  
+
     fetchInterests();
   }, []);
 
@@ -128,24 +149,6 @@ export default function MapPage() {
     })();
   }, []);
 
-  const threads = useMemo(() => ([
-    { id: 'hacks', name: 'Hacks' },
-    { id: 'deals', name: 'Deals' },
-    { id: 'events', name: 'Events' }
-  ]), []);
-
-  const [selectedThreads, setSelectedThreads] = useState(
-    () => threads.map(t => t.id)
-  );
-
-  const filteredEvents = useMemo(() => {
-    return events.filter(evt => selectedThreads.includes(evt.table_id));
-  }, [events, selectedThreads]);
-
-  const handleFilterChange = useCallback(ids => {
-    setSelectedThreads(ids);
-  }, []);
-
   useEffect(() => {
     const fetchInterests = async () => {
       const { data: { user } } = await clientDB.auth.getUser();
@@ -183,7 +186,11 @@ export default function MapPage() {
           />
           <div className="px-4">
             <div className={styles.mapWrapper}>
-              <EventMap events={filteredEvents} />
+              <EventMap
+                key={focusId ?? 'all'}
+                events={filteredEvents}
+                focusId={focusId}
+              />
             </div>
 
             <div className="px-4 py-2 max-w-md mx-auto w-full">

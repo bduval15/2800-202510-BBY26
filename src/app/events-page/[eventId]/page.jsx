@@ -27,7 +27,7 @@ import CommentSection from '@/components/sections/CommentSection';
 import StickyNavbar from '@/components/StickyNavbar';
 import { clientDB } from '@/supabaseClient';
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
-import ShowOnMapButton from '@/components/map-components/ShowOnMapButton';
+import ShowOnMapButton from '@/components/mapComponents/ShowOnMapButton';
 
 export default function EventDetailPage({ params }) {
   const resolvedParams = use(params);
@@ -292,8 +292,11 @@ export default function EventDetailPage({ params }) {
           <div className="flex items-center mb-6">
             <VoteButtons eventId={event.id} itemType="events" userId={currentUserId} upvotes={event.upvotes} downvotes={event.downvotes} />
             {locationCoords && (
-              <ShowOnMapButton lat={locationCoords.lat} lng={locationCoords.lng} />
-            )}
+                          <ShowOnMapButton
+                            id={event.id}
+                            children="Show on Map"
+                          />
+                        )}
             <BookmarkButton eventId={event.id} />          
           </div>
         </div>
