@@ -268,20 +268,7 @@ export default function EventDetailPage({ params }) {
               <Tag key={i} label={toTitleCase(tag)} />
             ))}
           </div>
-
-          {/* Event Dates - New Section */}
-          {(event.start_date || event.end_date) && (
-            <div className="mb-4 text-base text-[#8B4C24]">
-              <p>
-                <span className="font-bold">📅 Dates: </span> 
-                {formatDateMMDDYYYY(event.start_date)}
-                {event.end_date && formatDateMMDDYYYY(event.start_date) !== formatDateMMDDYYYY(event.end_date) && (
-                  ` - ${formatDateMMDDYYYY(event.end_date)}`
-                )}
-              </p>
-            </div>
-          )}
-
+        
           {/* Location */}
           <p className="text-base mb-4 text-[#8B4C24]">
             <span className="font-bold">📍 Location:</span> {
@@ -296,6 +283,19 @@ export default function EventDetailPage({ params }) {
               })()
             }
           </p>
+
+          {/* Event Dates */}
+          {(event.start_date || event.end_date) && (
+            <div className="mb-4 text-base text-[#8B4C24]">
+              <p>
+                <span className="font-bold">📅 Dates: </span>
+                {formatDateMMDDYYYY(event.start_date)}
+                {event.end_date && formatDateMMDDYYYY(event.start_date) !== formatDateMMDDYYYY(event.end_date) && (
+                  ` - ${formatDateMMDDYYYY(event.end_date)}`
+                )}
+              </p>
+            </div>
+          )}
 
           {/* Description */}
           <p className="mb-6 text-[#8B4C24]">{event.description}</p>
