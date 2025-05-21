@@ -1,23 +1,36 @@
-'use client'
+/**
+ * VoteButtons.jsx
+ * Loaf Life – Displays upvote/downvote buttons and vote count.
+ *
+ * This component provides interactive upvote and downvote buttons for
+ * various items. Users can cast a vote, change their existing vote, or
+ * remove it. The component shows the net vote count and the user's
+ * current vote status. Votes are saved to Supabase, updating the
+ * 'user_item_votes' table and item-specific tables (e.g., 'hacks').
+ *
+ * Features:
+ * - Renders upvote and downvote buttons.
+ * - Displays the net total of upvotes and downvotes.
+ * - Allows users to cast, change, or retract their vote.
+ * - Highlights the user's current vote status (upvoted/downvoted).
+ * - Persists vote changes to the Supabase database.
+ * - Manages loading and error states for vote actions.
+ *
+ * Portions of styling and logic assisted by Google Gemini 2.5 Flash.
+ *
+ * Modified with assistance from Google Gemini 2.5 Flash.
+ *
+ * @author Nathan Oloresisimo
+ * @author https://gemini.google.com/app
+ */
+
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline';
 import { clientDB } from '@/supabaseClient';
 
-/**
- * VoteButtons.jsx
- * Loaf Life - Vote Buttons
- * 
- * This component displays upvote and downvote buttons and the current vote count.
- * Users can vote once per item, change their vote, or remove their vote.
- * Votes are persistent and reflected in the UI.
- * 
- * Written with assistance from Google Gemini 2.5 Flash
- * 
- * @author: Nathan O
- * @author: https://gemini.google.com/app
- */
 
 const VoteButtons = ({ itemId, itemType, userId, upvotes: initialUpvotes, downvotes: initialDownvotes, hackId, dealId, eventId }) => {
   const [localUpvotes, setLocalUpvotes] = useState(Number(initialUpvotes) || 0);
@@ -176,6 +189,7 @@ const VoteButtons = ({ itemId, itemType, userId, upvotes: initialUpvotes, downvo
       return;
     }
 
+    // Store original state for potential rollback
     const originalLocalUpvotes = localUpvotes;
     const originalLocalDownvotes = localDownvotes;
     const originalUserVoteType = currentUserVoteType;
@@ -184,27 +198,34 @@ const VoteButtons = ({ itemId, itemType, userId, upvotes: initialUpvotes, downvo
     let newLocalDownvotes = localDownvotes;
     let nextUserVoteType = null;
 
+    // Determine new vote counts and user's vote type based on the action
     if (voteAction === 'upvote') {
       if (currentUserVoteType === 'upvoted') {
+        // User is removing their upvote
         newLocalUpvotes = localUpvotes - 1;
         nextUserVoteType = null;
       } else if (currentUserVoteType === 'downvoted') {
+        // User is changing from downvote to upvote
         newLocalUpvotes = localUpvotes + 1;
         newLocalDownvotes = localDownvotes - 1;
         nextUserVoteType = 'upvoted';
       } else {
+        // User is casting a new upvote
         newLocalUpvotes = localUpvotes + 1;
         nextUserVoteType = 'upvoted';
       }
     } else if (voteAction === 'downvote') {
       if (currentUserVoteType === 'downvoted') {
+        // User is removing their downvote
         newLocalDownvotes = localDownvotes - 1;
         nextUserVoteType = null;
       } else if (currentUserVoteType === 'upvoted') {
+        // User is changing from upvote to downvote
         newLocalDownvotes = localDownvotes + 1;
         newLocalUpvotes = localUpvotes - 1;
         nextUserVoteType = 'downvoted';
       } else {
+        // User is casting a new downvote
         newLocalDownvotes = localDownvotes + 1;
         nextUserVoteType = 'downvoted';
       }
