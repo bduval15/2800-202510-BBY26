@@ -11,6 +11,7 @@ import VoteButtons from '@/components/buttons/VoteButtons';
 import Tag from '@/components/Tag';
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
 import CommentSection from '@/components/sections/CommentSection';
+import ShowOnMapButton from '@/components/map-components/ShowOnMapButton';
 
 import { ArrowLeftIcon, MapPinIcon, PencilIcon, TrashIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { clientDB } from '@/supabaseClient.js';
@@ -41,6 +42,7 @@ export default function DealDetailPage() {
   const [currentUserId, setCurrentUserId] = useState(null);
   const [isOptionsMenuOpen, setIsOptionsMenuOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [locationCoords, setLocationCoords] = useState(null);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -132,19 +134,41 @@ export default function DealDetailPage() {
         } else if (data) {
           setDeal(data);
           let loc = data.location;
-          if (data.location && typeof data.location === 'string') {
-            try {
-              const parsedLocation = JSON.parse(data.location);
-              if (parsedLocation && parsedLocation.address) {
-                loc = parsedLocation.address;
+          let parsedLat = null;
+          let parsedLng = null;
+
+          if (data.location) {
+            let tempCoords = null;
+            if (typeof data.location === 'string') {
+              try {
+                const parsedJson = JSON.parse(data.location);
+                if (parsedJson) {
+                  loc = parsedJson.address || loc;
+                  if (typeof parsedJson.lat === 'number' && typeof parsedJson.lng === 'number') {
+                    tempCoords = { lat: parsedJson.lat, lng: parsedJson.lng };
+                  }
+                }
+              } catch (e) {
+                console.warn("Failed to parse location JSON for deal detail:", data.location, e);
               }
-            } catch (e) {
-              console.warn("Failed to parse location JSON for deal detail:", data.location, e);
+            } else if (typeof data.location === 'object' && data.location.address) {
+              loc = data.location.address;
+              if (typeof data.location.lat === 'number' && typeof data.location.lng === 'number') {
+                tempCoords = { lat: data.location.lat, lng: data.location.lng };
+              }
             }
-          } else if (data.location && typeof data.location === 'object' && data.location.address) {
-            loc = data.location.address;
+            if (tempCoords) {
+              parsedLat = tempCoords.lat;
+              parsedLng = tempCoords.lng;
+            }
           }
           setDisplayLocation(loc);
+          
+          if (parsedLat !== null && parsedLng !== null) {
+            setLocationCoords({ lat: parsedLat, lng: parsedLng });
+          } else {
+            setLocationCoords(null);
+          }
         } else {
           setError('Deal not found.');
           setDeal(null);
@@ -308,7 +332,11 @@ export default function DealDetailPage() {
               downvotes={deal.downvotes || 0}
               userId={currentUserId}
             />
+            {locationCoords && (
+              <ShowOnMapButton lat={locationCoords.lat} lng={locationCoords.lng} />
+            )}
             <BookmarkButton dealId={deal.id} />
+            
           </div>
         </div>
 

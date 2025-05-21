@@ -27,6 +27,7 @@ import CommentSection from '@/components/sections/CommentSection';
 import StickyNavbar from '@/components/StickyNavbar';
 import { clientDB } from '@/supabaseClient';
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
+import ShowOnMapButton from '@/components/map-components/ShowOnMapButton';
 
 export default function EventDetailPage({ params }) {
   const resolvedParams = use(params);
@@ -37,6 +38,7 @@ export default function EventDetailPage({ params }) {
   const [currentUserId, setCurrentUserId] = useState(null);
   const [isOptionsMenuOpen, setIsOptionsMenuOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [locationCoords, setLocationCoords] = useState(null);
   const router = useRouter();
   const optionsMenuRef = useRef(null);
 
@@ -85,6 +87,28 @@ export default function EventDetailPage({ params }) {
           setError("Event not found.");
         } else {
           setEvent(eventData);
+          // Parse location for lat/lng
+          if (eventData.location) {
+            let parsedLat = null;
+            let parsedLng = null;
+            try {
+              const parsedLocation = JSON.parse(eventData.location);
+              if (parsedLocation && typeof parsedLocation.lat === 'number' && typeof parsedLocation.lng === 'number') {
+                parsedLat = parsedLocation.lat;
+                parsedLng = parsedLocation.lng;
+              }
+            } catch (e) {
+              console.warn("Failed to parse location JSON for event detail:", eventData.location, e);
+              // If parsing fails, lat/lng will remain null, and button won't show, which is fine.
+            }
+            if (parsedLat !== null && parsedLng !== null) {
+              setLocationCoords({ lat: parsedLat, lng: parsedLng });
+            } else {
+              setLocationCoords(null);
+            }
+          } else {
+            setLocationCoords(null);
+          }
         }
       } catch (err) {
         setError(err.message);
@@ -264,11 +288,13 @@ export default function EventDetailPage({ params }) {
           <p className="text-sm text-[#8B4C24]/80 mb-6">
             By {event.user_profiles?.name || 'Unknown'} – {formatTimeAgo(event.created_at)}
           </p>
-
           {/* Votes & Bookmark */}
           <div className="flex items-center mb-6">
             <VoteButtons eventId={event.id} itemType="events" userId={currentUserId} upvotes={event.upvotes} downvotes={event.downvotes} />
-            <BookmarkButton eventId={event.id} />
+            {locationCoords && (
+              <ShowOnMapButton lat={locationCoords.lat} lng={locationCoords.lng} />
+            )}
+            <BookmarkButton eventId={event.id} />          
           </div>
         </div>
 
