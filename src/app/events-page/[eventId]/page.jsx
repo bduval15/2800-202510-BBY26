@@ -1,3 +1,29 @@
+/**
+ * page.jsx (EventDetailPage)
+ * Loaf Life – Displays detailed information for a specific event.
+ *
+ * This page fetches and displays details for a specific event from Supabase,
+ * identified by an ID in the URL. It shows title, description, location,
+ * dates, tags, and author. Authenticated creators can edit or delete their
+ * events. Users can vote on and bookmark events.
+ *
+ * Features:
+ * - Fetches and displays specific event details from Supabase.
+ * - Author-specific edit and delete functionalities for events.
+ * - User voting (upvote/downvote) and bookmarking for events.
+ * - Displays event location, dates, tags, and author.
+ * - Includes a comment section for discussions.
+ *
+ * Portions of styling and logic assisted by Google Gemini 2.5 Flash.
+ * Modified with assistance from Google Gemini 2.5 Flash and ChatGPT
+ * (for conversion from a previous component).
+ *
+ * @author Nathan Oloresisimo
+ * @author Conner P
+ * @author https://gemini.google.com/app
+ * @author https://chatgpt.com
+ */
+
 'use client';
 
 import React, { useState, useEffect, useRef, use } from 'react';
@@ -13,25 +39,8 @@ import StickyNavbar from '@/components/StickyNavbar';
 import { clientDB } from '@/supabaseClient';
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
 import ShowOnMapButton from '@/components/mapComponents/ShowOnMapButton';
-
-/**
- * EventDetails.jsx
- * Loaf Life - Event Details Page
- *
- * This page displays the details of a specific event, fetched from Supabase
- * based on the event ID. It includes event title, description, location,
- * dates, tags, author, and timestamp. Authenticated authors can edit or
- * delete their events. Users can also vote and bookmark events.
- *
- * Converted from 'Hack Details Page' with table changes for 'events'
- *
- * Modified with assistance from Google Gemini 2.5 Flash
- *
- * @author: Nathan O
- * @author: Conner P
- * @author: https://gemini.google.com/app
- * @author: ChatGPT used to simplify conversion 
- */
+import { formatTimeAgo } from '@/utils/formatTimeAgo';
+import toTitleCase from '@/utils/toTitleCase';
 
 export default function EventDetailPage({ params }) {
   // -- State & Hooks --
@@ -151,22 +160,6 @@ export default function EventDetailPage({ params }) {
     return <div className="max-w-md mx-auto px-4 py-8 text-center text-lg">Event not found.</div>;
   }
 
-  // -- Helper Functions --
-  const formatTimeAgo = (timestamp) => {
-    if (!timestamp) return 'N/A';
-    const now = new Date();
-    const past = new Date(timestamp);
-    const diff = Math.floor((now - past) / 1000);
-    if (diff < 60) return `${diff} seconds ago`;
-    const mins = Math.floor(diff / 60);
-    if (mins < 60) return `${mins} minutes ago`;
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `${hrs} hours ago`;
-    const days = Math.floor(hrs / 24);
-    if (days < 7) return `${days} days ago`;
-    return `${Math.floor(days / 7)} weeks ago`;
-  };
-
   const formatDateMMDDYYYY = (dateString) => {
     if (!dateString) return null;
     const date = new Date(dateString + 'T00:00:00'); // Ensure date is interpreted as local
@@ -174,27 +167,6 @@ export default function EventDetailPage({ params }) {
     const day = date.getDate().toString().padStart(2, '0');
     const year = date.getFullYear();
     return `${month}/${day}/${year}`;
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return 'Date not available';
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    const date = new Date(dateString + 'T00:00:00');
-    return date.toLocaleDateString(undefined, options);
-  };
-
-  const toTitleCase = (str) => {
-    if (!str) return '';
-    const minorWords = new Set([
-      "a", "an", "the", "and", "but", "or", "for", "nor", "on", "at", "to", "from", "by", "of", "in", "into", "near", "over", "past", "through", "up", "upon", "with", "without"
-    ]);
-    const words = String(str).toLowerCase().split(' ');
-    return words.map((word, index) => {
-      if (index === 0 || index === words.length - 1 || !minorWords.has(word)) {
-        return word.charAt(0).toUpperCase() + word.slice(1);
-      }
-      return word;
-    }).join(' ');
   };
 
   // -- Handlers --
