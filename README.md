@@ -8,7 +8,7 @@ Loaf Life is a mobile-first web application designed for students to find free o
 
 Students often rely on scattered sources like bulletin boards or Facebook groups for useful, money-saving opportunities. Loaf Life brings these into one place via:
 - A categorized interactive map.
-- Peer-submitted tips and hacks.
+- Peer-submitted deals, hacks and events
 - Saveable content via user profiles.
 
 ---
@@ -41,8 +41,8 @@ Students often rely on scattered sources like bulletin boards or Facebook groups
 - Filters by category and distance
 - Popups with detailed info and “Save” button
 
-### 💡 Hacks Page
-- Static markdown-style hack posts
+### 💡 Hacks/Events/Deals Page
+- Static markdown-style posts
 - Save favorites to a "Pocket Cheatsheet"
 
 ### 🧾 Submissions
@@ -58,32 +58,137 @@ Students often rely on scattered sources like bulletin boards or Facebook groups
 ## 🗂️ Project Structure
 ```
 BBY26REPO/
-├── public/                  # Static assets (e.g., images, favicon)
+├── public/
+│   ├── images/
+│   │   ├── avatars/
+│   │   │   ├── avatar1.png
+│   │   │   ├── avatar2.png
+│   │   │   └── ... (up to avatar9.png)
+│   │   ├── loafs/
+│   │   │   ├── loaf-bg.png
+│   │   │   ├── loafs-holding-hands.png
+│   │   │   ├── sad-loaf.png
+│   │   │   ├── toast-happy.png
+│   │   │   ├── toast-neutral.png
+│   │   │   └── toast-sad.png
+│   │   ├── map/
+│   │   │   ├── mapLoaf2.png
+│   │   │   ├── mapLoaf3.png
+│   │   │   ├── mapPinBlue.png
+│   │   │   ├── mapPinPurple.png
+│   │   │   └── mapPinRed.png
+│   │   ├── skeleton/
+│   │   │   └── Skeleton.PNG
+│   │   ├── threads/
+│   │   │   ├── 404loaf.png
+│   │   │   ├── browse.png
+│   │   │   ├── hamburger.png
+│   │   │   ├── live.png
+│   │   │   ├── logo.png
+│   │   │   ├── profile.png
+│   │   │   ├── save.png
+│   │   │   └── toaster.png
+│   │   └── leaflet/
+│   │       ├── marker-icon-2x.png
+│   │       ├── marker-icon.png
+│   │       └── marker-shadow.png
 ├── src/
-│   ├── app/                 # Next.js App Router directory
-│   │   ├── authentication/  # Auth pages (login, register)
-│   │   ├── hacks-page/      # Static or dynamic tips/hacks
-│   │   ├── login-page/      # Login form/page
-│   │   ├── map/             # Interactive map and pin components
-│   │   ├── profile/         # User dashboard
-│   │   ├── favicon.ico      # App icon
-│   │   ├── globals.css      # Global styles
-│   │   ├── layout.js        # App layout wrapper
-│   │   └── page.js          # Root landing page
-│   ├── components/          # Reusable UI components
-│   ├── contexts/            # React context providers (e.g., AuthContext)
-│   ├── hooks/               # Custom React hooks
-│   ├── layouts/             # Page-specific layouts
-│   ├── services/            # API logic (e.g., Supabase interactions)
-│   └── utils/               # Utility functions/helpers
-├── .gitignore               # Files to ignore in Git
-├── about.html               # Static info page
-├── eslint.config.mjs        # Linting config
-├── jsconfig.json            # JS path aliases/settings
-├── next.config.mjs          # Next.js config
-├── package.json             # Dependencies and scripts
-├── package-lock.json        # Dependency tree lock
-├── postcss.config.mjs       # PostCSS config
-├── tailwind.config.js       # Tailwind setup
-└── README.md                # Project overview and instructions
+│   ├── app/
+│   │   ├── about-page/
+│   │   │   └── page.jsx
+│   │   ├── add-form/
+│   │   │   └── page.jsx
+│   │   ├── deals-page/
+│   │   │   ├── [dealId]/
+│   │   │   │   ├── edit/
+│   │   │   │   │   └── page.jsx
+│   │   │   │   └── page.jsx
+│   │   │   └── page.jsx
+│   │   ├── events-page/
+│   │   │   ├── [eventId]/
+│   │   │   │   ├── [edit]/
+│   │   │   │   │   └── page.jsx
+│   │   │   │   └── page.jsx
+│   │   │   └── page.jsx
+│   │   ├── hacks-page/
+│   │   │   ├── [id]/
+│   │   │   │   ├── edit/
+│   │   │   │   │   └── page.jsx
+│   │   │   │   └── page.jsx
+│   │   │   └── page.jsx
+│   │   ├── login-page/
+│   │   │   └── page.jsx
+│   │   ├── main-feed-page/
+│   │   │   └── page.jsx
+│   │   ├── map-page/
+│   │   │   └── page.jsx
+│   │   ├── onboarding/
+│   │   │   └── page.jsx
+│   │   ├── profile/
+│   │   │   └── page.jsx
+│   │   ├── layout.js
+│   │   ├── not-found.jsx
+│   │   └── page.jsx
+│   ├── components/
+│   │   ├── buttons/
+│   │   │   ├── AllButton.jsx
+│   │   │   ├── Bookmark.jsx
+│   │   │   ├── CommentCount.jsx
+│   │   │   └── VoteButtons.jsx
+│   │   ├── cards/
+│   │   │   ├── BaseCard.jsx
+│   │   │   ├── Comment.jsx
+│   │   │   ├── DealCard.jsx
+│   │   │   ├── EventCard.jsx
+│   │   │   └── HackCard.jsx
+│   │   ├── forms/
+│   │   │   ├── AddCommentForm.jsx
+│   │   │   └── AddPostForm.jsx
+│   │   ├── mapComponents/
+│   │   │   ├── EventMap.jsx
+│   │   │   ├── EventMap.module.css
+│   │   │   ├── EventPopup.jsx
+│   │   │   ├── FilterBar.jsx
+│   │   │   ├── LocateControl.jsx
+│   │   │   ├── LocationAutoComplete.jsx
+│   │   │   ├── ShowOnMapButton.jsx
+│   │   │   └── ZoomToEvent.jsx
+│   │   ├── profile/
+│   │   │   ├── AvatarModal.jsx
+│   │   │   ├── AvatarSelector.jsx
+│   │   │   ├── BioSection.jsx
+│   │   │   ├── EditProfileModal.jsx
+│   │   │   ├── InterestsSection.jsx
+│   │   │   ├── ProfileCard.jsx
+│   │   │   ├── SavedPostsSection.jsx
+│   │   │   └── SkeletonLoad.jsx
+│   │   ├── sections/
+│   │   │   └── CommentSection.jsx
+│   │   └── skeletons/
+│   │       └── CommentSkeleton.jsx
+│   ├── lib/
+│   │   └── tags.js
+│   └── utils/
+│       ├── AI/
+│       │   └── huggingFaceHelper.js
+│       ├── formatting/
+│       │   ├── formatDate.js
+│       │   └── formatTimeAgo.js
+│       └── content/
+│       |   ├── tagEmojis.js
+│       |   └── toTitleCase.js
+|       ├── supabaseClient.js
+|       ├── middleware.js
+|       └── supabaseServer.js+
+
+├── .gitignore
+├── eslint.config.mjs
+├── jsconfig.json
+├── next.config.mjs
+├── package.json
+├── package-lock.json
+├── postcss.config.mjs
+├── tailwind.config.js
+├── README.md
+└── supabaseDoc.md
 ```
