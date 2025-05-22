@@ -70,6 +70,8 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
   const [locationKey, setLocationKey] = useState(0);
   // State to control visibility of the cancel confirmation modal.
   const [showCancelConfirmModal, setShowCancelConfirmModal] = useState(false);
+  // State to track form submission status
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Minimum selectable date for event date pickers.
   const MIN_DATE = '1900-01-01';
@@ -113,9 +115,15 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (isSubmitting) { // Prevent multiple submissions
+      return;
+    }
+    setIsSubmitting(true);
+
     const trimmedTitle = title.trim();
     if (!trimmedTitle) {
       console.error("Title cannot be empty or just whitespace.");
+      setIsSubmitting(false); // Reset submitting state
       return;
     }
 
@@ -123,6 +131,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
 
     if (selectedTags.length === 0) {
       setShowTagError(true);
+      setIsSubmitting(false); // Reset submitting state
       return;
     }
     setShowTagError(false);
@@ -131,6 +140,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
     if (postType === 'event') {
       if (!eventStartDate || !eventEndDate) {
         console.log("Start and End dates are required for events.")
+        setIsSubmitting(false); // Reset submitting state
         return;
       }
       const startDate = new Date(eventStartDate);
@@ -140,6 +150,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
       if (startDate < new Date(MIN_DATE) || startDate > new Date(MAX_DATE) || endDate < new Date(MIN_DATE) || endDate > new Date(MAX_DATE)) {
         setShowDateRangeError(true);
         setShowDateOrderError(false);
+        setIsSubmitting(false); // Reset submitting state
         return;
       }
       setShowDateRangeError(false);
@@ -148,6 +159,7 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
       if (endDate < startDate) {
         setShowDateOrderError(true);
         setShowDateRangeError(false);
+        setIsSubmitting(false); // Reset submitting state
         return;
       }
       setShowDateOrderError(false);
@@ -214,7 +226,22 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
 
     console.log(formData);
     if (onSubmit) {
-      onSubmit(formData);
+      try {
+        const submissionSuccessful = await onSubmit(formData);
+        if (!submissionSuccessful) {
+          // If onSubmit returns false (or any falsy value indicating failure before navigation),
+          // re-enable the button so the user can correct issues and try again.
+          setIsSubmitting(false);
+        }
+        // If submissionSuccessful is true, we *don't* set isSubmitting to false.
+        // This keeps the button disabled until the component unmounts due to navigation.
+      } catch (error) {
+        // Handle any unexpected errors from the onSubmit prop (e.g., if it doesn't return a boolean)
+        console.error("Error during form submission processing:", error);
+        setIsSubmitting(false); // Re-enable in case of unexpected errors
+      }
+    } else {
+      setIsSubmitting(false); // Reset submitting state if no onSubmit prop
     }
   };
 
@@ -569,9 +596,10 @@ export default function AddPostForm({ tags, onSubmit, onClose }) {
         {/* Submit button with dynamic text based on post type */}
         <button
           type="submit"
-          className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#77A06B] hover:bg-[#668d5b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#77A06B] transition duration-150 ease-in-out"
+          disabled={isSubmitting} // Disable button when submitting
+          className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#77A06B] hover:bg-[#668d5b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#77A06B] transition duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {postType === 'hack' ? 'Add Hack' : (postType === 'deal') ? 'Add Deal' : 'Add Event'}
+          {isSubmitting ? 'Submitting...' : (postType === 'hack' ? 'Add Hack' : (postType === 'deal') ? 'Add Deal' : 'Add Event')}
         </button>
         {/* Cancel button */}
         <button

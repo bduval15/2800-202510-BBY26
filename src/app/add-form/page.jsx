@@ -53,14 +53,14 @@ export default function AddFormPage() {
 
     if (sessionError) {
       console.error('Error getting session:', sessionError);
-      return;
+      return false;
     }
 
     // Ensure a user is logged in
     if (!session || !session.user) {
       console.error('No active session or user found.');
       router.push('/login-page'); // Redirect to login if no user
-      return;
+      return false; // Indicate redirection, not a successful form submission path
     }
 
     const userId = session.user.id;
@@ -110,30 +110,40 @@ export default function AddFormPage() {
       };
     } else {
       console.error('Unknown post type:', formData.postType);
-      return;
+      return false;
     }
 
     // Insert the prepared data into the determined Supabase table
-    const { data, error } = await clientDB
+    const { error } = await clientDB
       .from(tableName)
       .insert([dataToInsert]);
 
     if (error) {
       console.error(`Error inserting ${formData.postType}:`, error);
-      return;
+      return false; // Indicate submission failure
     }
 
     // Redirect the user to the appropriate page after successful submission
-    if (formData.postType === 'hack') {
-      router.push('/hacks-page');
-    } else if (formData.postType === 'deal') {
-      router.push('/deals-page'); 
-    } else if (formData.postType === 'event') {
-      router.push('/events-page');
-    } else {
-      // Fallback redirection if postType is somehow unknown at this point
-      console.warn('Unknown post type for redirection:', formData.postType);
-      router.push('/main-feed-page'); 
+    try {
+      if (formData.postType === 'hack') {
+        await router.push('/hacks-page');
+      } else if (formData.postType === 'deal') {
+        await router.push('/deals-page');
+      } else if (formData.postType === 'event') {
+        await router.push('/events-page');
+      } else {
+        // Fallback redirection if postType is somehow unknown at this point
+        console.warn('Unknown post type for redirection:', formData.postType);
+        await router.push('/main-feed-page');
+      }
+      return true; // Indicate submission and navigation initiated successfully
+    } catch (navigationError) {
+      console.error('Error during navigation:', navigationError);
+      // Data was inserted, but navigation failed.
+      // We'll consider this "successful enough" from the form's perspective
+      // to prevent resubmission of data, as the main goal is to avoid duplicates.
+      // The user might need to navigate manually or be shown a message.
+      return true;
     }
   };
 
