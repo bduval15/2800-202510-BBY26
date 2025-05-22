@@ -44,7 +44,6 @@ import styles from '@/components/mapComponents/EventMap.module.css';
 import { clientDB } from '@/supabaseClient';
 import { loadAllEvents } from '@/utils/loadAllEvents';
 import AIbutton from '@/components/buttons/AIbutton';
-import { useSearchParams } from 'next/navigation';
 
 const EventMap = dynamic(
   () => import('@/components/mapComponents/EventMap'),
@@ -68,10 +67,13 @@ export default function MapPage() {
   const [events, setEvents] = useState([]);
   const [interests, setInterests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [focusId, setFocusId] = useState(null);
 
-  // Get 'focus' query param to highlight a particular event
-  const searchParams = useSearchParams();
-  const focusId = searchParams.get('focus');
+  +  // Read '?focus=' from the URL on the client
+    useEffect(() => {
+      const params = new URLSearchParams(window.location.search);
+      setFocusId(params.get('focus'));
+    }, []);
 
   // All thread types available for filtering
   const threads = useMemo(() => ([
