@@ -78,7 +78,7 @@ export default function Home() {
           <div>
             <Link href="/login-page">
               <img 
-                src="images/save.png" 
+                src="images/loafsave.png" 
                 alt="Save feature - Piggy bank icon" 
                 className="w-14 mx-auto mb-2" 
               />
@@ -88,7 +88,7 @@ export default function Home() {
           <div>
             <Link href="/login-page">
               <img 
-                src="images/live.png" 
+                src="images/heart.png" 
                 alt="Live Well feature - Heart icon" 
                 className="w-14 mx-auto mb-2" 
               />
