@@ -1,35 +1,48 @@
 /**
  * InterestsSection.jsx
- * Displays and allows editing of the user's selected interests.
- * Includes modal for choosing from predefined interest tags.
  * 
- * Turned profile page's interest view/edit into reusable component.
- * Portions of styling and layout were assisted by ChatGPT for educational purposes.
+ * Loaf Life – Reusable component to display and edit a user's interest tags.
+ * 
+ * This component shows a list of emoji-based interest tags and allows users to update their selections
+ * via a modal interface. Users can select from a predefined list, with a max selection limit.
  *
- * Modified with assistance from ChatGPT o4-mini-high.
+ * Extracted from ProfilePage and modularized with assistance from ChatGPT o4-mini-high.
+ * Portions of layout, tag styling, and modal UX refined for learning purposes.
+ * 
  * @author Aleen Dawood
- * @author https://chatgpt.com/*
+ * @author https://chatgpt.com/
+ * 
+ * @function InterestsSection
+ * @description Renders the selected interest tags and provides an editable modal to update them.
  */
 
 import React from "react";
 
+/**
+ * InterestsSection
+ * 
+ * @function InterestsSection
+ * @returns {JSX.Element} Interest tag display and editing interface
+ */
 export default function InterestsSection({
     interests = [],                 // Current interests (display-only)
-    editInterests = [],             // Temporary list for editing
-    setEditInterests = () => { },   // Setter for edited interests
-    showEditInterests = false,      // Modal visibility toggle
+    editInterests = [],             // Temporary state for editing
+    setEditInterests = () => { },   // Setter for updated selection
+    showEditInterests = false,      // Controls modal visbility 
     setShowEditInterests = () => { },
-    onSaveInterests = () => { },    // Save handler callback
+    onSaveInterests = () => { },    // Callback to save interests
     predefinedInterests = [],       // List of predefined options
-    maxSelection = 5,               // Limit on number of interests
+    maxSelection = 5,               //  Limit for selected interests
 }) {
     return (
-        <section className="max-w-md mx-auto bg-white p-4 rounded-lg mt-6">
+        <section className="max-w-md mx-auto bg-white p-4 rounded-xl border border-[#D1905A] shadow-md mt-6">
+
+            {/* ---------- Section Title ---------- */}
             <h2 className="font-semibold text-left text-lg text-[#8B4C24] mb-2">
                 My Interests
             </h2>
 
-            {/* Display selected interests as emoji-label tags */}
+            {/* ---------- Display Current Interests ---------- */}
             <div className="flex flex-wrap gap-2 text-sm mb-4">
                 {interests.map((interest, index) => (
                     <span
@@ -42,7 +55,7 @@ export default function InterestsSection({
                 ))}
             </div>
 
-            {/* Edit button triggers interest selection modal */}
+            {/* ---------- Edit Button ---------- */}
             <div className="flex justify-end">
                 <button
                     onClick={() => setShowEditInterests(true)}
@@ -52,15 +65,19 @@ export default function InterestsSection({
                 </button>
             </div>
 
-            {/* Edit Interests Modal */}
+            {/* ---------- Interest Selection Modal ---------- */}
             {showEditInterests && (
                 <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+
+                    {/* Modal container */}
                     <div className="bg-white p-6 rounded-xl max-w-md w-full max-h-[80vh] overflow-y-auto shadow-lg">
+
+                        {/* Modal heading */}
                         <h2 className="text-lg font-bold text-[#8B4C24] mb-4 text-center">
                             Choose up to {maxSelection} Interests
                         </h2>
 
-                        {/* Grid of selectable interest buttons */}
+                        {/* ---------- Interest Buttons Grid ---------- */}
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6 justify-items-center">
                             {predefinedInterests.map((interest) => {
                                 const isSelected = editInterests.some(
@@ -72,6 +89,7 @@ export default function InterestsSection({
                                         key={interest.label}
                                         type="button"
                                         onClick={() => {
+                                            // Toggle selection or prevent going over max
                                             if (isSelected) {
                                                 setEditInterests(
                                                     editInterests.filter((i) => i.label !== interest.label)
@@ -91,7 +109,7 @@ export default function InterestsSection({
                             })}
                         </div>
 
-                        {/* Modal action buttons */}
+                        {/* ---------- Modal Buttons ---------- */}
                         <div className="flex justify-between mt-4">
                             <button
                                 onClick={() => setShowEditInterests(false)}
@@ -99,6 +117,7 @@ export default function InterestsSection({
                             >
                                 Cancel
                             </button>
+
                             <button
                                 onClick={onSaveInterests}
                                 className="bg-[#639751] text-white font-medium px-6 py-1.5 rounded hover:bg-[#6bb053] transition"

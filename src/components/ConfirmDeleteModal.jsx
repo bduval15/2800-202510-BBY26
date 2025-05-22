@@ -1,18 +1,35 @@
+/**
+ * File: ConfirmDeleteModal.jsx
+ *
+ * Loaf Life
+ *   Modal for confirming the deletion of an item. This component presents a modal
+ *   dialog to the user, asking for confirmation before proceeding with a delete
+ *   operation. It is designed to prevent accidental deletions by requiring an
+ *   explicit confirmation. The modal displays the name of the item to be deleted
+ *   if provided.
+ *   Utilizes React for UI components.
+ *
+ * Authorship:
+ *   @author Nathan Oloresisimo
+ *   @author https://gemini.google.com/app
+ *
+ * Main Component:
+ *   @function ConfirmDeleteModal
+ *   @description Displays a modal dialog to confirm item deletion. It shows a
+ *                confirmation message and, optionally, the item's name.
+ *                Provides "Cancel" and "Delete" actions. Visibility is
+ *                controlled by the `isOpen` prop.
+ *   @param {object} props - The component's props.
+ *   @param {boolean} props.isOpen - Controls the visibility of the modal.
+ *   @param {function} props.onClose - Function to call when the modal is closed (Cancel).
+ *   @param {function} props.onConfirm - Function to call when deletion is confirmed.
+ *   @param {string} [props.itemName] - The name of the item to be deleted.
+ *   @returns {JSX.Element | null} The modal component or null if not open.
+ */
+
 'use client';
 
 import React from 'react';
-
-/**
- * ConfirmDeleteModal.jsx
- * Loaf Life - Confirm Delete Modal
- * 
- * This component allows users to confirm the deletion of a hack or deal.
- * 
- * Modified with assistance from Google Gemini 2.5 Flash
- * 
- * @author: Nathan O
- * @author https://gemini.google.com/app
- */
 
 export default function ConfirmDeleteModal({ isOpen, onClose, onConfirm, itemName }) {
   if (!isOpen) {
@@ -20,7 +37,7 @@ export default function ConfirmDeleteModal({ isOpen, onClose, onConfirm, itemNam
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-50 p-4">
       <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">Confirm Deletion</h2>
         <p className="mb-6 text-gray-600">

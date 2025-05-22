@@ -1,22 +1,35 @@
 /**
  * SkeletonLoaf.jsx
- * Loaf Life – fallback component displayed while profile data is loading.
+ *
+ * Loaf Life – Fallback animation component shown while profile data is loading.
+ *
+ * This animated skeleton screen shows a pulsing loaf message and graphic while
+ * waiting for Supabase data (used in ProfilePage).
+ *
+ * Styling and animation were refined with the help of Tailwind utility classes.
  * 
- * This skeleton screen shows a pulsing loaf image and message during data fetch.
- * Used on ProfilePage while waiting on Supabase data to load.
+ * Modified with assistance from ChatGPT o4-mini-high.
  * 
- * Portions of layout and styling were assisted by ChatGPT for educational purposes.
  * @author Aleen Dawood
- * @author https://chatgpt.com/*
+ * @author https://chatgpt.com/
+ * 
+ * @function SkeletonLoaf
+ * @description Renders a centered animated loaf and loading message to indicate data is being fetched.
  */
 
+/**
+ * SkeletonLoaf
+ * 
+ * @function SkeletonLoaf
+ * @returns {JSX.Element} Animated skeleton placeholder component
+ */
 export default function SkeletonLoaf() {
   return (
     <div className="flex flex-col items-center justify-center mt-10 animate-fade-in">
-      {/* Loading text */}
+      {/* Loading text with pulsing animation */}
       <p className="mb-2 text-[#8B4C24] font-medium animate-pulse">Waking up the loaf…</p>
 
-      {/* Animated placeholder image */}
+      {/* Pulsing loaf image as a placeholder */}
       <img
         src="/images/skeleton/Skeleton.png"
         alt="Loading..."

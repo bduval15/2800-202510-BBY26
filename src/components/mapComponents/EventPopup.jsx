@@ -1,13 +1,19 @@
 /**
-* EventPopup.jsx
-*
-* Loaf Life – Holds all the functionality 
-* for even popup modal when clicking on a pin.
-* 
+ * EventPopup.jsx
+ *
+ * Loaf Life – Holds all the functionality for event popup modal when clicking on a pin.
+ *
  * Modified with assistance from ChatGPT o4-mini-high.
- * 
+ *
  * @author Brady Duval
  * @author https://chatgpt.com/
+ *
+ * @function EventPopup
+ * @description Renders a popup for an event marker showing avatar, title, distance,
+ *              thread label, and a button to navigate to the detailed post page.
+ *
+ * @function goToPost
+ * @description Navigates the user to the detailed post page corresponding to the event.
  */
 
 'use client';
@@ -22,12 +28,21 @@ import {
 
 export default function EventPopup({ evt, userPosition }) {
   const router = useRouter();
+
+  // Map of thread IDs to their display labels
   const labelMap = { hacks: 'Hacks', deals: 'Deals', events: 'Free Events' };
+
+  // Determine the label for this event's thread
   const threadLabel = labelMap[evt.table_id] || 'General';
+
+  // Source URL for the user's avatar, fallback to logo
   const avatarSrc = evt.userAvatar || '/images/logo.png';
+
+  // State for holding the computed distance between user and event
   const [distanceKm, setDistanceKm] = useState(null);
 
   useEffect(() => {
+    // Calculate and set distance when both userPosition and event coords exist
     if (
       userPosition &&
       typeof evt.lat === 'number' &&
@@ -35,11 +50,17 @@ export default function EventPopup({ evt, userPosition }) {
     ) {
       const from = L.latLng(userPosition.lat, userPosition.lng);
       const to = L.latLng(evt.lat, evt.lng);
-      const meters = from.distanceTo(to);
-      setDistanceKm(meters / 1000);
+      const meters = from.distanceTo(to); // Leaflet returns meters
+      setDistanceKm(meters / 1000); // Convert to kilometers
     }
   }, [userPosition, evt.lat, evt.lng]);
 
+  /**
+   * goToPost
+   *
+   * @function goToPost
+   * @description Navigate to the event's detailed post page when button is clicked.
+   */
   const goToPost = () => {
     router.push(`/${evt.table_id}-page/${evt.id}`)
   }
@@ -60,6 +81,7 @@ export default function EventPopup({ evt, userPosition }) {
             alt="avatar"
             className="w-12 h-12 rounded-full"
             onError={e => {
+              // Fallback to default logo if avatar fails to load
               e.currentTarget.src = '/images/logo.png';
             }}
           />
@@ -67,7 +89,7 @@ export default function EventPopup({ evt, userPosition }) {
             {evt.title}
           </h4>
         </div>
-        {/* — Location on left, Thread Pill on right — */}
+        {/* Distance indicator and thread label pill */}
         <div className="flex justify-between items-center text-gray-600 text-xs mb-3">
           <div className="flex items-center space-x-1">
             <MapPinIcon className="h-4 w-4" />

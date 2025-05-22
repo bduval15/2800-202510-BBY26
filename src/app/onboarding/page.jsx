@@ -1,5 +1,6 @@
 /**
  * OnboardingPage.jsx
+ * 
  * Loaf Life – profile onboarding form for new users.
  *
  * This page allows users to complete their profile setup by selecting an avatar,
@@ -19,6 +20,14 @@
  * 
  * @author Aleen Dawood
  * @author https://chatgpt.com/*
+ * 
+ * @function OnboardingPage
+ * @description Main onboarding form component. Handles avatar selection, form inputs,
+ *              interest selection, validation, and data submission to Supabase.
+ *
+ * @function handleSubmit
+ * @description Validates input, saves user profile info to Supabase,
+ *              and redirects to main feed on success.
  */
 
 'use client';
@@ -76,19 +85,28 @@ export default function OnboardingPage() {
         { emoji: "🕹️", label: "Esports" },
     ];
 
-    // Fetch user info on mount
+    /**
+     * @function useEffect (fetch user ID)
+     * @description On mount, fetch the currently logged-in user
+     *              and store their ID for profile updates.
+     */
     useEffect(() => {
         const getUser = async () => {
             const { data: { user } } = await clientDB.auth.getUser();
-            if (user) setUserId(user.id); // Save user ID for profile updates
+            if (user) setUserId(user.id);
         };
         getUser();
     }, []);
 
-    // Validation logic for form fields
+    // Check if all required fields are filled and within character limits
     const isFormValid = school.trim() && bio.trim() && interests.length > 0 && school.length <= SCHOOL_MAX && bio.length <= BIO_MAX;
 
-    // Handles form submission: updates Supabase, redirects to profile
+    /**
+     * @function handleSubmit
+     * @description Handles form submission to Supabase. If valid, saves profile data
+     *              and redirects to the main feed.
+     * @param {Event} e
+     */
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!isFormValid) return;
@@ -101,7 +119,7 @@ export default function OnboardingPage() {
             interests: interests.map(i => i.label),
         }).eq('id', userId);
 
-        if (!error) router.push('/profile');
+        if (!error) router.push('/main-feed-page');
         else setError('Something went wrong while saving. Please try again.');
 
         setSubmitting(false);
@@ -121,7 +139,11 @@ export default function OnboardingPage() {
                     {/* Avatar section */}
                     <div className="flex flex-col items-center space-y-2">
                         <img src={avatar} alt="Avatar" className="w-24 h-24 rounded-full object-cover" />
-                        <button type="button" onClick={() => setShowAvatarModal(true)} className="text-sm text-[#8B4C24] border border-[#8B4C24] rounded px-3 py-1 hover:bg-[#F5E3C6]">
+                        <button
+                            type="button"
+                            onClick={() => setShowAvatarModal(true)}
+                            className="text-sm text-[#8B4C24] border border-[#8B4C24] rounded px-3 py-1 hover:bg-[#F5E3C6]"
+                        >
                             Edit Avatar
                         </button>
                     </div>
@@ -160,7 +182,10 @@ export default function OnboardingPage() {
                     {/* Interests selection area */}
                     <div>
                         <label className="block text-sm font-medium text-[#8B4C24] mb-1">Please select your interests</label>
-
+                        {/* Error or guidance message */}
+                        <p className={`text-xs ${error === 'max' ? 'text-red-600' : 'text-gray-500'}`}>
+                            The maximum you can choose is {MAX_SELECTION}.
+                        </p>
                         <div className="flex flex-wrap gap-2 mt-2 mb-3">
                             {PREDEFINED_INTERESTS.map((item) => {
                                 const isSelected = interests.some((i) => i.label === item.label);
@@ -189,11 +214,6 @@ export default function OnboardingPage() {
                                 );
                             })}
                         </div>
-
-                        {/* Error or guidance message */}
-                        <p className={`text-xs ${error === 'max' ? 'text-red-600' : 'text-gray-500'}`}>
-                            The maximum you can choose is {MAX_SELECTION}.
-                        </p>
                     </div>
 
                     {/* Final submit button */}

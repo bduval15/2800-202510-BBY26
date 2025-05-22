@@ -1,70 +1,62 @@
 /**
  * Toast.jsx
- * Reusable toast notification component for Loaf Life.
- * Can be triggered globally across the app to show success, error, or info messages.
  *
- * Usage:
- * <Toast message="Profile saved!" type="success" />
+ * Loaf Life – Toast popup animation component used to provide playful feedback.
+ *
+ * Displays a happy toast loaf rising from a toaster, triggered during profile updates.
+ * Built with Framer Motion for smooth enter/exit animations.
+ *
+ * Props:
+ * - visible (boolean): controls visibility of the toast popup
+ * - message (string): optional message text (currently unused visually)
+ * - type (string): visual type indicator ("success", "error", etc.) – reserved for future styling
+ * - onClose (function): optional callback when toast is dismissed (not used yet)
  *
  * Modified with assistance from ChatGPT o4-mini-high.
- * Portions of styling and animation assisted by ChatGPT for educational purposes.
- *
+ * 
  * @author Aleen Dawood
- * @author https://chatgpt.com/*
+ * @author https://chatgpt.com/
+ *
+ * @function Toast
+ * @description Renders an animated toast loaf rising from a toaster using Framer Motion.
  */
 
-'use client';
+import { motion, AnimatePresence } from "framer-motion";
 
-import { useEffect } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import Image from 'next/image';
+/**
+ * Toast
+ * @param {Object} props
+ * @param {boolean} props.visible - Controls if the toast animation is shown
+ * @param {string} props.message - Optional message (unused visually for now)
+ * @param {string} props.type - Optional type of toast (e.g., success/error)
+ * @param {Function} props.onClose - Optional onClose handler
+ */
+export default function Toast({ visible, message, type = "success", onClose }) {
+  return (
+    <AnimatePresence>
+      {visible && (
+        // Fixed-position container centered at the bottom
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-[1000] flex flex-col items-center">
 
-export default function Toast({ message, type = 'success', visible, onClose }) {
-    // Automatically hide toast after 3 seconds
-    useEffect(() => {
-        if (visible) {
-            const timer = setTimeout(() => {
-                onClose();
-            }, 3000);
-            return () => clearTimeout(timer);
-        }
-    }, [visible, onClose]);
+          {/* Animated toast loaf rising up */}
+          <motion.img
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: -60, opacity: 1 }}
+            exit={{ y: 20, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 300 }}
+            src="/images/loafs/toast-happy.png"
+            alt="Toast"
+            className="w-14 h-auto -mb-6 z-10"
+          />
 
-    // Background colors and icons based on toast type
-    const backgroundColors = {
-        success: 'bg-[#639751]',
-        error: 'bg-red-500',
-        info: 'bg-blue-500',
-    };
-
-    const emojiIcons = {
-        success: '/images/loafs/toast-happy.png',
-        error: '/images/loafs/toast-sad.png',
-        info: '/images/loafs/toast-neutral.png',
-    };
-
-    return (
-        <AnimatePresence>
-            {visible && (
-                <motion.div
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 50 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                    className={`flex items-center gap-2 fixed top-6 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-xl shadow-lg text-white text-sm z-[1000] ${backgroundColors[type]}`}
-                >
-                    {/* Toast emoji icon */}
-                    <Image
-                        src={emojiIcons[type]}
-                        alt="toast icon"
-                        width={24}
-                        height={24}
-                        className="object-contain"
-                    />
-                    {/* Toast message */}
-                    {message}
-                </motion.div>
-            )}
-        </AnimatePresence>
-    );
+          {/* Static toaster image */}
+          <img
+            src="/images/toaster.png"
+            alt="Toaster"
+            className="w-24 h-auto z-20 -mt-12"
+          />
+        </div>
+      )}
+    </AnimatePresence>
+  );
 }
