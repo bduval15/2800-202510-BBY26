@@ -180,7 +180,6 @@ BBY26REPO/
 |       ├── supabaseClient.js
 |       ├── middleware.js
 |       └── supabaseServer.js+
-
 ├── .gitignore
 ├── eslint.config.mjs
 ├── jsconfig.json
