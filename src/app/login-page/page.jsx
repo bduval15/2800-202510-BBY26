@@ -139,16 +139,10 @@ export default function LoginPage() {
    * Navigation Handler
    * 
    * @function handleBack
-   * @description Manages backward navigation with fallback to home:
-   * - Uses browser history when available
-   * - Defaults to root route when no history
+   * @description Manages backward navigation to home:
    */
   const handleBack = () => {
-    if (typeof window !== "undefined" && window.history.length > 1) {
-      router.back();
-    } else {
-      router.push("/");
-    }
+    router.push("/");
   };
 
   return (
@@ -249,6 +243,7 @@ export default function LoginPage() {
             />
             <button
               type="button"
+              onPointerDown={e => e.preventDefault()} 
               onClick={() => setShowPassword(!showPassword)}
               className="absolute top-[38px] right-3 text-[#8B4C24] hover:text-[#639751] focus:outline-none"
               tabIndex={-1}
