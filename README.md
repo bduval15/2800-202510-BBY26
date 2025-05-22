@@ -80,18 +80,23 @@ BBY26REPO/
 │   │   ├── skeleton/
 │   │   │   └── Skeleton.PNG
 │   │   ├── threads/
-│   │   │   ├── 404loaf.png
-│   │   │   ├── browse.png
-│   │   │   ├── hamburger.png
-│   │   │   ├── live.png
-│   │   │   ├── logo.png
-│   │   │   ├── profile.png
-│   │   │   ├── save.png
-│   │   │   └── toaster.png
-│   │   └── leaflet/
-│   │       ├── marker-icon-2x.png
-│   │       ├── marker-icon.png
-│   │       └── marker-shadow.png
+│   │   │   ├── dealsThread.png
+│   │   │   ├── eventsThread.png
+│   │   │   ├── hacksThread.png
+│   │   │   └── savingsThread.png
+│   │   ├── leaflet/
+│   │   │  ├── marker-icon-2x.png
+│   │   │  ├── marker-icon.png
+│   │   │  └── marker-shadow.png
+│   │   ├── 404loaf.png
+│   │   ├── browse.png
+│   │   ├── hamburger.png
+│   │   ├── live.png
+│   │   ├── logo.png
+│   │   ├── profile.png
+│   │   ├── save.png
+│   │   └── toaster.png
+│   │ 
 ├── src/
 │   ├── app/
 │   │   ├── about-page/
