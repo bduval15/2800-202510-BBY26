@@ -151,6 +151,7 @@ function ClosePopupsOnClick() {
  */
 function FocusHandler({ events, focusId, markersRef }) {
     const map = useMap()
+    const hasZoomedFor = useRef({});
 
     useEffect(() => {
         if (!focusId) return // Do nothing if no focusId provided
@@ -161,6 +162,8 @@ function FocusHandler({ events, focusId, markersRef }) {
             console.warn('[FocusHandler] no event with id', focusId)
             return
         }
+
+        if (hasZoomedFor.current[focusId]) return; // Already zoomed once
 
         // Zoom to the event's location, then open its popup
         ZoomToEvent(
@@ -175,6 +178,8 @@ function FocusHandler({ events, focusId, markersRef }) {
                 }
             }
         )
+        // Mark Focus as zoomed 
+        hasZoomedFor.current[focusId] = true;
     }, [focusId, events, map])
 
     return null
@@ -325,7 +330,7 @@ export default function EventMap({ events = [], focusId = null }) {
                     subdomains={['a', 'b', 'c', 'd']}
                 />
 
-                 {/* Close popups on click or Escape */}
+                {/* Close popups on click or Escape */}
                 <ClosePopupsOnClick />
 
                 {/* Render markers for each event */}
@@ -343,7 +348,7 @@ export default function EventMap({ events = [], focusId = null }) {
                     focusId={focusId}
                     markersRef={markersRef}
                 />
-                
+
                 {/* Locate control to allow user to find their position */}
                 <LocateControl
                     position="topright"
