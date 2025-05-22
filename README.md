@@ -194,5 +194,6 @@ BBY26REPO/
 ├── postcss.config.mjs
 ├── tailwind.config.js
 ├── README.md
-└── supabaseDoc.md
+├── supabaseDoc.md
+└── tailwind.config.js
 ```
