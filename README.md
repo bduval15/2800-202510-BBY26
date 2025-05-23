@@ -161,10 +161,10 @@ A big thank-you to the open-source projects, tutorials, and tools that power Loa
 
 - **ChatGPT** – AI language model by OpenAI, used for code suggestions, README drafting, and brainstorming.
   - https://chat.openai.com
-  - 
+  
 - **Gemini** – Google’s AI assistant, leveraged for refining feature descriptions and polishing content.
   - https://gemini.google.com
-  - 
+  
 - **Deepseek** – AI-powered research tool, used to source and verify external references throughout the project.
   - https://deepseek.com  
 
